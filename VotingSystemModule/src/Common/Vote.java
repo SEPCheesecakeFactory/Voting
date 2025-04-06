@@ -1,0 +1,15 @@
+package Common;
+
+public class Vote
+{
+  private int userId;
+  private int[] choices;
+
+  public Vote(int userId, int[] choices){
+    this.userId=userId;
+    this.choices=choices;
+  }
+
+  public int getUserId() { return userId; }
+  public int[] getChoices() { return choices; }
+}

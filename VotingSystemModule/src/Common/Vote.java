@@ -1,5 +1,7 @@
 package Common;
 
+import java.util.Arrays;
+
 public class Vote
 {
   private int userId;
@@ -12,4 +14,10 @@ public class Vote
 
   public int getUserId() { return userId; }
   public int[] getChoices() { return choices; }
+
+  @Override public String toString()
+  {
+    return "Vote{" + "userId=" + userId + ", choices=" + Arrays.toString(
+        choices) + '}';
+  }
 }

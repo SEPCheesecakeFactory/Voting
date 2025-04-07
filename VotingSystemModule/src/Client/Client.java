@@ -16,12 +16,12 @@ public class Client
       ClientConnection clientConnection = new ClientConnection(socket);
       new Thread(clientConnection).start();
 
-      while(true)
-      {
-        System.out.println("Enter a message: ");
-        String stringToSend = scanner.nextLine();
-        clientConnection.send(stringToSend);
-      }
+//      while(true)
+//      {
+//        System.out.println("Enter a message: ");
+//        String stringToSend = scanner.nextLine();
+//        clientConnection.send(stringToSend);
+//      }
     }
     catch (IOException e)
     {

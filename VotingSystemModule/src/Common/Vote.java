@@ -2,6 +2,7 @@ package Common;
 
 import java.util.Arrays;
 
+// This could easily be a record class if we embrace immutability (why mutable?)
 public class Vote
 {
   private int userId;

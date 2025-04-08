@@ -1,5 +1,6 @@
 package Common;
 
+// This could easily be a record class if we embrace immutability (retrieved from the server anyway, so... why mutable?)
 public class Poll
 {
   private String title;

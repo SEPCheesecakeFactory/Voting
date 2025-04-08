@@ -1,6 +1,7 @@
 package Server;
 //Sockets 2 michael
 import Common.*;
+import jdk.jshell.spi.ExecutionControl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -65,5 +66,9 @@ public class ServerConnection implements Runnable
     private Vote recieveVote() throws IOException, ClassNotFoundException
     {
       return (Vote) inFromClient.readObject();
+    }
+    public void send(String message)
+    {
+      System.err.println("Not implemented.");
     }
 }

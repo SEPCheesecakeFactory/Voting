@@ -1,6 +1,6 @@
 package Common;
 
-
+// This could easily be a record class if we embrace immutability (retrieved from the server anyway, so... why mutable?)
 public class ChoiceOption
 {
   private int id;
@@ -30,5 +30,5 @@ public class ChoiceOption
   public void setValue(String value)
   {
     this.value = value;
-  }
+  } // needed?
 }

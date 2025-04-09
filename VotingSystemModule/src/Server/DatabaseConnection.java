@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class DatabaseConnection implements DatabaseConnector
 {
-  public DatabaseConnection()
+  public DatabaseConnection() throws SQLException
   {
     DriverManager.registerDriver(new org.postgresql.Driver());
   }

@@ -3,10 +3,12 @@ package Server;
 import Common.Poll;
 import Common.Vote;
 
+import java.sql.SQLException;
+
 public class DatabaseConnectionProxy implements DatabaseConnector
 {
   private DatabaseConnection databaseConnection;
-  public DatabaseConnectionProxy()
+  public DatabaseConnectionProxy() throws SQLException
   {
     databaseConnection = new DatabaseConnection();
   }

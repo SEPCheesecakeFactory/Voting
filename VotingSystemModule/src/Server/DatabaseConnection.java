@@ -17,7 +17,7 @@ public class DatabaseConnection implements DatabaseConnector
 
   private Connection openConnection() throws SQLException
   {
-    return DriverManager.getConnection("jdbc:posgresql://localhost:5432/postgres","postgres", "password"); // IMPORTANT: I guess we will all have to set it to our password when trying it out unless we get a proper server
+    return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres","postgres", "password"); // IMPORTANT: I guess we will all have to set it to our password when trying it out unless we get a proper server
   }
 
   @Override public void storeVote(Vote vote)

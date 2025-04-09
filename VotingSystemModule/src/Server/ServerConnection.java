@@ -31,6 +31,7 @@ public class ServerConnection implements Runnable
 //      Vote vote = recieveVote();
 //      System.out.println(vote);
       Vote vote = (Vote) inFromClient.readObject();
+      System.out.println("Vote received " + vote);
     }
     catch (IOException | ClassNotFoundException e)
     {

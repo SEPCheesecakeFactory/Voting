@@ -27,18 +27,15 @@ public class ClientConnection implements Runnable
     {
       while (true)
       {
-//       Poll poll = (Poll) inFromServer.readObject();
-       //logic of displaying the poll info and choosing options should be here
+         Poll poll = (Poll) inFromServer.readObject();
+        //logic of displaying the poll info and choosing options should be here
         // TODO: Should be changed for protocol 2.0, choices can't be gotten right after receiving the poll
         // TODO: Should be actually changed for protocol 3.0
-//        int[] choices = {1,3};//dummy not logic
-//        Vote vote = new Vote(1, choices);//dummy not logic
 
-        sendVote(vote);
 //        System.out.println("Message received: " + message);
       }
     }
-    catch (IOException | ClassNotFoundException e)
+    catch (Exception e)
     {
       throw new RuntimeException(e);
     }

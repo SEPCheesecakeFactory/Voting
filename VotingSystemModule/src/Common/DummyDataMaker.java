@@ -48,5 +48,12 @@ public class DummyDataMaker
     Poll poll = new Poll(getDummyText("Title", id),getDummyText("Description", id),1,questions);
     return poll;
   }
-
+  // ====================
+  //    VOTE
+  // ====================
+  public static Vote getDummyVote(int userID, int[] options)
+  {
+    Vote vote = new Vote(userID, new int[]{options[(new Random()).nextInt(options.length)]});
+    return vote;
+  }
 }

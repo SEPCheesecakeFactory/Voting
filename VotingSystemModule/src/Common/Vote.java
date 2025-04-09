@@ -1,9 +1,10 @@
 package Common;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 // This could easily be a record class if we embrace immutability (why mutable?)
-public class Vote
+public class Vote implements Serializable
 {
   private int userId;
   private int[] choices;

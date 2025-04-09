@@ -8,8 +8,6 @@ public class Client
 {
   public static void main(String[] args)
   {
-    Scanner scanner = new Scanner(System.in);
-
     try
     {
       Socket socket = new Socket("localhost", 2910);

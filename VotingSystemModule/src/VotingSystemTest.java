@@ -16,7 +16,13 @@ public class VotingSystemTest
     {
       Socket socket = new Socket("localhost", 2910);
       ClientConnection clientConnection = new ClientConnection(socket);
-      Vote vote = DummyDataMaker.getDummyVote(0,new int[]{0,1,2,3});
+      // === INPUTTING ===
+      System.out.println("Input userID:");
+      int userID = scanner.nextInt();
+      System.out.println("Input choiceID:");
+      int choiceID = scanner.nextInt();
+      Vote vote = new Vote(userID, new int[]{choiceID});
+      // ===
       System.out.println("Sending vote " + vote);
       clientConnection.sendVote(vote);
     }

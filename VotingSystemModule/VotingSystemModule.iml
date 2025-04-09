@@ -7,5 +7,19 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.7.5</version>
+    </dependency>
+    <orderEntry type="module-library">
+          <library>
+            <CLASSES>
+              <root url="src/postgresql-42.7.5.jar!/" />
+            </CLASSES>
+            <JAVADOC />
+            <SOURCES />
+          </library>
+        </orderEntry>
   </component>
 </module>

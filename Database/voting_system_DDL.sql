@@ -2,38 +2,36 @@ CREATE SCHEMA IF NOT EXISTS voting_system;
 
 SET SCHEMA 'voting_system';
 
-CREATE DOMAIN Id AS Integer CHECK (VALUE > 4000.00);
-
 CREATE TABLE Poll(
-    id Id PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(60)
 );
 
 CREATE TABLE Question(
-    id Id PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(180),
     description VARCHAR(250),
     poll_id INT references Poll(id)
 );
 
 CREATE TABLE ChoiceOption(
-    id Id PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     value VARCHAR(100),
     question_id INT references Question(id)
 );
 
 CREATE TABLE Users(
-    id Id PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(40)
 );
 
-CREATE TABLE Vote(
-    id Id PRIMARY KEY,
-    user_id INT references Users(id)
-);
-
 CREATE TABLE VotedChoice(
-    vote_id INT references Vote(id),
+    vote_id INT references Users(id),
     choice_option_id INT references ChoiceOption(id),
     PRIMARY KEY (vote_id, choice_option_id)
 );
+
+INSERT INTO Poll (title) VALUES ('Dupa');
+INSERT INTO Question (title, description, poll_id) VALUES ('Question Title', 'Description', 1);
+INSERT INTO ChoiceOption (value, question_id) VALUES ('Yes', 2);
+INSERT INTO Users (username) VALUES ('Wiktor Belzedup');

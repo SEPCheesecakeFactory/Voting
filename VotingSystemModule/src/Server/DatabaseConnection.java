@@ -27,8 +27,7 @@ public class DatabaseConnection implements DatabaseConnector
       for(int choiceOptionID : vote.getChoices())
       {
         // PreparedStatement insertVoteStatement = connection.prepareStatement("INSERT INTO VotedChoice VALUES ("+vote.getUserId()+","+choiceOptionID+
-        PreparedStatement insertVoteStatement = connection.prepareStatement("INSERT INTO VotedChoice VALUES (?,?)");
-        // TODO: check if the indexing is really from 1 (seems sus)
+        PreparedStatement insertVoteStatement = connection.prepareStatement("INSERT INTO votedchoice VALUES (?,?)");
         insertVoteStatement.setInt(1,vote.getUserId());
         insertVoteStatement.setInt(2,choiceOptionID);
         insertVoteStatement.executeUpdate();

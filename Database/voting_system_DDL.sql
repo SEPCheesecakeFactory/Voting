@@ -22,14 +22,14 @@ CREATE TABLE ChoiceOption(
     question_id INT references Question(id)
 );
 
-CREATE TABLE "User"(
+CREATE TABLE Users(
     id Id PRIMARY KEY,
     username VARCHAR(40)
 );
 
 CREATE TABLE Vote(
     id Id PRIMARY KEY,
-    user_id INT references "User"(id)
+    user_id INT references Users(id)
 );
 
 CREATE TABLE VotedChoice(

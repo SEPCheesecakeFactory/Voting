@@ -25,16 +25,17 @@ public class DummyDataMaker
   }
   public static ChoiceOption getDummyChoiceOption(int id)
   {
-    return getDummyChoiceOptionFromSeed(id, (new Random()).nextInt(0,dummyChoiceOptions.length)); // !WARNING: length hardcoded regardless of functionality
+    return getDummyChoiceOptionFromSeed(id, (new Random()).nextInt(dummyChoiceOptions.length)); // !WARNING: length hardcoded regardless of functionality
   }
   // ====================
   //    QUESTIONS
   // ====================
   public static Question getDummyQuestion(int id, int minChoiceID, int maxChoiceID)
   {
-    ChoiceOption[] choiceOptions = new ChoiceOption[]{};
-    for(int i = minChoiceID; i < maxChoiceID; i++)
-      getDummyChoiceOptionFromSeed(i, i-minChoiceID);
+    ChoiceOption[] choiceOptions = new ChoiceOption[maxChoiceID-minChoiceID];
+    for (int i = minChoiceID; i < maxChoiceID; i++) {
+      choiceOptions[i - minChoiceID] = getDummyChoiceOptionFromSeed(i, i - minChoiceID); // Assign each choice
+    }
     return new Question(choiceOptions, id, getDummyText("Title", id), getDummyText("Description", id));
   }
   // ====================

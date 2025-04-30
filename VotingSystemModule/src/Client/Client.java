@@ -12,6 +12,11 @@ public class Client
     {
       Socket socket = new Socket("localhost", 2910);
       ClientConnection clientConnection = new ClientConnection(socket);
+      Model model = new Model();
+      ClientViewModel viewModel = new ClientViewModel(model, clientConnection);
+      ClientView view = new ClientView(viewModel);
+      clientConnection.setModel(model);
+
       new Thread(clientConnection).start();
 
 //      while(true)

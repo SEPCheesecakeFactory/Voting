@@ -1,7 +1,9 @@
 package Common;
 
+import java.io.Serializable;
+
 // This could easily be a record class if we embrace immutability (retrieved from the server anyway, so... why mutable?)
-public class ChoiceOption
+public class ChoiceOption implements Serializable
 {
   private int id;
   private String value;

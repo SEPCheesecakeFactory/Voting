@@ -28,7 +28,7 @@ public class ServerConnection implements Runnable
     Poll poll = DummyDataMaker.getDummyPoll(0); // TODO: replace with real poll
     try{
 //      // Protocol - send poll, receive vote
-//      sendPoll(poll);
+      sendPoll(poll);
 //      Vote vote = recieveVote();
 //      System.out.println(vote);
       Vote vote = (Vote) inFromClient.readObject();

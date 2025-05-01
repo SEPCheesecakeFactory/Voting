@@ -33,5 +33,5 @@ CREATE TABLE VotedChoice(
 
 INSERT INTO Poll (title) VALUES ('Dupa');
 INSERT INTO Question (title, description, poll_id) VALUES ('Question Title', 'Description', 1);
-INSERT INTO ChoiceOption (value, question_id) VALUES ('Yes', 2);
+INSERT INTO ChoiceOption (value, question_id) VALUES ('Yes', 1);
 INSERT INTO Users (username) VALUES ('Wiktor Belzedup');

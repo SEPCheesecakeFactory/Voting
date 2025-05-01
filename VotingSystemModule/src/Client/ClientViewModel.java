@@ -8,7 +8,7 @@ import java.beans.PropertyChangeListener;
 
 public class ClientViewModel implements PropertyChangeListener {
   private final Model model;
-  private final ClientConnection connection; //can this be like this or should this reference be in the model?
+  private final ClientConnection connection; //can this be like this or should this reference be in the model? TODO: model
   private ClientView view;
 
   public ClientViewModel(Model model, ClientConnection connection) {
@@ -22,7 +22,7 @@ public class ClientViewModel implements PropertyChangeListener {
     this.view = view;
   }
 
-  //should the logic of this method be in the model?
+  //should the logic of this method be in the model? TODO: model
   public void sendVote(int userId, int[] choices) {
     try {
       Vote vote = new Vote(userId, choices);

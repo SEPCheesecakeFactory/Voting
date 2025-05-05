@@ -1,6 +1,7 @@
 package Server;
 
 import Common.Poll;
+import Common.Profile;
 import Common.Vote;
 
 import java.sql.SQLException;
@@ -24,5 +25,13 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Poll poll = databaseConnection.retrievePoll(id);
     System.out.println("Poll retrieved. " + poll);
     return poll;
+  }
+
+  @Override public int loginOrRegisterAProfile(Profile profile)
+  {
+    System.out.println("user "+profile.getUsername()+" logged or registered");
+    return databaseConnection.loginOrRegisterAProfile(profile);
+
+
   }
 }

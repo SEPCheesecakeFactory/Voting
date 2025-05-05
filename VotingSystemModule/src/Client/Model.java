@@ -1,15 +1,20 @@
 package Client;
 
 import Common.Poll;
+import Common.Profile;
+import Common.Vote;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class Model implements PropertyChangeSubject {
   private final PropertyChangeSupport support;
+  private final ClientConnection connection;
   private Poll currentPoll;
+  private Profile currentProfile;
 
-  public Model() {
+  public Model(ClientConnection connection) {
+    this.connection = connection;
     support = new PropertyChangeSupport(this);
   }
 
@@ -18,9 +23,35 @@ public class Model implements PropertyChangeSubject {
     this.currentPoll = poll;
     support.firePropertyChange("PollUpdated", oldPoll, currentPoll);
   }
+  public void setProfile(Profile profile) {
+    this.currentProfile = profile;
+  }
+
+  public Profile getProfile() {
+    return currentProfile;
+  }
+
 
   public Poll getPoll() {
     return currentPoll;
+  }
+
+  public void sendLoginOrRegister(Profile profile) {
+    try {
+      connection.sendLoginOrRegister(profile);
+      setProfile(profile);  // Set the profile after receiving the user ID
+    } catch (Exception e) {
+      System.out.println("Failed to login or register: " + e.getMessage());
+    }
+  }
+  public void sendVote(int userId, int[] choices)
+  {
+    try {
+      Vote vote = new Vote(userId, choices);
+      connection.sendVote(vote);
+    } catch (Exception e) {
+      System.out.println("Failed to send vote: " + e.getMessage());
+    }
   }
 
   @Override

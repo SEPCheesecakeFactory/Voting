@@ -1,12 +1,10 @@
 package Server;
 
 import Common.Poll;
+import Common.Profile;
 import Common.Vote;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DatabaseConnection implements DatabaseConnector
 {
@@ -54,5 +52,43 @@ public class DatabaseConnection implements DatabaseConnector
       throw new RuntimeException(e);
     }
     return null;
+  }
+
+  @Override public int loginOrRegisterAProfile(Profile profile)
+  {
+    try (Connection conn = openConnection()) {
+      // Check if the user already exists
+      String query = "SELECT id FROM users WHERE username = ?";
+      PreparedStatement checkStmt = conn.prepareStatement(query);
+      checkStmt.setString(1, profile.getUsername());
+      ResultSet rs = checkStmt.executeQuery();
+
+      if (rs.next()) {
+        // User exists, return their ID
+        System.out.println(rs.getInt("id"));
+        return rs.getInt("id");
+      } else {
+        // User doesn't exist, insert them into the database
+        String insertQuery = "INSERT INTO users (username) VALUES (?) RETURNING id";
+        PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
+        insertStmt.setString(1, profile.getUsername());
+        rs = insertStmt.executeQuery();
+        if (rs.next()) {
+          // Return the generated ID after insertion
+          System.out.println(rs.getInt("id"));
+          return rs.getInt("id");
+        } else {
+          throw new SQLException("Failed to insert user.");
+        }
+      }
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Connection getConnection() throws SQLException {
+    return openConnection();
   }
 }

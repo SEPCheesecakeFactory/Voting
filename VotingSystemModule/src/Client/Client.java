@@ -12,8 +12,8 @@ public class Client
     {
       Socket socket = new Socket("localhost", 2910);
       ClientConnection clientConnection = new ClientConnection(socket);
-      Model model = new Model();
-      ClientViewModel viewModel = new ClientViewModel(model, clientConnection);
+      Model model = new Model(clientConnection);
+      ClientViewModel viewModel = new ClientViewModel(model);
       ClientView view = new ClientView(viewModel);
       clientConnection.setModel(model);
 

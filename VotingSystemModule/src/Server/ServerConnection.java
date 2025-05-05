@@ -25,14 +25,27 @@ public class ServerConnection implements Runnable
   @Override
   public void run()
   {
-    Poll poll = DummyDataMaker.getDummyPoll(0); // TODO: replace with real poll
+    Poll poll = null; // TODO: replace with real poll
+    try
+    {
+      DummyDataMaker dummyDataMaker = new DummyDataMaker();
+      poll = dummyDataMaker.getDummyPoll(0);
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
     try{
+      DatabaseConnectionProxy dbp = new DatabaseConnectionProxy();
+      Profile profile =(Profile) inFromClient.readObject();
+      int id =dbp.loginOrRegisterAProfile(profile);
+      sendProfile(profile, id);
 //      // Protocol - send poll, receive vote
       sendPoll(poll);
 //      Vote vote = recieveVote();
 //      System.out.println(vote);
       Vote vote = (Vote) inFromClient.readObject();
-      DatabaseConnectionProxy dbp = new DatabaseConnectionProxy();
+
       dbp.storeVote(vote);
       System.out.println("Vote received " + vote);
     }
@@ -60,7 +73,13 @@ public class ServerConnection implements Runnable
     //    }
       }
 
-    //  public void send(String message) throws IOException
+  private void sendProfile(Profile profile, int id) throws IOException
+  {
+    profile.setId(id);
+    outToClient.writeObject(profile);
+  }
+
+  //  public void send(String message) throws IOException
     //  {
     //    outToClient.writeObject(message);
     //  }

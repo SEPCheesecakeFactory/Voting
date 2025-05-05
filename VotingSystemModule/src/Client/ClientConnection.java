@@ -1,6 +1,7 @@
 package Client;
 //Socket 2 - Michael
 import Common.Poll;
+import Common.Profile;
 import Common.Vote;
 
 import java.io.IOException;
@@ -30,8 +31,12 @@ public class ClientConnection implements Runnable
   {
     try
     {
+      Profile profile = (Profile) inFromServer.readObject();
+      int userId = retrieveID(profile);
+      model.getProfile().setId(userId);
       while (true)
       {
+
          Poll poll = (Poll) inFromServer.readObject();
         //logic of displaying the poll info and choosing options should be here
         // TODO: Should be changed for protocol 2.0, choices can't be gotten right after receiving the poll
@@ -48,8 +53,17 @@ public class ClientConnection implements Runnable
     }
   }
 
+  private int retrieveID(Profile profile)
+  {
+    return profile.getId();
+  }
+
   public void sendVote(Vote vote) throws IOException
   {
     outToServer.writeObject(vote);
+  }
+  public void sendLoginOrRegister(Profile profile) throws IOException
+  {
+    outToServer.writeObject(profile);
   }
 }

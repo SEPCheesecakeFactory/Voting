@@ -12,6 +12,7 @@ public class ClientView {
   public ClientView(ClientViewModel viewModel) {
     this.viewModel = viewModel;
     this.viewModel.setView(this);
+    displayLoginView();
   }
 
   public void displayPoll(Poll poll) {
@@ -43,9 +44,15 @@ public class ClientView {
       choices[i] = options[answer].getId(); // Store selected option's ID
     }
 
-    System.out.print("Enter your User ID: ");
-    int userId = scanner.nextInt();
 
+    int userId = viewModel.getModel().getProfile().getId();
+    System.out.print("your User ID: "+userId);
     viewModel.sendVote(userId, choices);
+  }
+  public void displayLoginView() {
+    Scanner scanner = new Scanner(System.in);
+    System.out.print("Login or register - enter your username: ");
+    String username = scanner.nextLine();
+    viewModel.loginOrRegister(username);
   }
 }

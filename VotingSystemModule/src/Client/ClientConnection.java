@@ -32,8 +32,10 @@ public class ClientConnection implements Runnable
     try
     {
       Profile profile = (Profile) inFromServer.readObject();
-      int userId = retrieveID(profile);
-      model.getProfile().setId(userId);
+      model.setProfile(profile);
+
+      String message = (String) inFromServer.readObject();
+      model.setMessage(message);
       while (true)
       {
 
@@ -56,14 +58,22 @@ public class ClientConnection implements Runnable
   private int retrieveID(Profile profile)
   {
     return profile.getId();
+
   }
 
   public void sendVote(Vote vote) throws IOException
   {
+    outToServer.reset();
     outToServer.writeObject(vote);
   }
   public void sendLoginOrRegister(Profile profile) throws IOException
   {
+    outToServer.reset();
+    outToServer.writeObject(profile);
+  }
+  public void sendChangeUsername(Profile profile) throws IOException
+  {
+    outToServer.reset();
     outToServer.writeObject(profile);
   }
 }

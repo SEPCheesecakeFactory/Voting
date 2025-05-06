@@ -65,7 +65,7 @@ public class DatabaseConnection implements DatabaseConnector
 
       if (rs.next()) {
         // User exists, return their ID
-        System.out.println(rs.getInt("id"));
+
         return rs.getInt("id");
       } else {
         // User doesn't exist, insert them into the database
@@ -75,13 +75,33 @@ public class DatabaseConnection implements DatabaseConnector
         rs = insertStmt.executeQuery();
         if (rs.next()) {
           // Return the generated ID after insertion
-          System.out.println(rs.getInt("id"));
+
           return rs.getInt("id");
         } else {
           throw new SQLException("Failed to insert user.");
         }
       }
     }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override public void changeUsername(Profile profile)
+  {
+    try (Connection conn = openConnection()) {
+
+
+        String insertQuery = "UPDATE users SET username = ? WHERE id = ?;";
+        PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
+        insertStmt.setString(1, profile.getUsername());
+        insertStmt.setInt(2, profile.getId());
+      System.out.println("Updating username to " + profile.getUsername() + " for ID " + profile.getId());
+        insertStmt.executeUpdate();
+
+      }
+
     catch (SQLException e)
     {
       throw new RuntimeException(e);

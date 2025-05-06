@@ -9,10 +9,12 @@ import java.util.Scanner;
 public class ClientView {
   private final ClientViewModel viewModel;
 
-  public ClientView(ClientViewModel viewModel) {
+  public ClientView(ClientViewModel viewModel) throws InterruptedException
+  {
     this.viewModel = viewModel;
     this.viewModel.setView(this);
     displayLoginView();
+
   }
 
   public void displayPoll(Poll poll) {
@@ -54,5 +56,17 @@ public class ClientView {
     System.out.print("Login or register - enter your username: ");
     String username = scanner.nextLine();
     viewModel.loginOrRegister(username);
+  }
+  public void displayChangeUsername()
+  {
+    Scanner scanner = new Scanner(System.in);
+    System.out.print("Change username - enter new one: ");
+    String username = scanner.nextLine();
+    viewModel.changeUserName(username);
+  }
+
+  public void displayMessage(String newValue)
+  {
+    System.out.println(newValue);
   }
 }

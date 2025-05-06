@@ -34,4 +34,12 @@ public class DatabaseConnectionProxy implements DatabaseConnector
 
 
   }
+
+  @Override public void changeUsername(Profile profile)
+  {
+
+    databaseConnection.changeUsername(profile);
+    System.out.println("Username changed");
+  }
+
 }

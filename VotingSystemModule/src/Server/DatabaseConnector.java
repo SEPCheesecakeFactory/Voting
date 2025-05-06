@@ -10,4 +10,5 @@ public interface DatabaseConnector
   public void storeVote(Vote vote);
   public Poll retrievePoll(int id);
   public int loginOrRegisterAProfile(Profile profile);
+  public void changeUsername(Profile profile);
 }

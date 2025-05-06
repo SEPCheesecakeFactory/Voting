@@ -37,9 +37,18 @@ public class ServerConnection implements Runnable
     }
     try{
       DatabaseConnectionProxy dbp = new DatabaseConnectionProxy();
+      //clientlogin or registerign to the system
       Profile profile =(Profile) inFromClient.readObject();
       int id =dbp.loginOrRegisterAProfile(profile);
       sendProfile(profile, id);
+
+      //client changing username
+      profile =(Profile) inFromClient.readObject();
+      System.out.println(profile.getUsername());
+      dbp.changeUsername(profile);
+      send("Username changed");
+
+
 //      // Protocol - send poll, receive vote
       sendPoll(poll);
 //      Vote vote = recieveVote();
@@ -73,11 +82,17 @@ public class ServerConnection implements Runnable
     //    }
       }
 
-  private void sendProfile(Profile profile, int id) throws IOException
+  public void sendProfile(Profile profile, int id) throws IOException
   {
+    outToClient.reset();
     profile.setId(id);
+
     outToClient.writeObject(profile);
   }
+//  public void sendProfile(Profile profile) throws IOException
+//  {
+//    outToClient.writeObject(profile);
+//  }
 
   //  public void send(String message) throws IOException
     //  {
@@ -89,14 +104,18 @@ public class ServerConnection implements Runnable
 
     public void sendPoll(Poll poll) throws IOException
     {
+      outToClient.reset();
       outToClient.writeObject(poll);
     }
     private Vote recieveVote() throws IOException, ClassNotFoundException
     {
       return (Vote) inFromClient.readObject();
     }
-    public void send(String message)
+    public void send(String message) throws IOException
     {
-      System.err.println("Not implemented.");
+      outToClient.reset();
+      outToClient.writeObject(message);
     }
+
+
 }

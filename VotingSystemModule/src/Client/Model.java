@@ -6,6 +6,7 @@ import Common.Vote;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 
 public class Model implements PropertyChangeSubject {
   private final PropertyChangeSupport support;
@@ -23,8 +24,14 @@ public class Model implements PropertyChangeSubject {
     this.currentPoll = poll;
     support.firePropertyChange("PollUpdated", oldPoll, currentPoll);
   }
+  public void setMessage(String message)
+  {
+    support.firePropertyChange("NewMessage",null,message);
+  }
   public void setProfile(Profile profile) {
     this.currentProfile = profile;
+    support.firePropertyChange("ProfileSet",null,null);
+
   }
 
   public Profile getProfile() {
@@ -39,9 +46,21 @@ public class Model implements PropertyChangeSubject {
   public void sendLoginOrRegister(Profile profile) {
     try {
       connection.sendLoginOrRegister(profile);
-      setProfile(profile);  // Set the profile after receiving the user ID
+
     } catch (Exception e) {
       System.out.println("Failed to login or register: " + e.getMessage());
+    }
+  }
+  public void sendChangeUsername(String username)
+  {
+    try{
+      currentProfile.changeUsername(username);
+
+      connection.sendChangeUsername(currentProfile);
+    }
+    catch (Exception e)
+    {
+      System.out.println("Failed to change username: " + e.getMessage());
     }
   }
   public void sendVote(int userId, int[] choices)

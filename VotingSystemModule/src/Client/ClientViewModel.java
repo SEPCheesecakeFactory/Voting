@@ -6,6 +6,7 @@ import Common.Vote;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.security.InvalidParameterException;
 
 public class ClientViewModel implements PropertyChangeListener {
   private final Model model;
@@ -40,23 +41,21 @@ public class ClientViewModel implements PropertyChangeListener {
   }
 
   @Override
-  public void propertyChange(PropertyChangeEvent evt) {
-    if ("PollUpdated".equals(evt.getPropertyName()) && view != null)
-    {
-      Poll updatedPoll = (Poll) evt.getNewValue();
-      view.displayPoll(updatedPoll);
-    }
-    if("NewMessage".equals(evt.getPropertyName()) && view != null)
-    {
-      view.displayMessage( (String) evt.getNewValue());
-
-    }
-    if("ProfileSet".equals(evt.getPropertyName()) && view != null)
-    {
-      view.displayChangeUsername();
-
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (view == null) return;
+    switch (evt.getPropertyName()) {
+      case "PollUpdated":
+        view.displayPoll((Poll) evt.getNewValue());
+        break;
+      case "NewMessage":
+        view.displayMessage((String) evt.getNewValue());
+        break;
+      case "ProfileSet":
+        view.displayChangeUsername();
+        break;
+      default:
+        throw new InvalidParameterException(String.format("Event %s does not exist in the current context.", evt.getPropertyName()));
     }
   }
-
-
 }

@@ -9,52 +9,65 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-public class Model implements PropertyChangeSubject {
+public class Model implements PropertyChangeSubject
+{
   private final PropertyChangeSupport support;
   private final ClientConnection connection;
   private Poll currentPoll;
   private Profile currentProfile;
 
-  public Model(ClientConnection connection) {
+  public Model(ClientConnection connection)
+  {
     this.connection = connection;
     support = new PropertyChangeSupport(this);
   }
 
-  public void setPoll(Poll poll) {
+  public void setPoll(Poll poll)
+  {
     Poll oldPoll = this.currentPoll;
     this.currentPoll = poll;
     support.firePropertyChange("PollUpdated", oldPoll, currentPoll);
   }
+
   public void setMessage(String message)
   {
-    support.firePropertyChange("NewMessage",null,message);
+    support.firePropertyChange("NewMessage", null, message);
   }
-  public void setProfile(Profile profile) {
+
+  public void setProfile(Profile profile)
+  {
     this.currentProfile = profile;
-    support.firePropertyChange("ProfileSet",null,null);
+    support.firePropertyChange("ProfileSet", null, null);
 
   }
 
-  public Profile getProfile() {
+  public Profile getProfile()
+  {
     return currentProfile;
   }
 
-
-  public Poll getPoll() {
+  public Poll getPoll()
+  {
     return currentPoll;
   }
 
-  public void sendLoginOrRegister(Profile profile) {
-    try {
+  public void sendLoginOrRegister(Profile profile)
+  {
+    try
+    {
       connection.sendLoginOrRegister(profile);
 
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       Logger.log("Failed to login or register: " + e.getMessage());
     }
   }
+
   public void sendChangeUsername(String username)
   {
-    try{
+    try
+    {
       currentProfile.changeUsername(username);
 
       connection.sendChangeUsername(currentProfile);
@@ -64,33 +77,41 @@ public class Model implements PropertyChangeSubject {
       Logger.log("Failed to change username: " + e.getMessage());
     }
   }
+
   public void sendVote(int userId, int[] choices)
   {
-    try {
+    try
+    {
       Vote vote = new Vote(userId, choices);
       connection.sendVote(vote);
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       Logger.log("Failed to send vote: " + e.getMessage());
     }
   }
 
-  @Override
-  public void addPropertyChangeListener(PropertyChangeListener listener) {
+  @Override public void addPropertyChangeListener(
+      PropertyChangeListener listener)
+  {
     support.addPropertyChangeListener(listener);
   }
 
-  @Override
-  public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
+  @Override public void addPropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
     support.addPropertyChangeListener(name, listener);
   }
 
-  @Override
-  public void removePropertyChangeListener(PropertyChangeListener listener) {
+  @Override public void removePropertyChangeListener(
+      PropertyChangeListener listener)
+  {
     support.removePropertyChangeListener(listener);
   }
 
-  @Override
-  public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+  @Override public void removePropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
     support.removePropertyChangeListener(name, listener);
   }
 }

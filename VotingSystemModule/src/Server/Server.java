@@ -1,5 +1,7 @@
 package Server;
 //Sockets 2 class
+import Utils.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,7 +10,7 @@ public class Server
 {
   public static void main(String[] args)
   {
-    System.out.println("Starting server...");
+    Logger.log("Starting the server...");
     try
     {
       ServerSocket welcomeSocket = new ServerSocket(2910);
@@ -19,7 +21,7 @@ public class Server
         Socket socket = welcomeSocket.accept();
         ServerConnection serverConnection = new ServerConnection(socket, connectionPool);
         connectionPool.add(serverConnection);
-        System.out.println("Client connected");
+        Logger.log("Client connected");
         new Thread(serverConnection).start();
       }
     }

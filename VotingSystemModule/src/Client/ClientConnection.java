@@ -46,7 +46,7 @@ public class ClientConnection implements Runnable
         if (model != null) {
           model.setPoll(poll); // push to model
         }
-//        System.out.println("Message received: " + message);
+//        Logger.log("Message received: " + message);
       }
     }
     catch (Exception e)

@@ -3,6 +3,7 @@ package Server;
 import Common.Poll;
 import Common.Profile;
 import Common.Vote;
+import Utils.Logger;
 
 import java.sql.*;
 
@@ -97,7 +98,7 @@ public class DatabaseConnection implements DatabaseConnector
         PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
         insertStmt.setString(1, profile.getUsername());
         insertStmt.setInt(2, profile.getId());
-      System.out.println("Updating username to " + profile.getUsername() + " for ID " + profile.getId());
+        Logger.log("Updating username to " + profile.getUsername() + " for ID " + profile.getId());
         insertStmt.executeUpdate();
 
       }

@@ -3,6 +3,7 @@ package Client;
 import Common.Poll;
 import Common.Profile;
 import Common.Vote;
+import Utils.Logger;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -48,7 +49,7 @@ public class Model implements PropertyChangeSubject {
       connection.sendLoginOrRegister(profile);
 
     } catch (Exception e) {
-      System.out.println("Failed to login or register: " + e.getMessage());
+      Logger.log("Failed to login or register: " + e.getMessage());
     }
   }
   public void sendChangeUsername(String username)
@@ -60,7 +61,7 @@ public class Model implements PropertyChangeSubject {
     }
     catch (Exception e)
     {
-      System.out.println("Failed to change username: " + e.getMessage());
+      Logger.log("Failed to change username: " + e.getMessage());
     }
   }
   public void sendVote(int userId, int[] choices)
@@ -69,7 +70,7 @@ public class Model implements PropertyChangeSubject {
       Vote vote = new Vote(userId, choices);
       connection.sendVote(vote);
     } catch (Exception e) {
-      System.out.println("Failed to send vote: " + e.getMessage());
+      Logger.log("Failed to send vote: " + e.getMessage());
     }
   }
 

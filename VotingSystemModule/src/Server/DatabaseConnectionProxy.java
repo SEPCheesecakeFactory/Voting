@@ -3,6 +3,7 @@ package Server;
 import Common.Poll;
 import Common.Profile;
 import Common.Vote;
+import Utils.Logger;
 
 import java.sql.SQLException;
 
@@ -17,19 +18,19 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   @Override public void storeVote(Vote vote)
   {
     databaseConnection.storeVote(vote);
-    System.out.println("Vote sent to the database. {"+vote+"}");
+    Logger.log("Vote sent to the database. {"+vote+"}");
   }
 
   @Override public Poll retrievePoll(int id)
   {
     Poll poll = databaseConnection.retrievePoll(id);
-    System.out.println("Poll retrieved. " + poll);
+    Logger.log("Poll retrieved. " + poll);
     return poll;
   }
 
   @Override public int loginOrRegisterAProfile(Profile profile)
   {
-    System.out.println("user "+profile.getUsername()+" logged or registered");
+    Logger.log("user "+profile.getUsername()+" logged or registered");
     return databaseConnection.loginOrRegisterAProfile(profile);
 
 
@@ -39,7 +40,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   {
 
     databaseConnection.changeUsername(profile);
-    System.out.println("Username changed");
+    Logger.log("Username changed");
   }
 
 }

@@ -1,6 +1,7 @@
 import Client.ClientConnection;
 import Common.DummyDataMaker;
 import Common.Vote;
+import Utils.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -17,13 +18,13 @@ public class VotingSystemTest
       Socket socket = new Socket("localhost", 2910);
       ClientConnection clientConnection = new ClientConnection(socket);
       // === INPUTTING ===
-      System.out.println("Input userID:");
+      Logger.log("Input userID:");
       int userID = scanner.nextInt();
-      System.out.println("Input choiceID:");
+      Logger.log("Input choiceID:");
       int choiceID = scanner.nextInt();
       Vote vote = new Vote(userID, new int[]{choiceID});
       // ===
-      System.out.println("Sending vote " + vote);
+      Logger.log("Sending vote " + vote);
       clientConnection.sendVote(vote);
     }
     catch (IOException e)

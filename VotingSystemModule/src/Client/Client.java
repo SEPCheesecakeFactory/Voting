@@ -21,7 +21,7 @@ public class Client
 
 //      while(true)
 //      {
-//        System.out.println("Enter a message: ");
+//        Logger.log("Enter a message: ");
 //        String stringToSend = scanner.nextLine();
 //        clientConnection.send(stringToSend);
 //      }

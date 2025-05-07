@@ -3,6 +3,7 @@ package Client;
 import Common.Poll;
 import Common.Question;
 import Common.ChoiceOption;
+import Utils.Logger;
 
 import java.util.Scanner;
 

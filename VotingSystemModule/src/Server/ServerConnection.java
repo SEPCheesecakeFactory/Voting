@@ -1,6 +1,7 @@
 package Server;
 //Sockets 2 michael
 import Common.*;
+import Utils.Logger;
 import jdk.jshell.spi.ExecutionControl;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class ServerConnection implements Runnable
 
       //client changing username
       profile =(Profile) inFromClient.readObject();
-      System.out.println(profile.getUsername());
+      Logger.log(profile.getUsername());
       dbp.changeUsername(profile);
       send("Username changed");
 
@@ -52,11 +53,11 @@ public class ServerConnection implements Runnable
 //      // Protocol - send poll, receive vote
       sendPoll(poll);
 //      Vote vote = recieveVote();
-//      System.out.println(vote);
+//      Logger.log(vote);
       Vote vote = (Vote) inFromClient.readObject();
 
       dbp.storeVote(vote);
-      System.out.println("Vote received " + vote);
+      Logger.log("Vote received " + vote);
     }
     catch (IOException | ClassNotFoundException e)
     {
@@ -72,7 +73,7 @@ public class ServerConnection implements Runnable
     //      try
     //      {
     //        String message = (String) inFromClient.readObject();
-    //        System.out.println("Received: " + message);
+    //        Logger.log("Received: " + message);
     //        connectionPool.broadcast(message);
     //      }
     //      catch (IOException | ClassNotFoundException e)

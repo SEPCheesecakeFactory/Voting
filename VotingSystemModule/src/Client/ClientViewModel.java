@@ -6,22 +6,19 @@ import Common.Vote;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.security.InvalidParameterException;
 
-public class ClientViewModel implements PropertyChangeListener {
+public class ClientViewModel implements PropertyChangeListener, PropertyChangeSubject {
   private final Model model;
-  private ClientView view;
+  private final PropertyChangeSupport support;
 
   public ClientViewModel(Model model) {
     this.model = model;
     this.model.addPropertyChangeListener("PollUpdated", this);
     this.model.addPropertyChangeListener("NewMessage", this);
     this.model.addPropertyChangeListener("ProfileSet", this);
-  }
-
-  //i know this is against the rules but this is going to be fixed when we start using javaFX and binding
-  public void setView(ClientView view) {
-    this.view = view;
+    support  = new PropertyChangeSupport(this);
   }
 
   public void sendVote(int userId, int[] choices) {
@@ -41,21 +38,27 @@ public class ClientViewModel implements PropertyChangeListener {
   }
 
   @Override
-  public void propertyChange(PropertyChangeEvent evt)
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    support.addPropertyChangeListener(listener);
+  }
+
+  @Override
+  public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
+    support.addPropertyChangeListener(name, listener);
+  }
+
+  @Override
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    support.removePropertyChangeListener(listener);
+  }
+
+  @Override
+  public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+    support.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public void propertyChange(PropertyChangeEvent evt)
   {
-    if (view == null) return;
-    switch (evt.getPropertyName()) {
-      case "PollUpdated":
-        view.displayPoll((Poll) evt.getNewValue());
-        break;
-      case "NewMessage":
-        view.displayMessage((String) evt.getNewValue());
-        break;
-      case "ProfileSet":
-        view.displayChangeUsername();
-        break;
-      default:
-        throw new InvalidParameterException(String.format("Event %s does not exist in the current context.", evt.getPropertyName()));
-    }
+    support.firePropertyChange(evt);
   }
 }

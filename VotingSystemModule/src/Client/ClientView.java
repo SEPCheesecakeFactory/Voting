@@ -5,17 +5,20 @@ import Common.Question;
 import Common.ChoiceOption;
 import Utils.Logger;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.security.InvalidParameterException;
 import java.util.Scanner;
 
-public class ClientView {
+public class ClientView implements PropertyChangeListener
+{
   private final ClientViewModel viewModel;
 
   public ClientView(ClientViewModel viewModel) throws InterruptedException
   {
     this.viewModel = viewModel;
-    this.viewModel.setView(this);
+    this.viewModel.addPropertyChangeListener(this);
     displayLoginView();
-
   }
 
   public void displayPoll(Poll poll) {
@@ -69,5 +72,23 @@ public class ClientView {
   public void displayMessage(String newValue)
   {
     System.out.println(newValue);
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    switch (evt.getPropertyName()) {
+      case "PollUpdated":
+        displayPoll((Poll) evt.getNewValue());
+        break;
+      case "NewMessage":
+        displayMessage((String) evt.getNewValue());
+        break;
+      case "ProfileSet":
+        displayChangeUsername();
+        break;
+      default:
+        throw new InvalidParameterException(String.format("Event %s does not exist in the current context.", evt.getPropertyName()));
+    }
   }
 }

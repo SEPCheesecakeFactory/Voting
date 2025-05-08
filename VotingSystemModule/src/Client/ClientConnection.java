@@ -87,5 +87,10 @@ public class ClientConnection implements Runnable
     PollResult pollResult=(PollResult) inFromServer.readObject();
     model.getResult(pollResult);
   }
+  public void sendFinalResults(Poll poll) throws IOException
+  {
+    outToServer.reset();
+    outToServer.writeObject(poll);
+  }
 
 }

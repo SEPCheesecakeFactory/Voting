@@ -127,6 +127,17 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
   {
     support.firePropertyChange("PollResult",null, pollResult );
   }
+  public void sendFinalResult(Poll poll)
+  {
+    try
+    {
+      connection.sendFinalResults(poll);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to send final poll results: " + e.getMessage());
+    }
+  }
 
   @Override public void sendResultRequest(int pollID)
   {

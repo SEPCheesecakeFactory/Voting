@@ -34,16 +34,6 @@ public class UserGroupManager
     return null;
   }
 
-  public boolean removeUserFromGroup(String groupName, Profile user)
-  {
-    UserGroup group = getGroup(groupName);
-    if (group != null)
-    {
-      return group.removeMember(user);
-    }
-    return false;
-  }
-
   public List<UserGroup> getAllGroups()
   {
     return new ArrayList<>(groups);

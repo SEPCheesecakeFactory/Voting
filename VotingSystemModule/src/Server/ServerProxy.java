@@ -1,5 +1,5 @@
 package Server;
 
-public class ServerProxy implements ServerInterface
+public class ServerProxy implements ServerConnectionInterface
 {
 }

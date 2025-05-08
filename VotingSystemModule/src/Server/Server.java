@@ -5,6 +5,7 @@ import Utils.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class Server
 {
@@ -26,6 +27,10 @@ public class Server
       }
     }
     catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+    catch (SQLException e)
     {
       throw new RuntimeException(e);
     }

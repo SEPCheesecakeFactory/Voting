@@ -21,6 +21,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Logger.log("Vote sent to the database. {"+vote+"}");
   }
 
+
   @Override public Poll retrievePoll(int id)
   {
     Poll poll = databaseConnection.retrievePoll(id);
@@ -42,5 +43,14 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     databaseConnection.changeUsername(profile);
     Logger.log("Username changed");
   }
+
+  public void closePollAndSaveResults(int pollId)
+  {
+    databaseConnection.closePollAndSaveResults(pollId);
+    Logger.log("Poll with ID " + pollId + " marked as closed in database.");
+  }
+
+
+
 
 }

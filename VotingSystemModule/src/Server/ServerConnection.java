@@ -93,21 +93,23 @@ public class ServerConnection implements Runnable
   @Override
   public void run() {
     try {
-      // 1. Send poll to client (replace dummy later)
-      DummyDataMaker dummyDataMaker = new DummyDataMaker();
-      Poll poll = dummyDataMaker.getDummyPoll(0);
-      sendPoll(poll);
 
-      // 2. Login
+
+      // 1. Login
       Profile profile = (Profile) inFromClient.readObject();
       int id = dbp.loginOrRegisterAProfile(profile);
       sendProfile(profile, id);
 
-      // 3. Username change
+      // 2. Username change
       profile = (Profile) inFromClient.readObject();
       Logger.log(profile.getUsername());
       dbp.changeUsername(profile);
       send("Username changed");
+
+      // 3. Send poll to client (replace dummy later)
+      DummyDataMaker dummyDataMaker = new DummyDataMaker();
+      Poll poll = dummyDataMaker.getDummyPoll(0);
+      sendPoll(poll);
 
       // 4. Delegate all further client messages to the ServerProxy
       while (true) {

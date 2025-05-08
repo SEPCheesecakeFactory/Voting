@@ -24,25 +24,19 @@ public class ClientViewModel
     this.model.addPropertyChangeListener("ProfileSet", this);
   }
 
-  public void sendVote(int userId, int[] choices) {
-    Poll currentPoll = model.getPoll();
-    if (currentPoll != null && currentPoll.isClosed()) {
-      System.out.println("Cannot vote: Poll is closed.");
-      return;
-    }
   public void sendVote(int userId, int[] choices)
   {
     Poll currentPoll = model.getPoll();
 
-    if(currentPoll != null && currentPoll.isClosed())
+    if (currentPoll != null && currentPoll.isClosed())
       System.out.println("Cannot vote: Poll is closed.");
-
 
     model.sendVote(userId, choices);
   }
+
   public void closePoll(Poll poll)
   {
-    if(poll == null)
+    if (poll == null)
       System.out.println("Poll is null, cannot close.");
 
     if (!poll.isClosed())
@@ -54,19 +48,7 @@ public class ClientViewModel
     }
     else
       System.out.println("Poll is already closed.");
-
   }
-
-  public void closePoll(Poll poll) {
-    if (poll == null) {
-      System.out.println("Poll is null, cannot close.");
-      return;
-    }
-
-    model.sendPollCloseRequest(poll.getId());
-    System.out.println("Poll close request sent to server.");
-  }
-
 
   public void loginOrRegister(String username)
   {

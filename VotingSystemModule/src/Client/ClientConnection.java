@@ -1,6 +1,7 @@
 package Client;
 //Socket 2 - Michael
 import Common.Poll;
+import Common.PollResult;
 import Common.Profile;
 import Common.Vote;
 

@@ -1,15 +1,17 @@
 package Client;
 
 import Common.Poll;
+import Common.PollResult;
 import Common.Profile;
 import Common.Vote;
 import Utils.Logger;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-public class Model implements PropertyChangeSubject
+public class Model implements PropertyChangeSubject, PollResultRequestService
 {
   private final PropertyChangeSupport support;
   private final ClientConnection connection;
@@ -138,7 +140,7 @@ public class Model implements PropertyChangeSubject
 
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
-    
+
   }
 
   @Override public void getResult(PollResult pollResult)

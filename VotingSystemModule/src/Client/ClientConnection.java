@@ -76,9 +76,4 @@ public class ClientConnection implements Runnable
     outToServer.reset();
     outToServer.writeObject(profile);
   }
-  public void sendFinalResults(Poll poll) throws IOException
-  {
-    outToServer.reset();
-    outToServer.writeObject(poll);
-  }
 }

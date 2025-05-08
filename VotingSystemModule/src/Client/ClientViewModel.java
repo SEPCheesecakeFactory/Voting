@@ -26,32 +26,8 @@ public class ClientViewModel
 
   public void sendVote(int userId, int[] choices)
   {
-    Poll currentPoll = model.getPoll();
-
-    if(currentPoll != null && currentPoll.isClosed())
-      System.out.println("Cannot vote: Poll is closed.");
-
-
     model.sendVote(userId, choices);
   }
-
-  public void closePoll(Poll poll)
-  {
-    if(poll == null)
-      System.out.println("Poll is null, cannot close.");
-
-    if (!poll.isClosed())
-    {
-      poll.closePoll();
-      model.sendFinalResult(poll);
-      support.firePropertyChange("PollUpdated", null, poll);
-      System.out.println("Poll closed and final result sent.");
-    }
-    else
-      System.out.println("Poll is already closed.");
-
-  }
-
 
   public void loginOrRegister(String username)
   {

@@ -4,8 +4,7 @@ import Common.*;
 import Utils.Logger;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DatabaseConnection implements DatabaseConnector
 {
@@ -36,6 +35,75 @@ public class DatabaseConnection implements DatabaseConnector
       throw new RuntimeException(e);
     }
   }
+  @Override
+  public void editVote(Vote vote, int pollId) {
+    try (Connection connection = openConnection()) {
+
+      // 1. Get all choice_option_ids for the poll
+      PreparedStatement getPollChoices = connection.prepareStatement(
+          "SELECT co.id FROM ChoiceOption co, Question q " +
+              "WHERE co.question_id = q.id AND q.poll_id = ?"
+      );
+      getPollChoices.setInt(1, pollId);
+      ResultSet pollChoicesResult = getPollChoices.executeQuery();
+
+      List<Integer> pollChoiceIds = new ArrayList<>();
+      while (pollChoicesResult.next()) {
+        pollChoiceIds.add(pollChoicesResult.getInt(1));
+      }
+
+      // 2. Get user's existing votes in this poll
+      PreparedStatement getUserVotes = connection.prepareStatement(
+          "SELECT choice_option_id FROM VotedChoice " +
+              "WHERE vote_id = ?"
+      );
+      getUserVotes.setInt(1, vote.getUserId());
+      ResultSet userVotesResult = getUserVotes.executeQuery();
+
+      List<Integer> existingChoiceOptionsIds = new ArrayList<>();
+      while (userVotesResult.next()) {
+        int choiceOptionId = userVotesResult.getInt(1);
+        if (pollChoiceIds.contains(choiceOptionId)) {
+          existingChoiceOptionsIds.add(choiceOptionId);
+        }
+      }
+
+      // 3. Compare and update
+      List<Integer> newChoiceOptionsIds = new ArrayList<>();
+      for (int choice : vote.getChoices()) {
+        newChoiceOptionsIds.add(choice);
+      }
+
+      List<Integer> toAdd = new ArrayList<>(newChoiceOptionsIds);
+      toAdd.removeAll(existingChoiceOptionsIds);
+
+      List<Integer> toRemove = new ArrayList<>(existingChoiceOptionsIds);
+      toRemove.removeAll(newChoiceOptionsIds);
+
+      for (int choiceId : toRemove) {
+        PreparedStatement delete = connection.prepareStatement(
+            "DELETE FROM VotedChoice WHERE vote_id = ? AND choice_option_id = ?"
+        );
+        delete.setInt(1, vote.getUserId());
+        delete.setInt(2, choiceId);
+        delete.executeUpdate();
+      }
+
+      for (int choiceId : toAdd) {
+        PreparedStatement insert = connection.prepareStatement(
+            "INSERT INTO VotedChoice (vote_id, choice_option_id) VALUES (?, ?)"
+        );
+        insert.setInt(1, vote.getUserId());
+        insert.setInt(2, choiceId);
+        insert.executeUpdate();
+      }
+
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
 
   @Override public Poll retrievePoll(int id)
   {

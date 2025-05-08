@@ -37,10 +37,16 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  @Override public Poll retrievePoll(int id)
+  @Override public Poll retrievePoll(int id) //Should this return a poll or the choice options??
   {
     try(Connection connection = openConnection())
     {
+      PreparedStatement selectPollStatement = connection.prepareStatement("SELECT * FROM poll WHERE id = ?");
+      selectPollStatement.setInt(1, id);
+      ResultSet rs = selectPollStatement.executeQuery();
+      if (rs.next()){
+         rs.getInt(id);
+      }
       // ==== Example From - Database Programming in Java - part 2 ====
       // PreparedStatement selectStatement = connection.prepareStatement("SELECT name FROM Author");
       // Result rs = selectStatement.executeQuery();

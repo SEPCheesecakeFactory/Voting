@@ -1,11 +1,11 @@
 package Server;
 
-import Common.Poll;
-import Common.Profile;
-import Common.Vote;
+import Common.*;
 import Utils.Logger;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatabaseConnection implements DatabaseConnector
 {
@@ -37,16 +37,10 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  @Override public Poll retrievePoll(int id) //Should this return a poll or the choice options??
+  @Override public Poll retrievePoll(int id)
   {
     try(Connection connection = openConnection())
     {
-      PreparedStatement selectPollStatement = connection.prepareStatement("SELECT * FROM poll WHERE id = ?");
-      selectPollStatement.setInt(1, id);
-      ResultSet rs = selectPollStatement.executeQuery();
-      if (rs.next()){
-         rs.getInt(id);
-      }
       // ==== Example From - Database Programming in Java - part 2 ====
       // PreparedStatement selectStatement = connection.prepareStatement("SELECT name FROM Author");
       // Result rs = selectStatement.executeQuery();
@@ -59,6 +53,37 @@ public class DatabaseConnection implements DatabaseConnector
       throw new RuntimeException(e);
     }
     return null;
+  }
+
+  @Override public PollResult retrievePollResults(int id)
+  {
+    try (Connection connection = openConnection()){
+      //Get the ChoiceOption
+      PreparedStatement selectChoiceOptionStatement = connection.prepareStatement(
+          "SELECT id FROM ChoiceOption WHERE question_id = ("
+              + "SELECT id FROM Question WHERE poll_id = ?))");
+      selectChoiceOptionStatement.setInt(1, id);
+      ResultSet rsChoiceOption = selectChoiceOptionStatement.executeQuery();
+
+      //Get the count of that choice option
+      PreparedStatement selectVotedChoiceCountStatement = connection.prepareStatement(
+          "SELECT COUNT(*) as count FROM VotedChoice WHERE choice_option_id = ?");
+
+      Map<Integer, Integer> choiceVoters = new HashMap<>();
+      while (rsChoiceOption.next()){//While there are more choice options
+        selectVotedChoiceCountStatement.setInt(1, rsChoiceOption.getInt("id")); //Updating the id to the new question
+        ResultSet rsVotedChoiceCount = selectVotedChoiceCountStatement.executeQuery(); //Executing
+
+        if (rsVotedChoiceCount.next()){ //If there is a count
+          //Save question id and count
+          choiceVoters.put(rsChoiceOption.getInt("id"), rsVotedChoiceCount.getInt("count")); //Getting and saving results
+        }
+      }
+      return new PollResult(choiceVoters);
+    }
+    catch (SQLException e){
+      throw new RuntimeException(e);
+    }
   }
 
   @Override public int loginOrRegisterAProfile(Profile profile)

@@ -20,6 +20,10 @@ public class Poll implements Serializable
     this.isClosed = isClosed;
   }
 
+  public Poll(String title, String description, int id, Question[] questions) {
+    this(title, description, id, questions, false); // default to not closed
+  }
+
   public String getTitle()
   {
     return title;

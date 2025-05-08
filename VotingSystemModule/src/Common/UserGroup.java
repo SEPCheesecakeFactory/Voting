@@ -33,8 +33,9 @@ public class UserGroup implements Serializable
       {
         return false;
       }
-      members.add(profile);
-      return true;
+
     }
+    members.add(profile);
+    return true;
   }
 }

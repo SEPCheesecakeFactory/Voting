@@ -86,4 +86,16 @@ public class ClientConnection implements Runnable
     outToServer.reset();
     outToServer.writeObject(message);
   }
+  public void getPollResult() throws IOException, ClassNotFoundException
+  {
+    inFromServer.reset();
+    PollResult pollResult=(PollResult) inFromServer.readObject();
+    model.getResult(pollResult);
+  }
+  public void sendFinalResults(Poll poll) throws IOException
+  {
+    outToServer.reset();
+    outToServer.writeObject(poll);
+  }
+
 }

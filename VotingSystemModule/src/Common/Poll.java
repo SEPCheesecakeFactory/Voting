@@ -11,12 +11,13 @@ public class Poll implements Serializable
   private Question[] questions;
   private boolean isClosed;
 
-  public Poll(String title, String description, int id, Question[] questions)
+  public Poll(String title, String description, int id, Question[] questions, boolean isClosed)
   {
     this.title = title;
     this.description = description;
     this.id = id;
     this.questions = questions;
+    this.isClosed = isClosed;
   }
 
   public String getTitle()

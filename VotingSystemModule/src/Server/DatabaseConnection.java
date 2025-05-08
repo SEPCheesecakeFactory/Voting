@@ -79,7 +79,7 @@ public class DatabaseConnection implements DatabaseConnector
           choiceVoters.put(rsChoiceOption.getInt("id"), rsVotedChoiceCount.getInt("count")); //Getting and saving results
         }
       }
-      return new PollResult(choiceVoters);
+      return new PollResult(retrievePoll(id), choiceVoters); //For now we are retrieving the poll
     }
     catch (SQLException e){
       throw new RuntimeException(e);
@@ -143,4 +143,24 @@ public class DatabaseConnection implements DatabaseConnector
   public Connection getConnection() throws SQLException {
     return openConnection();
   }
+
+  public void closePollAndSaveResults(int pollId)
+  {
+    String sql = "UPDATE polls SET is_closed = TRUE WHERE id = ?";
+
+    try (Connection conn = openConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql))
+    {
+      stmt.setInt(1, pollId);
+      stmt.executeUpdate();
+      Logger.log("Poll with ID " + pollId + " marked as closed.");
+    }
+    catch (SQLException e)
+    {
+      Logger.log("Failed to close poll with ID " + pollId + ": " + e.getMessage());
+      throw new RuntimeException(e);
+    }
+  }
+
+
 }

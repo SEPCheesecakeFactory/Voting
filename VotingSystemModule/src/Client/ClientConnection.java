@@ -1,6 +1,7 @@
 package Client;
 //Socket 2 - Michael
 import Common.Poll;
+import Common.PollResult;
 import Common.Profile;
 import Common.Vote;
 
@@ -76,9 +77,33 @@ public class ClientConnection implements Runnable
     outToServer.reset();
     outToServer.writeObject(profile);
   }
+  /*public void sendFinalResults(Poll poll) throws IOException
+  {
+    outToServer.reset();
+    outToServer.writeObject(poll);
+  }*/
+  public void sendClosePollRequest(int pollId) throws IOException {
+    String message = "close_poll:" + pollId;
+    outToServer.reset();
+    outToServer.writeObject(message);
+  }
+  public void getPollResult() throws IOException, ClassNotFoundException
+  {
+    inFromServer.reset();
+    PollResult pollResult=(PollResult) inFromServer.readObject();
+    model.getResult(pollResult);
+  }
   public void sendFinalResults(Poll poll) throws IOException
   {
     outToServer.reset();
     outToServer.writeObject(poll);
   }
+
+  public void sendPollResultRequest(int pollID) throws IOException {
+    String request = "result_request:" + pollID;
+    outToServer.reset();
+    outToServer.writeObject(request);
+  }
+
+
 }

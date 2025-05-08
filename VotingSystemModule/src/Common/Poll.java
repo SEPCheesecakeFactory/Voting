@@ -11,7 +11,6 @@ public class Poll implements Serializable
   private Question[] questions;
   private boolean isClosed;
 
-
   public Poll(String title, String description, int id, Question[] questions, boolean isClosed)
   {
     this.title = title;
@@ -19,6 +18,10 @@ public class Poll implements Serializable
     this.id = id;
     this.questions = questions;
     this.isClosed = isClosed;
+  }
+
+  public Poll(String title, String description, int id, Question[] questions) {
+    this(title, description, id, questions, false); // default to not closed
   }
 
   public String getTitle()
@@ -61,13 +64,14 @@ public class Poll implements Serializable
     this.questions = questions;
   }
 
-  public boolean isClosed()
-  {
+  public boolean isClosed() {
     return isClosed;
   }
+  public void setClosed(boolean closed) {
+    isClosed = closed;
+  }
 
-  public void closePoll()
-  {
+  public void closePoll() {
     this.isClosed = true;
   }
 }

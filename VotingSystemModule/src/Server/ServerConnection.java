@@ -15,15 +15,21 @@ public class ServerConnection implements Runnable
   private final ObjectInputStream inFromClient;
   private final ObjectOutputStream outToClient;
   private final ConnectionPool connectionPool;
+  private final ServerProxy serverProxy;
+  private final DatabaseConnectionProxy dbp;
 
-  public ServerConnection(Socket connectionSocket, ConnectionPool connectionPool) throws IOException
+  public ServerConnection(Socket connectionSocket, ConnectionPool connectionPool) throws IOException, SQLException
   {
     inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
     outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
     this.connectionPool = connectionPool;
+
+    this.dbp = new DatabaseConnectionProxy();
+    this.serverProxy = new ServerProxy(new ServerModel(dbp, connectionPool));
+
   }
 
-  @Override
+  /*@Override
   public void run()
   {
     Poll poll = null; // TODO: replace with real poll
@@ -82,6 +88,40 @@ public class ServerConnection implements Runnable
     //      }
     //    }
       }
+*/
+
+  @Override
+  public void run() {
+    try {
+
+
+      // 1. Login
+      Profile profile = (Profile) inFromClient.readObject();
+      int id = dbp.loginOrRegisterAProfile(profile);
+      sendProfile(profile, id);
+
+      // 2. Username change
+      profile = (Profile) inFromClient.readObject();
+      Logger.log(profile.getUsername());
+      dbp.changeUsername(profile);
+      send("Username changed");
+
+      // 3. Send poll to client (replace dummy later)
+      DummyDataMaker dummyDataMaker = new DummyDataMaker();
+      Poll poll = dummyDataMaker.getDummyPoll(0);
+      sendPoll(poll);
+
+      // 4. Delegate all further client messages to the ServerProxy
+      while (true) {
+        Object incoming = inFromClient.readObject();
+        serverProxy.handle(incoming);
+      }
+
+    } catch (IOException | ClassNotFoundException | SQLException e) {
+      Logger.log("Server connection error: " + e.getMessage());
+    }
+  }
+
 
   public void sendProfile(Profile profile, int id) throws IOException
   {

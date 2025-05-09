@@ -157,6 +157,11 @@ public class ServerConnection implements Runnable
       outToClient.reset();
       outToClient.writeObject(message);
     }
+  public void sendPollResult(PollResult pollResult) throws IOException
+  {
+    outToClient.reset();
+    outToClient.writeObject(pollResult);
+  }
 
 
 }

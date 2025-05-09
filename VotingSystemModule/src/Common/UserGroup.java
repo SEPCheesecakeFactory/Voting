@@ -33,9 +33,13 @@ public class UserGroup implements Serializable
       {
         return false;
       }
-
     }
     members.add(profile);
     return true;
+  }
+
+  public boolean removeMember(Profile profile)
+  {
+    return members.remove(profile);
   }
 }

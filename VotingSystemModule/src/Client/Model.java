@@ -18,7 +18,6 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
   private Poll currentPoll;
   private Profile currentProfile;
 
-
   public Model(ClientConnection connection)
   {
     this.connection = connection;
@@ -106,10 +105,14 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
     }
   }*/
 
-  public void sendPollCloseRequest(int pollId) {
-    try {
+  public void sendPollCloseRequest(int pollId)
+  {
+    try
+    {
       connection.sendClosePollRequest(pollId);
-    } catch (IOException e) {
+    }
+    catch (IOException e)
+    {
       Logger.log("Failed to send poll close request: " + e.getMessage());
     }
   }
@@ -145,8 +148,9 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
 
   @Override public void getResult(PollResult pollResult)
   {
-    support.firePropertyChange("PollResult",null, pollResult );
+    support.firePropertyChange("PollResult", null, pollResult);
   }
+
   public void sendFinalResult(Poll poll)
   {
     try
@@ -161,15 +165,14 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
 
   @Override public void sendResultRequest(int pollID)
   {
-
-      try
-      {
-        connection.sendPollResultRequest(pollID);
-      }
-      catch (IOException e)
-      {
-        throw new RuntimeException(e);
-      }
+    try
+    {
+      connection.sendPollResultRequest(pollID);
     }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
 
 }

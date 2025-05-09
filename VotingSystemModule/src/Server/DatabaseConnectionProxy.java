@@ -1,6 +1,7 @@
 package Server;
 
 import Common.Poll;
+import Common.PollResult;
 import Common.Profile;
 import Common.Vote;
 import Utils.Logger;
@@ -21,12 +22,22 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Logger.log("Vote sent to the database. {"+vote+"}");
   }
 
+  @Override public void editVote(Vote vote, int pollId)
+  {
+    databaseConnection.editVote(vote, pollId);
+    Logger.log("Vote sent to the database. {"+vote+"}");
+  }
 
   @Override public Poll retrievePoll(int id)
   {
     Poll poll = databaseConnection.retrievePoll(id);
     Logger.log("Poll retrieved. " + poll);
     return poll;
+  }
+
+  @Override public PollResult retrievePollResults(int id)
+  {
+    return null;
   }
 
   @Override public int loginOrRegisterAProfile(Profile profile)

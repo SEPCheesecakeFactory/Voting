@@ -9,6 +9,7 @@ import Common.Vote;
 public interface DatabaseConnector
 {
   public void storeVote(Vote vote);
+  public void editVote(Vote vote, int pollId);
   public Poll retrievePoll(int id);
   public PollResult retrievePollResults(int id);
   public int loginOrRegisterAProfile(Profile profile);

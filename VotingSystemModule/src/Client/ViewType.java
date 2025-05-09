@@ -6,4 +6,8 @@ public enum ViewType
   General,
   PollResult,
   CreatePoll
+  DisplayPoll,
+  Login,
+  ChangeUsername,
+  ClosePoll
 }

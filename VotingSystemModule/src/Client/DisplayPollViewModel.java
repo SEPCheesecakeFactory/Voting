@@ -1,30 +1,34 @@
 package Client;
 
 import Common.Poll;
-import Common.Profile;
-import Common.Vote;
 import Utils.Logger;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.security.InvalidParameterException;
 
-public class ClientViewModel
-    implements PropertyChangeListener, PropertyChangeSubject
-{
-  private final Model model;
-  private final PropertyChangeSupport support;
+public class DisplayPollViewModel  implements PropertyChangeListener, PropertyChangeSubject{
+  private Model model;
+  private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-  public ClientViewModel(Model model)
-  {
-    support = new PropertyChangeSupport(this);
+  public DisplayPollViewModel(Model model) {
     this.model = model;
-
-    this.model.addPropertyChangeListener("NewMessage", this);
-
+    this.model.addPropertyChangeListener("PollUpdated", this);
   }
 
+  public Model getModel()
+  {
+    return model;
+  }
+  public void sendVote(int userId, int[] choices)
+  {
+    Poll currentPoll = model.getPoll();
+
+    if (currentPoll != null && currentPoll.isClosed())
+      Logger.log("Cannot vote: Poll is closed.");
+
+    model.sendVote(userId, choices);
+  }
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)

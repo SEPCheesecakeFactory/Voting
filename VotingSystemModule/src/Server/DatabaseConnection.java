@@ -21,14 +21,48 @@ public class DatabaseConnection implements DatabaseConnector
         "password"); // IMPORTANT: I guess we will all have to set it to our password when trying it out unless we get a proper server
   }
 
-  @Override public void storeVote(Vote vote)
+  @Override
+  public void storeVote(Vote vote)
   {
     try (Connection connection = openConnection())
     {
+
+
+      // 1. Get poll_id using the first choice_option_id
+      PreparedStatement getPollIdStmt = connection.prepareStatement(
+          "SELECT q.poll_id " +
+              "FROM ChoiceOption co " +
+              "JOIN Question q ON co.question_id = q.id " +
+              "WHERE co.id = ?");
+      getPollIdStmt.setInt(1, vote.getChoices()[0]);  // assume all choices are from the same poll
+      ResultSet pollIdResult = getPollIdStmt.executeQuery();
+
+      int pollId;
+      if (pollIdResult.next())
+      {
+        pollId = pollIdResult.getInt(1);
+      }
+      else
+      {
+        throw new RuntimeException("No poll found for the provided choice option.");
+      }
+
+      // 2. Check if poll is closed
+      PreparedStatement checkPollClosedStmt = connection.prepareStatement(
+          "SELECT is_closed FROM Poll WHERE id = ?");
+      checkPollClosedStmt.setInt(1, pollId);
+      ResultSet isClosedResult = checkPollClosedStmt.executeQuery();
+
+      if (isClosedResult.next() && isClosedResult.getBoolean("is_closed"))
+      {
+        throw new RuntimeException("Poll is closed. Cannot store vote.");
+      }
+
+      // 3. Insert selected choices into VotedChoice
       for (int choiceOptionID : vote.getChoices())
       {
         PreparedStatement insertVoteStatement = connection.prepareStatement(
-            "INSERT INTO votedchoice VALUES (?,?)");
+            "INSERT INTO VotedChoice (vote_id, choice_option_id) VALUES (?, ?)");
         insertVoteStatement.setInt(1, vote.getUserId());
         insertVoteStatement.setInt(2, choiceOptionID);
         insertVoteStatement.executeUpdate();
@@ -40,12 +74,13 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
+
   @Override public void editVote(Vote vote)
   {
     try (Connection connection = openConnection())
     {
 
-      // 1. Get poll_id using vote_id
+      //  Get poll_id using vote_id
       PreparedStatement getPollIdStmt = connection.prepareStatement(
           "SELECT DISTINCT q.poll_id " + "FROM VotedChoice vc "
               + "JOIN ChoiceOption co ON vc.choice_option_id = co.id "
@@ -63,8 +98,18 @@ public class DatabaseConnection implements DatabaseConnector
       {
         throw new RuntimeException("No poll found for the user's vote.");
       }
+      //  Check if poll is closed
+      PreparedStatement checkPollClosedStmt = connection.prepareStatement(
+          "SELECT is_closed FROM Poll WHERE id = ?");
+      checkPollClosedStmt.setInt(1, pollId);
+      ResultSet isClosedResult = checkPollClosedStmt.executeQuery();
 
-      // 2. Get all choice_option_ids for the poll
+      if (isClosedResult.next() && isClosedResult.getBoolean("is_closed"))
+      {
+        throw new RuntimeException("Poll is closed. Cannot edit vote.");
+      }
+
+      //  Get all choice_option_ids for the poll
       PreparedStatement getPollChoices = connection.prepareStatement(
           "SELECT co.id FROM ChoiceOption co, Question q "
               + "WHERE co.question_id = q.id AND q.poll_id = ?");
@@ -77,7 +122,7 @@ public class DatabaseConnection implements DatabaseConnector
         pollChoiceIds.add(pollChoicesResult.getInt(1));
       }
 
-      // 3. Get user's existing votes in this poll
+      //  Get user's existing votes in this poll
       PreparedStatement getUserVotes = connection.prepareStatement(
           "SELECT choice_option_id FROM VotedChoice " + "WHERE vote_id = ?");
       getUserVotes.setInt(1, vote.getUserId());
@@ -93,7 +138,7 @@ public class DatabaseConnection implements DatabaseConnector
         }
       }
 
-      // 4. Compare and update
+      //  Compare and update
       List<Integer> newChoiceOptionsIds = new ArrayList<>();
       for (int choice : vote.getChoices())
       {

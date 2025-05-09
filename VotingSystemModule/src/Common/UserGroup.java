@@ -8,6 +8,7 @@ public class UserGroup implements Serializable
 {
   private String groupName;
   private List<Profile> members;
+  private int id;
 
   public UserGroup(String groupName)
   {
@@ -18,6 +19,16 @@ public class UserGroup implements Serializable
   public String getGroupName()
   {
     return groupName;
+  }
+
+  public void setId(int id)
+  {
+    this.id = id;
+  }
+
+  public int getId()
+  {
+    return id;
   }
 
   public List<Profile> getMembers()

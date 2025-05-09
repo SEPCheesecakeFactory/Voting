@@ -60,12 +60,14 @@ CREATE TABLE UserGroupMembership
 
 CREATE TABLE PollAccessControl
 (
-    poll_id INT REFERENCES Poll(id),
-    user_id INT REFERENCES Users(id),
-    group_id INT REFERENCES UserGroup(id),
-    PRIMARY KEY (poll_id, user_id, group_id)
+    poll_id  INT REFERENCES Poll(id),
+    user_id  INT REFERENCES Users(id) NULL,
+    group_id INT REFERENCES UserGroup(id) NULL,
+    PRIMARY KEY (poll_id, user_id, group_id),
+    CONSTRAINT user_or_group CHECK (user_id IS NOT NULL OR group_id IS NOT NULL)
 );
 
+-----
 --INSERT INTO Poll (title)
 --VALUES ('Dupa');
 --INSERT INTO Question (title, description, poll_id)

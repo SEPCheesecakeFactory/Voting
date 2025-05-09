@@ -435,4 +435,73 @@ public class DatabaseConnection implements DatabaseConnector
       }
     }
   }
+  // ===== User Group & Poll Access Methods =====
+  public int createUserGroup(String groupName) throws SQLException {
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(
+            "INSERT INTO UserGroup (name) VALUES (?) RETURNING id")) {
+      stmt.setString(1, groupName);
+      ResultSet rs = stmt.executeQuery();
+      if (rs.next()) {
+        return rs.getInt(1);
+      }
+      throw new SQLException("Group creation failed.");
+    }
+  }
+
+  public void addUserToGroup(int userId, int groupId) throws SQLException {
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(
+            "INSERT INTO UserGroupMembership (user_id, group_id) VALUES (?, ?)")) {
+      stmt.setInt(1, userId);
+      stmt.setInt(2, groupId);
+      stmt.executeUpdate();
+    }
+  }
+
+  public boolean userHasAccessToPoll(int userId, int pollId) {
+    String sql = """
+          SELECT 1
+          FROM Poll p
+          LEFT JOIN PollAccessControl pac ON p.id = pac.poll_id
+          LEFT JOIN UserGroupMembership ugm ON pac.group_id = ugm.group_id
+          WHERE p.id = ? AND (
+              p.is_private = FALSE OR
+              pac.user_id = ? OR
+              ugm.user_id = ?
+          )
+          """;
+
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setInt(1, pollId);
+      stmt.setInt(2, userId);
+      stmt.setInt(3, userId);
+      ResultSet rs = stmt.executeQuery();
+      return rs.next();
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to check poll access", e);
+    }
+  }
+
+  public void addUserToPoll(int userId, int pollId) throws SQLException {
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(
+            "INSERT INTO PollAccessControl (poll_id, user_id) VALUES (?, ?)")) {
+      stmt.setInt(1, pollId);
+      stmt.setInt(2, userId);
+      stmt.executeUpdate();
+    }
+  }
+
+  public void addGroupToPoll(int groupId, int pollId) throws SQLException {
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(
+            "INSERT INTO PollAccessControl (poll_id, group_id) VALUES (?, ?)")) {
+      stmt.setInt(1, pollId);
+      stmt.setInt(2, groupId);
+      stmt.executeUpdate();
+    }
+  }
+
 }

@@ -38,6 +38,11 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   @Override public PollResult retrievePollResults(int id)
   {
     return null;
+
+    // maybe this instead of null?
+    // PollResult pollResult = databaseConnection.retrievePollResults(id);
+    // Logger.log("Poll results retrieved. " + pollResult);
+    // return pollResult;
   }
 
   @Override public int loginOrRegisterAProfile(Profile profile)
@@ -50,7 +55,6 @@ public class DatabaseConnectionProxy implements DatabaseConnector
 
   @Override public void changeUsername(Profile profile)
   {
-
     databaseConnection.changeUsername(profile);
     Logger.log("Username changed");
   }
@@ -59,6 +63,12 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   {
     databaseConnection.storePoll(poll);
     Logger.log("Poll stored in the database.");
+  }
+
+  public boolean userHasAccessToPoll(int userId, int pollId) {
+    boolean hasAccess = databaseConnection.userHasAccessToPoll(userId, pollId);
+    Logger.log("User " + userId + (hasAccess ? " has access to " : " does not have access to ") + "poll " + pollId);
+    return hasAccess;
   }
 
   public void closePollAndSaveResults(int pollId)
@@ -70,7 +80,4 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   public boolean isOwner(int userId, int pollId) {
     return databaseConnection.isOwner(userId, pollId); // delegates to real DB
   }
-
-
-
 }

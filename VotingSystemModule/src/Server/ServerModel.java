@@ -44,7 +44,7 @@ public class ServerModel {
     return db.retrievePollResults(pollID);
   }
 
-  //  Optionally inject connection to send direct messages to the client
+  // Optionally inject connection to send direct messages to the client
   public void setConnection(ServerConnection connection) {
     this.connection = connection;
   }
@@ -59,5 +59,37 @@ public class ServerModel {
     } catch (IOException e) {
       Logger.log("Failed to send message to user: " + e.getMessage());
     }
+  }
+
+  public boolean checkPollAccess(int pollId) throws SQLException {
+    if (currentProfile == null) {
+      sendMessageToUser("Not logged in.");
+      return false;
+    }
+
+    if (!db.userHasAccessToPoll(currentProfile.getId(), pollId)) {
+      sendMessageToUser("You do not have access to this poll.");
+      return false;
+    }
+
+    return true;
+  }
+
+
+  public void viewPoll(int pollId) throws SQLException
+  {
+    if (!checkPollAccess(pollId))
+    {
+      return; // Stop processing if access is denied
+    }
+  }
+
+  // Example method that uses checkPollAccess
+  public void voteOnPoll(int pollId, Vote vote) throws SQLException {
+    if (!checkPollAccess(pollId)) {
+      return; // Stop processing if access is denied
+    }
+    // Proceed with voting logic
+    storeVote(vote);
   }
 }

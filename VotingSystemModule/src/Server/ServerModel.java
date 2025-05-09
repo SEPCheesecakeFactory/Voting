@@ -15,7 +15,7 @@ public class ServerModel {
   }
 
   public void storeVote(Vote vote) throws SQLException {
-    db.storeVote(vote);
+    db.storeVote(vote);//change to edit if u wanna test
   }
 
   public void closePoll(int pollId)

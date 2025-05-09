@@ -36,10 +36,28 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
   @Override
-  public void editVote(Vote vote, int pollId) {
+  public void editVote(Vote vote) {
     try (Connection connection = openConnection()) {
 
-      // 1. Get all choice_option_ids for the poll
+      // 1. Get poll_id using vote_id
+      PreparedStatement getPollIdStmt = connection.prepareStatement(
+          "SELECT DISTINCT q.poll_id " +
+              "FROM VotedChoice vc " +
+              "JOIN ChoiceOption co ON vc.choice_option_id = co.id " +
+              "JOIN Question q ON co.question_id = q.id " +
+              "WHERE vc.vote_id = ?"
+      );
+      getPollIdStmt.setInt(1, vote.getUserId());
+      ResultSet pollIdResult = getPollIdStmt.executeQuery();
+
+      int pollId;
+      if (pollIdResult.next()) {
+        pollId = pollIdResult.getInt(1);
+      } else {
+        throw new RuntimeException("No poll found for the user's vote.");
+      }
+
+      // 2. Get all choice_option_ids for the poll
       PreparedStatement getPollChoices = connection.prepareStatement(
           "SELECT co.id FROM ChoiceOption co, Question q " +
               "WHERE co.question_id = q.id AND q.poll_id = ?"
@@ -52,7 +70,7 @@ public class DatabaseConnection implements DatabaseConnector
         pollChoiceIds.add(pollChoicesResult.getInt(1));
       }
 
-      // 2. Get user's existing votes in this poll
+      // 3. Get user's existing votes in this poll
       PreparedStatement getUserVotes = connection.prepareStatement(
           "SELECT choice_option_id FROM VotedChoice " +
               "WHERE vote_id = ?"
@@ -68,7 +86,7 @@ public class DatabaseConnection implements DatabaseConnector
         }
       }
 
-      // 3. Compare and update
+      // 4. Compare and update
       List<Integer> newChoiceOptionsIds = new ArrayList<>();
       for (int choice : vote.getChoices()) {
         newChoiceOptionsIds.add(choice);

@@ -37,6 +37,22 @@ public class WindowManager
         PollResultViewModel pollResultVM = new PollResultViewModel(getModel());
         PollResultView pollResultV = new PollResultView(pollResultVM);
         break;
+      case ViewType.DisplayPoll:
+        DisplayPollViewModel displayPollVM = new DisplayPollViewModel(getModel());
+        DisplayPollView displayPollV = new DisplayPollView(displayPollVM);
+        break;
+      case Login:
+        LoginViewModel loginVM = new LoginViewModel(getModel());
+        LoginView loginV = new LoginView(loginVM);
+        break;
+      case ChangeUsername:
+        ChangeUsernameViewModel changeUsernameVM = new ChangeUsernameViewModel(getModel());
+        ChangeUsernameView changeUsernameV = new ChangeUsernameView(changeUsernameVM);
+        break;
+      case ClosePoll:
+        ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
+        ClosePollView closePollV = new ClosePollView(closePollVM);
+        break;
     }
   }
 

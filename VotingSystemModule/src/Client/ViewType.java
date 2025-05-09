@@ -4,5 +4,9 @@ public enum ViewType
 {
   Menu,
   General,
-  PollResult
+  PollResult,
+  DisplayPoll,
+  Login,
+  ChangeUsername,
+  ClosePoll
 }

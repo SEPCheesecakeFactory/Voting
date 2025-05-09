@@ -74,7 +74,7 @@ public class DummyDataMaker {
       questions[1] = insertIfNotExistsQuestion(conn, 2, 4, 7, pollId);
 
       // Create and return the Poll object
-      return new Poll(pollTitle, pollDesc, pollId, questions);
+      return new Poll(pollTitle, pollDesc, pollId, questions, false);
     }
   }
 

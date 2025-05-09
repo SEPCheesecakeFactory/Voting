@@ -223,8 +223,7 @@ public class DatabaseConnection implements DatabaseConnector
               rsVotedChoiceCount.getInt("count")); //Getting and saving results
         }
       }
-      return new PollResult(retrievePoll(id),
-          choiceVoters); //For now we are retrieving the poll
+      return new PollResult(retrievePoll(id), choiceVoters); //For now we are retrieving the poll
     }
     catch (SQLException e)
     {

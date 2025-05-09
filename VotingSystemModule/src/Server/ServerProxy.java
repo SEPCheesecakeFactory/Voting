@@ -1,5 +1,6 @@
 package Server;
 
+import Common.PollResult;
 import Common.Vote;
 import Utils.Logger;
 
@@ -30,6 +31,12 @@ public class ServerProxy
 
         model.closePoll(pollId);
         Logger.log("Poll close request handled for ID: " + pollId + " by user " + userId);
+      }
+      //TODO: Send the Poll Results ot the client *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+      else if (incoming instanceof String message && message.startsWith("result_request:")){
+        int pollId = Integer.parseInt(message.split(":")[1]);
+        PollResult pollResult = model.retrievePollResult(pollId);
+        Logger.log("Poll Results handled for: " +pollId);
       }
       else {
         Logger.log("Unknown object type received in ServerProxy: " + incoming);

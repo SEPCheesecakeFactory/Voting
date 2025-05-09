@@ -95,17 +95,15 @@ public class ServerConnection implements Runnable
   {
     try
     {
-
+      /*
       // 1. Login
       Profile profile = (Profile) inFromClient.readObject();
       int id = dbp.loginOrRegisterAProfile(profile);
       sendProfile(profile, id);
 
-
       ServerModel model = serverProxy.getModel();
       model.setCurrentProfile(profile);
       model.setConnection(this);
-
 
       // 2. Username change
       profile = (Profile) inFromClient.readObject();
@@ -117,6 +115,8 @@ public class ServerConnection implements Runnable
       DummyDataMaker dummyDataMaker = new DummyDataMaker();
       Poll poll = dummyDataMaker.getDummyPoll(0);
       sendPoll(poll);
+       */
+
 
       // 4. Delegate all further client messages to the ServerProxy
       while (true)
@@ -126,7 +126,7 @@ public class ServerConnection implements Runnable
       }
 
     }
-    catch (IOException | ClassNotFoundException | SQLException e)
+    catch (IOException | ClassNotFoundException e)
     {
       Logger.log("Server connection error: " + e.getMessage());
     }

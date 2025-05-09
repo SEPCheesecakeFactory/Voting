@@ -168,14 +168,13 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     }
     catch (IOException e)
     {
-      throw new RuntimeException(e);
+      Logger.log("Failed to send poll results request: " + e.getMessage());
     }
   }
 
   @Override public void sendVoteGroup(UserGroup userGroup)
   {
     try
-
     {
       connection.sendVoteGroup(userGroup);
     }

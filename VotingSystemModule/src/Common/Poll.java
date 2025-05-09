@@ -80,9 +80,16 @@ public class Poll implements Serializable
   }
 
   public boolean isPrivate()
+
   {
     return isPrivate;
   }
+
+  public void setPrivate(boolean isPrivate)
+  {
+    this.isPrivate = true;
+  }
+
 
   public List<Profile> getAllowedUsers()
   {

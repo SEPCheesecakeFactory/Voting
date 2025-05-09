@@ -37,6 +37,10 @@ public class WindowManager
         PollResultViewModel pollResultVM = new PollResultViewModel(getModel());
         PollResultView pollResultV = new PollResultView(pollResultVM);
         break;
+      case ViewType.CreatePoll:
+        CreatePollViewModel createPollViewModel = new CreatePollViewModel(getModel());
+        CreatePollView createPollView = new CreatePollView(createPollViewModel);
+        createPollView.render();
       case ViewType.DisplayPoll:
         DisplayPollViewModel displayPollVM = new DisplayPollViewModel(getModel());
         DisplayPollView displayPollV = new DisplayPollView(displayPollVM);

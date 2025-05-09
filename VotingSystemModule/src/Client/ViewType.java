@@ -5,6 +5,7 @@ public enum ViewType
   Menu,
   General,
   PollResult,
+  CreatePoll
   DisplayPoll,
   Login,
   ChangeUsername,

@@ -103,6 +103,12 @@ public class ClientConnection implements Runnable
     outToServer.writeObject(poll);
   }
 
+  public void sendCreatePoll(Poll poll) throws IOException
+  {
+    outToServer.reset();
+    outToServer.writeObject(poll);
+  }
+
   public void sendPollResultRequest(int pollID) throws IOException
   {
     String request = "result_request:" + pollID;

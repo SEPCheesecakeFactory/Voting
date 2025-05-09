@@ -67,6 +67,9 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Logger.log("Poll with ID " + pollId + " marked as closed in database.");
   }
 
+  public boolean isOwner(int userId, int pollId) {
+    return databaseConnection.isOwner(userId, pollId); // delegates to real DB
+  }
 
 
 

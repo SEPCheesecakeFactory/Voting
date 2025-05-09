@@ -101,6 +101,12 @@ public class ServerConnection implements Runnable
       int id = dbp.loginOrRegisterAProfile(profile);
       sendProfile(profile, id);
 
+
+      ServerModel model = serverProxy.getModel();
+      model.setCurrentProfile(profile);
+      model.setConnection(this);
+
+
       // 2. Username change
       profile = (Profile) inFromClient.readObject();
       Logger.log(profile.getUsername());

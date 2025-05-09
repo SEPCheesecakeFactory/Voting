@@ -74,22 +74,5 @@ public class ServerModel {
 
     return true;
   }
-
-
-  public void viewPoll(int pollId) throws SQLException
-  {
-    if (!checkPollAccess(pollId))
-    {
-      return; // Stop processing if access is denied
-    }
-  }
-
-  // Example method that uses checkPollAccess
-  public void voteOnPoll(int pollId, Vote vote) throws SQLException {
-    if (!checkPollAccess(pollId)) {
-      return; // Stop processing if access is denied
-    }
-    // Proceed with voting logic
-    storeVote(vote);
-  }
+  
 }

@@ -3,7 +3,7 @@ package Server;
 import Common.Vote;
 import Utils.Logger;
 
-public class ServerProxy implements ServerConnectionInterface
+public class ServerProxy
 {
   private final ServerModel model;
 

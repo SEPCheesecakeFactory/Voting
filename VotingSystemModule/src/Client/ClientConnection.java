@@ -1,9 +1,6 @@
 package Client;
 //Socket 2 - Michael
-import Common.Poll;
-import Common.PollResult;
-import Common.Profile;
-import Common.Vote;
+import Common.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -106,10 +103,21 @@ public class ClientConnection implements Runnable
     outToServer.writeObject(poll);
   }
 
+  public void sendCreatePoll(Poll poll) throws IOException
+  {
+    outToServer.reset();
+    outToServer.writeObject(poll);
+  }
+
   public void sendPollResultRequest(int pollID) throws IOException
   {
     String request = "result_request:" + pollID;
     outToServer.reset();
     outToServer.writeObject(request);
+  }
+  public void sendVoteGroup(UserGroup userGroup) throws IOException
+  {
+    outToServer.reset();
+    outToServer.writeObject(userGroup);
   }
 }

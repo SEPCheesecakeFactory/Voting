@@ -18,7 +18,8 @@ public class ServerConnection implements Runnable
   private final ServerProxy serverProxy;
   private final DatabaseConnectionProxy dbp;
 
-  public ServerConnection(Socket connectionSocket, ConnectionPool connectionPool) throws IOException, SQLException
+  public ServerConnection(Socket connectionSocket,
+      ConnectionPool connectionPool) throws IOException, SQLException
   {
     inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
     outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
@@ -90,15 +91,21 @@ public class ServerConnection implements Runnable
       }
 */
 
-  @Override
-  public void run() {
-    try {
-
+  @Override public void run()
+  {
+    try
+    {
 
       // 1. Login
       Profile profile = (Profile) inFromClient.readObject();
       int id = dbp.loginOrRegisterAProfile(profile);
       sendProfile(profile, id);
+
+
+      ServerModel model = serverProxy.getModel();
+      model.setCurrentProfile(profile);
+      model.setConnection(this);
+
 
       // 2. Username change
       profile = (Profile) inFromClient.readObject();
@@ -112,16 +119,18 @@ public class ServerConnection implements Runnable
       sendPoll(poll);
 
       // 4. Delegate all further client messages to the ServerProxy
-      while (true) {
+      while (true)
+      {
         Object incoming = inFromClient.readObject();
         serverProxy.handle(incoming);
       }
 
-    } catch (IOException | ClassNotFoundException | SQLException e) {
+    }
+    catch (IOException | ClassNotFoundException | SQLException e)
+    {
       Logger.log("Server connection error: " + e.getMessage());
     }
   }
-
 
   public void sendProfile(Profile profile, int id) throws IOException
   {
@@ -130,33 +139,40 @@ public class ServerConnection implements Runnable
 
     outToClient.writeObject(profile);
   }
-//  public void sendProfile(Profile profile) throws IOException
-//  {
-//    outToClient.writeObject(profile);
-//  }
+  //  public void sendProfile(Profile profile) throws IOException
+  //  {
+  //    outToClient.writeObject(profile);
+  //  }
 
   //  public void send(String message) throws IOException
-    //  {
-    //    outToClient.writeObject(message);
-    //  }
+  //  {
+  //    outToClient.writeObject(message);
+  //  }
 
-    // NOTE: Leaving out comments with unused code is considered a bac practice by many when using version control
-    // TODO: resolve (remove/implement) the unused code
+  // NOTE: Leaving out comments with unused code is considered a bac practice by many when using version control
+  // TODO: resolve (remove/implement) the unused code
 
-    public void sendPoll(Poll poll) throws IOException
-    {
-      outToClient.reset();
-      outToClient.writeObject(poll);
-    }
-    private Vote recieveVote() throws IOException, ClassNotFoundException
-    {
-      return (Vote) inFromClient.readObject();
-    }
-    public void send(String message) throws IOException
-    {
-      outToClient.reset();
-      outToClient.writeObject(message);
-    }
+  public void sendPoll(Poll poll) throws IOException
+  {
+    outToClient.reset();
+    outToClient.writeObject(poll);
+  }
 
+  private Vote recieveVote() throws IOException, ClassNotFoundException
+  {
+    return (Vote) inFromClient.readObject();
+  }
+
+  public void send(String message) throws IOException
+  {
+    outToClient.reset();
+    outToClient.writeObject(message);
+  }
+
+  public void sendPollResult(PollResult pollResult) throws IOException
+  {
+    outToClient.reset();
+    outToClient.writeObject(pollResult);
+  }
 
 }

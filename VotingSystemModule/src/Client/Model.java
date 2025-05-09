@@ -1,9 +1,6 @@
 package Client;
 
-import Common.Poll;
-import Common.PollResult;
-import Common.Profile;
-import Common.Vote;
+import Common.*;
 import Utils.Logger;
 
 import java.beans.PropertyChangeEvent;
@@ -11,7 +8,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-public class Model implements PropertyChangeSubject, PollResultRequestService
+public class Model implements PropertyChangeSubject, PollResultRequestService, CreateVoteGroupService, CreatePollService
 {
   private final PropertyChangeSupport support;
   private final ClientConnection connection;
@@ -175,4 +172,28 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
     }
   }
 
+  @Override public void sendVoteGroup(UserGroup userGroup)
+  {
+    try
+
+    {
+      connection.sendVoteGroup(userGroup);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override public void createPoll(Poll poll)
+  {
+    try
+    {
+      connection.sendCreatePoll(poll);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to create the poll: " + e.getMessage());
+    }
+  }
 }

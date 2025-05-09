@@ -6,31 +6,40 @@ import java.util.Scanner;
 
 public class Client
 {
+  private ClientConnection clientConnection;
+  private String host;
+  private int port;
+
+  public Client()
+  {
+    host = "localhost";
+    port = 2910;
+  }
+
+  public Client(String host, int port)
+  {
+    this.host = host;
+    this.port = port;
+  }
+
   public static void main(String[] args)
+  {
+    Client client = new Client();
+    client.run();
+  }
+
+  public void run()
   {
     try
     {
-      Socket socket = new Socket("localhost", 2910);
-      ClientConnection clientConnection = new ClientConnection(socket);
-      Model model = new Model(clientConnection);
-      ClientViewModel viewModel = new ClientViewModel(model);
-      ClientView view = new ClientView(viewModel);
-      clientConnection.setModel(model);
-
+      Socket socket = new Socket(host, port);
+      clientConnection = new ClientConnection(socket);
+      WindowManager.getInstance().setClientConnection(clientConnection);
+      WindowManager.getInstance().showView(ViewType.Menu);
+      clientConnection.setModel(WindowManager.getInstance().getModel());
       new Thread(clientConnection).start();
-
-//      while(true)
-//      {
-//        Logger.log("Enter a message: ");
-//        String stringToSend = scanner.nextLine();
-//        clientConnection.send(stringToSend);
-//      }
     }
     catch (IOException e)
-    {
-      throw new RuntimeException(e);
-    }
-    catch (InterruptedException e)
     {
       throw new RuntimeException(e);
     }

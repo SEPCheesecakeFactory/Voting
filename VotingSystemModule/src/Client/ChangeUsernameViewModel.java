@@ -1,30 +1,21 @@
 package Client;
 
-import Common.Poll;
-import Common.Profile;
-import Common.Vote;
-import Utils.Logger;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.security.InvalidParameterException;
 
-public class ClientViewModel
-    implements PropertyChangeListener, PropertyChangeSubject
-{
-  private final Model model;
-  private final PropertyChangeSupport support;
+public class ChangeUsernameViewModel implements PropertyChangeListener, PropertyChangeSubject{
+  private Model model;
+  private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-  public ClientViewModel(Model model)
-  {
-    support = new PropertyChangeSupport(this);
+  public ChangeUsernameViewModel(Model model) {
     this.model = model;
-
-    this.model.addPropertyChangeListener("NewMessage", this);
-
+    this.model.addPropertyChangeListener("ProfileSet", this);
   }
-
+  public void changeUserName(String username)
+  {
+    model.sendChangeUsername(username);
+  }
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)
@@ -54,4 +45,6 @@ public class ClientViewModel
   {
     support.firePropertyChange(evt);
   }
+
+
 }

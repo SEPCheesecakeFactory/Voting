@@ -182,6 +182,9 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     catch (IOException e)
     {
       throw new RuntimeException(e);
+    }
+  }
+
   @Override public void createPoll(Poll poll)
   {
     try

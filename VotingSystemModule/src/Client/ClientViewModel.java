@@ -43,7 +43,7 @@ public class ClientViewModel
     if (!poll.isClosed())
     {
       poll.closePoll();
-      model.sendFinalResult(poll);
+      model.sendPollCloseRequest(poll.getId());
       support.firePropertyChange("PollUpdated", null, poll);
       Logger.log("Poll closed and final result sent.");
     }

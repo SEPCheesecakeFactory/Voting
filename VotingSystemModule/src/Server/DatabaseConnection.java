@@ -232,7 +232,7 @@ public class DatabaseConnection implements DatabaseConnector
 
   public void closePollAndSaveResults(int pollId)
   {
-    String sql = "UPDATE polls SET is_closed = TRUE WHERE id = ?";
+    String sql = "UPDATE poll SET is_closed = TRUE WHERE id = ?";
 
     try (Connection conn = openConnection();
         PreparedStatement stmt = conn.prepareStatement(sql))

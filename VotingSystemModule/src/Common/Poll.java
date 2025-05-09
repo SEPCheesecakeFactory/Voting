@@ -12,11 +12,13 @@ public class Poll implements Serializable
   private int id;
   private Question[] questions;
   private boolean isClosed;
+
   private boolean isPrivate;
 
   private List<Profile> allowedUsers;
   private List<UserGroup> allowedGroups;
 
+  public Poll(){}
   public Poll(String title, String description, int id, Question[] questions,
       boolean isClosed)
   {
@@ -88,6 +90,10 @@ public class Poll implements Serializable
   public void setPrivate(boolean isPrivate)
   {
     this.isPrivate = true;
+  }
+  public void setClosed(boolean closed)
+  {
+    isClosed = closed;
   }
 
 

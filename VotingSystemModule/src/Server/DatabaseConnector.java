@@ -14,4 +14,5 @@ public interface DatabaseConnector
   public PollResult retrievePollResults(int id);
   public int loginOrRegisterAProfile(Profile profile);
   public void changeUsername(Profile profile);
+  public void storePoll(Poll poll);
 }

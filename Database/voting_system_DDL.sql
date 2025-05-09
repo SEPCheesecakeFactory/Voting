@@ -6,7 +6,7 @@ CREATE TABLE Poll
 (
     id         SERIAL PRIMARY KEY,
     title      VARCHAR(60),
-    is_public  BOOLEAN NOT NULL DEFAULT TRUE,
+    is_private  BOOLEAN NOT NULL DEFAULT FALSE,
     is_closed  BOOLEAN not null DEFAULT false
 );
 
@@ -84,7 +84,7 @@ INSERT INTO Users (username) VALUES
 ('charlie');
 
 -- Insert polls
-INSERT INTO Poll (title, is_public) VALUES
+INSERT INTO Poll (title, is_private) VALUES
 ('Favorite Programming Language', TRUE),
 ('Company Satisfaction Survey', FALSE);
 

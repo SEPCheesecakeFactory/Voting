@@ -1,5 +1,6 @@
 package Server;
 
+import Common.PollResult;
 import Common.Vote;
 
 import java.io.IOException;
@@ -23,6 +24,10 @@ public class ServerModel {
   {
     db.closePollAndSaveResults(pollId);
     connectionPool.broadcast("poll_closed:" + pollId); // Notify all clients
+  }
+  public PollResult retrievePollResult(int pollID)
+  {
+    return db.retrievePollResults(pollID);
   }
 
 }

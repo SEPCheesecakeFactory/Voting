@@ -41,18 +41,36 @@ public class ClientView implements PropertyChangeListener
         System.out.println("  " + j + ": " + options[j].getValue());
       }
 
-      int answer;
-      do {
-        System.out.print("Choose an option (index): ");
-        answer = scanner.nextInt();
-      } while (answer < 0 || answer >= options.length);
+      while (true) {
+        System.out.print("Choose an option (index or 'close_poll'): ");
+        String input = scanner.nextLine().trim();
 
-      choices[i] = options[answer].getId(); // Store selected option's ID
+        if (input.startsWith("close_poll")) {
+          try {
+           // int pollId = Integer.parseInt(input.split(":")[1]);
+            viewModel.closePoll(poll); // use the current poll instance
+            return; // exit after closing poll
+          } catch (Exception e) {
+            System.out.println("Invalid close_poll format. Use close_poll");
+          }
+        } else {
+          try {
+            int answer = Integer.parseInt(input);
+            if (answer >= 0 && answer < options.length) {
+              choices[i] = options[answer].getId(); // valid vote
+              break;
+            } else {
+              System.out.println("Invalid choice. Try again.");
+            }
+          } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Enter an index or 'close_poll:<id>'");
+          }
+        }
+      }
     }
 
-
     int userId = viewModel.getModel().getProfile().getId();
-    System.out.print("your User ID: "+userId);
+    System.out.print("Your User ID: " + userId + "\n");
     viewModel.sendVote(userId, choices);
   }
   public void displayLoginView() {

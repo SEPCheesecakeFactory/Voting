@@ -11,7 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-public class Model implements PropertyChangeSubject, PollResultRequestService
+public class Model implements PropertyChangeSubject, PollResultRequestService, CreatePollService
 {
   private final PropertyChangeSupport support;
   private final ClientConnection connection;
@@ -175,4 +175,15 @@ public class Model implements PropertyChangeSubject, PollResultRequestService
     }
   }
 
+  @Override public void createPoll(Poll poll)
+  {
+    try
+    {
+      connection.sendCreatePoll(poll);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to create the poll: " + e.getMessage());
+    }
+  }
 }

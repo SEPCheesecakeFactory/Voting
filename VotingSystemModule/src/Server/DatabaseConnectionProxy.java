@@ -22,9 +22,9 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Logger.log("Vote sent to the database. {"+vote+"}");
   }
 
-  @Override public void editVote(Vote vote, int pollId)
+  @Override public void editVote(Vote vote)
   {
-    databaseConnection.editVote(vote, pollId);
+    databaseConnection.editVote(vote);
     Logger.log("Vote sent to the database. {"+vote+"}");
   }
 

@@ -14,7 +14,7 @@ public class ClientView implements PropertyChangeListener
 {
   private final ClientViewModel viewModel;
 
-  public ClientView(ClientViewModel viewModel) throws InterruptedException
+  public ClientView(ClientViewModel viewModel)
   {
     this.viewModel = viewModel;
     this.viewModel.addPropertyChangeListener(this);

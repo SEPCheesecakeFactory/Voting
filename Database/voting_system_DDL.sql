@@ -1,4 +1,3 @@
-
 DROP SCHEMA IF EXISTS voting_system CASCADE;
 CREATE SCHEMA voting_system;
 SET SCHEMA 'voting_system';
@@ -7,7 +6,8 @@ CREATE TABLE Poll
 (
     id         SERIAL PRIMARY KEY,
     title      VARCHAR(60),
-    is_public  BOOLEAN NOT NULL DEFAULT TRUE
+    is_public  BOOLEAN NOT NULL DEFAULT TRUE,
+    is_closed  BOOLEAN not null DEFAULT false
 );
 
 CREATE TABLE Question

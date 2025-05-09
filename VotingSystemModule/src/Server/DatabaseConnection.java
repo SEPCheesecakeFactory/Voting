@@ -254,6 +254,21 @@ public class DatabaseConnection implements DatabaseConnector
     return openConnection();
   }
 
+  public boolean isOwner(int userId, int pollId) {
+    try (Connection conn = openConnection()) {
+      PreparedStatement stmt = conn.prepareStatement(
+          "SELECT 1 FROM pollownership WHERE user_id = ? AND poll_id = ?"
+      );
+      stmt.setInt(1, userId);
+      stmt.setInt(2, pollId);
+      ResultSet rs = stmt.executeQuery();
+      return rs.next(); // true if record exists
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to verify ownership", e);
+    }
+  }
+
+
   public void closePollAndSaveResults(int pollId)
   {
     String sql = "UPDATE poll SET is_closed = TRUE WHERE id = ?";

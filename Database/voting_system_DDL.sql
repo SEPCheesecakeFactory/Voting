@@ -107,3 +107,8 @@ INSERT INTO ChoiceOption (value, question_id) VALUES
 ('3 - Neutral', 2),
 ('4 - Satisfied', 2),
 ('5 - Very Satisfied', 2);
+
+-- Test alice owns Dummy Title 0 --
+INSERT INTO pollownership (user_id, poll_id) VALUES (1, 3);
+SELECT * FROM pollownership WHERE user_id = 1 AND poll_id = 3;
+UPDATE poll SET is_closed = false WHERE id = 3;

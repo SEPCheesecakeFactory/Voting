@@ -7,6 +7,7 @@ import Common.Vote;
 import Utils.JsonUtil;
 import Utils.Logger;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class ServerProxy
@@ -61,21 +62,49 @@ public class ServerProxy
     Message messageObject = JsonUtil.deserialize(message, Message.class);
 
     try {
+      int pollId;
       switch (messageObject.getType()) {
         case MessageType.SendVote:
           Vote vote = messageObject.getParam("vote", Vote.class);
           model.storeVote(vote);
           break;
 
+        case MessageType.ClosePoll:
+          pollId = messageObject.getParam("pollId", int.class);
+
+          int userId = messageObject.getParam("userId", int.class); // assumes you store profile in ServerModel
+
+          if (!model.getDb().isOwner(userId, pollId)) {
+            Logger.log("Unauthorized close attempt by user " + userId + " on poll " + pollId);
+            model.sendMessageToUser("You are not authorized to close this poll.");
+            return;
+          }
+
+          try
+          {
+            model.closePoll(pollId);
+          }
+          catch (IOException e)
+          {
+            throw new RuntimeException(e);
+          }
+          Logger.log("Poll close request handled for ID: " + pollId + " by user " + userId);
+
+          break;
+
         case MessageType.RequestPollResult:
-          Vote close = messageObject.getParam("close", Vote.class);
-          model.storeVote(close);
+          pollId = messageObject.getParam("pollId", int.class);
+          PollResult pollResult = model.retrievePollResult(pollId);
+          Logger.log("Poll Results handled for: " +pollId);
+          //TODO: Send pollResult to Client ***********************************
           break;
 
         default:
+          Logger.log("Error in ServerProxy:");
           throw new IllegalArgumentException("Unknown message type: " + messageObject.getType());
       }
-    } catch (SQLException e) {
+    } catch (Exception e) {
+      Logger.log("Error in ServerProxy: " + e.getMessage());
       throw new RuntimeException(e);
     }
   }

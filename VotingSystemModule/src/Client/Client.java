@@ -53,7 +53,7 @@ public class Client
     }
     catch (IOException e)
     {
-      Logger.log(e.getMessage());
+      Logger.log("Client - Exception",e.getMessage());
       return false;
     }
   }

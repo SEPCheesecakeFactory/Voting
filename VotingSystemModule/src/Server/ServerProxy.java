@@ -1,10 +1,13 @@
 package Server;
 
 import Common.Message;
+import Common.MessageType;
 import Common.PollResult;
 import Common.Vote;
 import Utils.JsonUtil;
 import Utils.Logger;
+
+import java.sql.SQLException;
 
 public class ServerProxy
 {
@@ -57,10 +60,23 @@ public class ServerProxy
   {
     Message messageObject = JsonUtil.deserialize(message, Message.class);
 
-    switch(messageObject.getParam("type", String.class)){
-      case "vote" : model.storeVote(message.getParam("vote", Vote.class));
-      case "close_poll" : model.storeVote(message.getParam("vote", Vote.class));
-    }
+    try {
+      switch (messageObject.getType()) {
+        case MessageType.SendVote:
+          Vote vote = messageObject.getParam("vote", Vote.class);
+          model.storeVote(vote);
+          break;
 
+        case MessageType.RequestPollResult:
+          Vote close = messageObject.getParam("close", Vote.class);
+          model.storeVote(close);
+          break;
+
+        default:
+          throw new IllegalArgumentException("Unknown message type: " + messageObject.getType());
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

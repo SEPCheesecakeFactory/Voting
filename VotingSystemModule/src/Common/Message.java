@@ -9,10 +9,7 @@ import java.util.ArrayList;
 
 public class Message
 {
-  public enum MessageType
-  {Response, SendVote, RequestPollResult}
 
-  ;
   private MessageType type;
   private JsonObject params;
   private static final Gson G = new Gson();

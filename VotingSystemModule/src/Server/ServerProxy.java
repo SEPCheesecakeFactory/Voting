@@ -68,7 +68,6 @@ public class ServerProxy
           Vote vote = messageObject.getParam("vote", Vote.class);
           model.storeVote(vote);
           break;
-
         case MessageType.ClosePoll:
           pollId = messageObject.getParam("pollId", int.class);
 
@@ -89,19 +88,16 @@ public class ServerProxy
             throw new RuntimeException(e);
           }
           Logger.log("Poll close request handled for ID: " + pollId + " by user " + userId);
-
           break;
-
         case MessageType.RequestPollResult:
           pollId = messageObject.getParam("pollId", int.class);
           PollResult pollResult = model.retrievePollResult(pollId);
           Logger.log("Poll Results handled for: " +pollId);
           //TODO: Send pollResult to Client ***********************************
           break;
-
         default:
-          Logger.log("Error in ServerProxy:");
-          throw new IllegalArgumentException("Unknown message type: " + messageObject.getType());
+          Logger.log("Received an unknown message type: " + messageObject.getType());
+          break;
       }
     } catch (Exception e) {
       Logger.log("Error in ServerProxy: " + e.getMessage());

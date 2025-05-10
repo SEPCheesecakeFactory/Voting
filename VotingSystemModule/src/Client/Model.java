@@ -8,7 +8,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-public class Model implements PropertyChangeSubject, PollResultRequestService, CreateVoteGroupService, CreatePollService
+public class Model implements PropertyChangeSubject, PollResultRequestService,
+    CreateVoteGroupService, CreatePollService
 {
   private final PropertyChangeSupport support;
   private Poll currentPoll;
@@ -50,8 +51,14 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     return currentPoll;
   }
 
+  public Client getClient()
+  {
+    return client;
+  }
+
   public void sendLoginOrRegister(Profile profile)
   {
+    Logger.log("Debugging - sendLoginOrRegister");
     try
     {
       // connection.sendLoginOrRegister(profile);
@@ -64,6 +71,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
 
   public void sendChangeUsername(String username)
   {
+    Logger.log("Debugging - sendChangeUsername");
     try
     {
       currentProfile.changeUsername(username);
@@ -78,6 +86,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
 
   public void sendVote(int userId, int[] choices)
   {
+    Logger.log("Debugging - sendVote");
     try
     {
       Vote vote = new Vote(userId, choices);
@@ -89,20 +98,9 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     }
   }
 
-  /*public void sendFinalResult(Poll poll)
-  {
-    try
-    {
-      connection.sendFinalResults(poll);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to send final poll results: " + e.getMessage());
-    }
-  }*/
-
   public void sendPollCloseRequest(int pollId)
   {
+    Logger.log("Debugging - addPropertyChangeListener");
     /*try
     {
       connection.sendClosePollRequest(pollId);
@@ -113,54 +111,15 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     }*/
   }
 
-  @Override public void addPropertyChangeListener(
-      PropertyChangeListener listener)
-  {
-    support.addPropertyChangeListener(listener);
-  }
-
-  @Override public void addPropertyChangeListener(String name,
-      PropertyChangeListener listener)
-  {
-    support.addPropertyChangeListener(name, listener);
-  }
-
-  @Override public void removePropertyChangeListener(
-      PropertyChangeListener listener)
-  {
-    support.removePropertyChangeListener(listener);
-  }
-
-  @Override public void removePropertyChangeListener(String name,
-      PropertyChangeListener listener)
-  {
-    support.removePropertyChangeListener(name, listener);
-  }
-
-  @Override public void propertyChange(PropertyChangeEvent evt)
-  {
-
-  }
-
   @Override public void getResult(PollResult pollResult)
   {
+    Logger.log("Debugging - getResult");
     support.firePropertyChange("PollResult", null, pollResult);
-  }
-
-  public void sendFinalResult(Poll poll)
-  {
-    /*try
-    {
-      connection.sendFinalResults(poll);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to send final poll results: " + e.getMessage());
-    }*/
   }
 
   @Override public void sendResultRequest(int pollID)
   {
+    Logger.log("Debugging - sendResultRequest");
     /*try
     {
       connection.sendPollResultRequest(pollID);
@@ -173,6 +132,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
 
   @Override public void sendVoteGroup(UserGroup userGroup)
   {
+    Logger.log("Debugging - sendVoteGroup");
     /*try
     {
       connection.sendVoteGroup(userGroup);
@@ -185,6 +145,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
 
   @Override public void createPoll(Poll poll)
   {
+    Logger.log("Debugging - createPoll");
     /*try
     {
       connection.sendCreatePoll(poll);
@@ -195,8 +156,36 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     }*/
   }
 
-  public Client getClient()
+  @Override public void addPropertyChangeListener(
+      PropertyChangeListener listener)
   {
-    return client;
+    Logger.log("Debugging - addPropertyChangeListener");
+    support.addPropertyChangeListener(listener);
+  }
+
+  @Override public void addPropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
+    Logger.log("Debugging - addPropertyChangeListener");
+    support.addPropertyChangeListener(name, listener);
+  }
+
+  @Override public void removePropertyChangeListener(
+      PropertyChangeListener listener)
+  {
+    Logger.log("Debugging - removePropertyChangeListener");
+    support.removePropertyChangeListener(listener);
+  }
+
+  @Override public void removePropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
+    Logger.log("Debugging - removePropertyChangeListener");
+    support.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public void propertyChange(PropertyChangeEvent evt)
+  {
+    Logger.log("Debugging - propertyChange");
   }
 }

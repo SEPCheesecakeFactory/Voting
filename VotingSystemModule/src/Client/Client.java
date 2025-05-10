@@ -39,7 +39,8 @@ public class Client
     }
     catch (IOException e)
     {
-      throw new RuntimeException(e);
+      Logger.log("Could not establish a connection with the server. Shutting down...");
+      Logger.log("Exception",e.getMessage());
     }
   }
 

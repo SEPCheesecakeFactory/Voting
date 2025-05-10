@@ -12,5 +12,5 @@ public enum MessageType
   SendResultRequest,
   SendVoteGroup,
   CreatePoll,
-
+  Test
 }

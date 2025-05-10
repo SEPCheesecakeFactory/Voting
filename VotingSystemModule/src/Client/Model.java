@@ -18,6 +18,8 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
 
   public Model(Client client)
   {
+    if(client == null)
+      throw new IllegalArgumentException("Client cannot be null!");
     this.client = client;
     support = new PropertyChangeSupport(this);
   }
@@ -84,7 +86,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   public void sendPollCloseRequest(int pollId)
   {
     Logger.log("Debugging - sendPollCloseRequest");
-    var message = new Message(MessageType.SendPollCloseRequest);
+    var message = new Message(MessageType.ClosePoll);
     message.addParam("pollId", pollId);
     boolean success = client.send(message);
   }

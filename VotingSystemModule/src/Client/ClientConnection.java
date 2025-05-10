@@ -46,6 +46,6 @@ public class ClientConnection implements Runnable
 
   public void send(String message) throws IOException
   {
-    outToServer.writeChars(message);
+    outToServer.writeObject(message);
   }
 }

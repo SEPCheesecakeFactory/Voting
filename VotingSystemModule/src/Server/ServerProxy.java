@@ -1,5 +1,6 @@
 package Server;
 
+import Common.Message;
 import Common.PollResult;
 import Common.Vote;
 import Utils.Logger;

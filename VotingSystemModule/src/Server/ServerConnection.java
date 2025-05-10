@@ -95,7 +95,7 @@ public class ServerConnection implements Runnable
   {
     try
     {
-      /*
+        /*
       // 1. Login
       Profile profile = (Profile) inFromClient.readObject();
       int id = dbp.loginOrRegisterAProfile(profile);
@@ -122,7 +122,7 @@ public class ServerConnection implements Runnable
       while (true)
       {
         Object incoming = inFromClient.readObject();
-        serverProxy.handle(incoming);
+        serverProxy.process((String) incoming);
       }
 
     }

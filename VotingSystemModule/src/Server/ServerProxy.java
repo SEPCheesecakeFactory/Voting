@@ -50,4 +50,17 @@ public class ServerProxy
   public ServerModel getModel() {
     return model;
   }
+
+  public void process(String message)
+  {
+    /*
+    Message messageObject = Deserialize(message);
+
+    switch(messageObject.getParam("type", String)){
+      case "vote" : model.storeVote(message.getParam("vote", Vote));
+      case "close_poll" : model.storeVote(message.getParam("vote", Vote));
+    }
+
+     */
+  }
 }

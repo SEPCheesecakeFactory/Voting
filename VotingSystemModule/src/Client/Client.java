@@ -1,12 +1,16 @@
 package Client;
-//Socket 2 - Michael
+
+import Common.Message;
+import Utils.JsonUtil;
+import Utils.Logger;
+
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client
 {
   private ClientConnection clientConnection;
+  private Model model;
   private String host;
   private int port;
 
@@ -22,26 +26,34 @@ public class Client
     this.port = port;
   }
 
-  public static void main(String[] args)
-  {
-    Client client = new Client();
-    client.run();
-  }
-
   public void run()
   {
     try
     {
       Socket socket = new Socket(host, port);
       clientConnection = new ClientConnection(socket);
-      WindowManager.getInstance().setClientConnection(clientConnection);
+      WindowManager.getInstance().setModel(new Model(this));
       WindowManager.getInstance().showView(ViewType.Menu);
-      clientConnection.setModel(WindowManager.getInstance().getModel());
+      this.model = WindowManager.getInstance().getModel();
       new Thread(clientConnection).start();
     }
     catch (IOException e)
     {
       throw new RuntimeException(e);
+    }
+  }
+
+  public boolean send(Message message)
+  {
+    try
+    {
+      clientConnection.send(JsonUtil.serialize(message));
+      return true;
+    }
+    catch (IOException e)
+    {
+      Logger.log(e.getMessage());
+      return false;
     }
   }
 }

@@ -4,12 +4,8 @@ public class WindowManager
 {
   private volatile static WindowManager instance;
   private Model model;
-  private ClientConnection clientConnection;
 
-  private WindowManager()
-  {
-
-  }
+  private WindowManager() { }
 
   public static WindowManager getInstance()
   {
@@ -38,11 +34,13 @@ public class WindowManager
         PollResultView pollResultV = new PollResultView(pollResultVM);
         break;
       case ViewType.CreatePoll:
-        CreatePollViewModel createPollViewModel = new CreatePollViewModel(getModel());
+        CreatePollViewModel createPollViewModel = new CreatePollViewModel(
+            getModel());
         CreatePollView createPollView = new CreatePollView(createPollViewModel);
         createPollView.render();
       case ViewType.DisplayPoll:
-        DisplayPollViewModel displayPollVM = new DisplayPollViewModel(getModel());
+        DisplayPollViewModel displayPollVM = new DisplayPollViewModel(
+            getModel());
         DisplayPollView displayPollV = new DisplayPollView(displayPollVM);
         break;
       case Login:
@@ -50,8 +48,10 @@ public class WindowManager
         LoginView loginV = new LoginView(loginVM);
         break;
       case ChangeUsername:
-        ChangeUsernameViewModel changeUsernameVM = new ChangeUsernameViewModel(getModel());
-        ChangeUsernameView changeUsernameV = new ChangeUsernameView(changeUsernameVM);
+        ChangeUsernameViewModel changeUsernameVM = new ChangeUsernameViewModel(
+            getModel());
+        ChangeUsernameView changeUsernameV = new ChangeUsernameView(
+            changeUsernameVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
@@ -60,20 +60,23 @@ public class WindowManager
     }
   }
 
+  public void setModel(Model model)
+  {
+    this.model = model;
+  }
+
   public Model getModel()
   {
     if (model == null)
-      model = new Model(getClientConnection());
+      model = new Model(getClient());
     return model;
   }
 
-  public ClientConnection getClientConnection()
+  public Client getClient()
   {
-    return clientConnection;
-  }
-
-  public void setClientConnection(ClientConnection clientConnection)
-  {
-    this.clientConnection = clientConnection;
+    if(getModel() != null)
+      return getModel().getClient();
+    else
+      return null;
   }
 }

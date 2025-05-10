@@ -11,13 +11,13 @@ import java.io.IOException;
 public class Model implements PropertyChangeSubject, PollResultRequestService, CreateVoteGroupService, CreatePollService
 {
   private final PropertyChangeSupport support;
-  private final ClientConnection connection;
   private Poll currentPoll;
   private Profile currentProfile;
+  private Client client;
 
-  public Model(ClientConnection connection)
+  public Model(Client client)
   {
-    this.connection = connection;
+    this.client = client;
     support = new PropertyChangeSupport(this);
   }
 
@@ -54,8 +54,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
   {
     try
     {
-      connection.sendLoginOrRegister(profile);
-
+      // connection.sendLoginOrRegister(profile);
     }
     catch (Exception e)
     {
@@ -69,7 +68,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     {
       currentProfile.changeUsername(username);
 
-      connection.sendChangeUsername(currentProfile);
+      // connection.sendChangeUsername(currentProfile);
     }
     catch (Exception e)
     {
@@ -82,7 +81,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     try
     {
       Vote vote = new Vote(userId, choices);
-      connection.sendVote(vote);
+      // connection.sendVote(vote);
     }
     catch (Exception e)
     {
@@ -104,14 +103,14 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
 
   public void sendPollCloseRequest(int pollId)
   {
-    try
+    /*try
     {
       connection.sendClosePollRequest(pollId);
     }
     catch (IOException e)
     {
       Logger.log("Failed to send poll close request: " + e.getMessage());
-    }
+    }*/
   }
 
   @Override public void addPropertyChangeListener(
@@ -150,49 +149,54 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
 
   public void sendFinalResult(Poll poll)
   {
-    try
+    /*try
     {
       connection.sendFinalResults(poll);
     }
     catch (IOException e)
     {
       Logger.log("Failed to send final poll results: " + e.getMessage());
-    }
+    }*/
   }
 
   @Override public void sendResultRequest(int pollID)
   {
-    try
+    /*try
     {
       connection.sendPollResultRequest(pollID);
     }
     catch (IOException e)
     {
       Logger.log("Failed to send poll results request: " + e.getMessage());
-    }
+    }*/
   }
 
   @Override public void sendVoteGroup(UserGroup userGroup)
   {
-    try
+    /*try
     {
       connection.sendVoteGroup(userGroup);
     }
     catch (IOException e)
     {
       throw new RuntimeException(e);
-    }
+    }*/
   }
 
   @Override public void createPoll(Poll poll)
   {
-    try
+    /*try
     {
       connection.sendCreatePoll(poll);
     }
     catch (IOException e)
     {
       Logger.log("Failed to create the poll: " + e.getMessage());
-    }
+    }*/
+  }
+
+  public Client getClient()
+  {
+    return client;
   }
 }

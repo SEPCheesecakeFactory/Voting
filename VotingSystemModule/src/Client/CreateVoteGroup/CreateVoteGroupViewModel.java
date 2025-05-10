@@ -1,5 +1,6 @@
-package Client;
+package Client.CreateVoteGroup;
 
+import Client.Model;
 import Common.Profile;
 import Common.UserGroup;
 

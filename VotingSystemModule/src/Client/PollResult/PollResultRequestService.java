@@ -1,4 +1,4 @@
-package Client;
+package Client.PollResult;
 
 import Common.PollResult;
 

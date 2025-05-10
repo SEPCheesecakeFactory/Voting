@@ -1,8 +1,4 @@
-package Client;
-
-import Common.ChoiceOption;
-import Common.Poll;
-import Common.Question;
+package Client.ClosePoll;
 
 import java.util.Scanner;
 

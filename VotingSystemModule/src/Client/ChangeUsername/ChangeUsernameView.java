@@ -1,6 +1,4 @@
-package Client;
-
-import Common.Poll;
+package Client.ChangeUsername;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

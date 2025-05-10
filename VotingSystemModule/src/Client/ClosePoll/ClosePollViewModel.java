@@ -1,7 +1,6 @@
-package Client;
+package Client.ClosePoll;
 
-import Common.Poll;
-import Utils.Logger;
+import Client.Model;
 
 public class ClosePollViewModel
 {

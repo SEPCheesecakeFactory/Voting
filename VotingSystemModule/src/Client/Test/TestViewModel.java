@@ -1,5 +1,6 @@
-package Client;
+package Client.Test;
 
+import Client.WindowManager;
 import Common.Message;
 import Common.MessageType;
 

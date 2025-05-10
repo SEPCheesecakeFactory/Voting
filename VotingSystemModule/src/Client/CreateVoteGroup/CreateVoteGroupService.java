@@ -1,4 +1,4 @@
-package Client;
+package Client.CreateVoteGroup;
 
 import Common.UserGroup;
 

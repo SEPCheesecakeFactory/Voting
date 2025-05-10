@@ -1,9 +1,6 @@
-package Client;
-
-import Common.Poll;
+package Client.Login;
 
 import java.beans.PropertyChangeEvent;
-import java.security.InvalidParameterException;
 import java.util.Scanner;
 
 public class LoginView {

@@ -1,4 +1,4 @@
-package Client;
+package Client.DisplayPoll;
 
 import Common.ChoiceOption;
 import Common.Poll;

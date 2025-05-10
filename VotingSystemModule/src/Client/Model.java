@@ -1,12 +1,14 @@
 package Client;
 
+import Client.CreatePoll.CreatePollService;
+import Client.CreateVoteGroup.CreateVoteGroupService;
+import Client.PollResult.PollResultRequestService;
 import Common.*;
 import Utils.Logger;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.IOException;
 
 public class Model implements PropertyChangeSubject, PollResultRequestService,
     CreateVoteGroupService, CreatePollService

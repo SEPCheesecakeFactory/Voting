@@ -1,5 +1,22 @@
 package Client;
 
+import Client.ChangeUsername.ChangeUsernameView;
+import Client.ChangeUsername.ChangeUsernameViewModel;
+import Client.ClosePoll.ClosePollView;
+import Client.ClosePoll.ClosePollViewModel;
+import Client.CreatePoll.CreatePollView;
+import Client.CreatePoll.CreatePollViewModel;
+import Client.DisplayPoll.DisplayPollView;
+import Client.DisplayPoll.DisplayPollViewModel;
+import Client.Login.LoginView;
+import Client.Login.LoginViewModel;
+import Client.Menu.MenuView;
+import Client.Menu.MenuViewModel;
+import Client.PollResult.PollResultView;
+import Client.PollResult.PollResultViewModel;
+import Client.Test.TestView;
+import Client.Test.TestViewModel;
+
 public class WindowManager
 {
   private volatile static WindowManager instance;
@@ -24,10 +41,6 @@ public class WindowManager
       case ViewType.Menu:
         MenuViewModel menuVM = new MenuViewModel();
         MenuView menuV = new MenuView(menuVM);
-        break;
-      case ViewType.General:
-        ClientViewModel generalVM = new ClientViewModel(getModel());
-        ClientView generalV = new ClientView(generalVM);
         break;
       case ViewType.PollResult:
         PollResultViewModel pollResultVM = new PollResultViewModel(getModel());

@@ -1,4 +1,4 @@
-package Client;
+package Client.Login;
 
 public interface LoginModelService
 {

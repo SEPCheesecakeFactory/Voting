@@ -56,8 +56,15 @@ public class WindowManager
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
         ClosePollView closePollV = new ClosePollView(closePollVM);
+        closePollV.render();
+        break;
+      case Test:
+        TestViewModel testVM = new TestViewModel();
+        TestView testV = new TestView(testVM);
+        testV.render();
         break;
     }
+    WindowManager.getInstance().showView(ViewType.Menu);
   }
 
   public void setModel(Model model)

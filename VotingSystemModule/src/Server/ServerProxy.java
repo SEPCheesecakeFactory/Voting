@@ -3,6 +3,7 @@ package Server;
 import Common.Message;
 import Common.PollResult;
 import Common.Vote;
+import Utils.JsonUtil;
 import Utils.Logger;
 
 public class ServerProxy
@@ -54,14 +55,12 @@ public class ServerProxy
 
   public void process(String message)
   {
-    /*
-    Message messageObject = Deserialize(message);
+    Message messageObject = JsonUtil.deserialize(message, Message.class);
 
-    switch(messageObject.getParam("type", String)){
-      case "vote" : model.storeVote(message.getParam("vote", Vote));
-      case "close_poll" : model.storeVote(message.getParam("vote", Vote));
+    switch(messageObject.getParam("type", String.class)){
+      case "vote" : model.storeVote(message.getParam("vote", Vote.class));
+      case "close_poll" : model.storeVote(message.getParam("vote", Vote.class));
     }
 
-     */
   }
 }

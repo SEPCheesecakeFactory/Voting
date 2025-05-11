@@ -96,6 +96,7 @@ public class ServerProxy
           pollId = messageObject.getParam("pollId", int.class);
           PollResult pollResult = model.retrievePollResult(pollId);
           Logger.log("Poll Results handled for: " +pollId);
+          model.sendPollResultsToUser(pollResult);
           //TODO: Send pollResult to Client ***********************************
           break;
 

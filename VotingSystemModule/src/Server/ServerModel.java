@@ -52,7 +52,7 @@ public class ServerModel {
   public void sendMessageToUser(String message) {
     try {
       if (connection != null) {
-        connection.send(message);
+          connection.send(message);
       } else {
         Logger.log("Cannot send message to user: no connection attached.");
       }
@@ -74,5 +74,16 @@ public class ServerModel {
 
     return true;
   }
-  
+
+  public void sendPollResultsToUser(PollResult pollResult){
+    try {
+      if (connection != null) {
+        connection.sendPollResult(pollResult);
+      } else {
+        Logger.log("Cannot send pollResult to user: no connection attached.");
+      }
+    } catch (IOException e) {
+      Logger.log("Failed to send pollResult to user: " + e.getMessage());
+    }
+  }
 }

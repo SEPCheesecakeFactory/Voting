@@ -122,6 +122,8 @@ public class ServerConnection implements Runnable
       while (true)
       {
         Object incoming = inFromClient.readObject();
+        Logger.log(incoming.toString());
+        System.out.println(incoming);
         serverProxy.process((String) incoming);
       }
 

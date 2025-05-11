@@ -19,4 +19,6 @@ public interface DatabaseConnector
   public void storePoll(Poll poll);
   public boolean userHasAccessToPoll(int userId, int pollId) throws
       SQLException;
+  public void closePollAndSaveResults(int pollId);
+  boolean isOwner(int userId, int pollId);
 }

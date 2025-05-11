@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class ServerModel {
-  private final DatabaseConnectionProxy db;
+  private final DatabaseConnector db;
   private final ConnectionPool connectionPool;
   private Profile currentProfile; // Track logged-in user
   private ServerConnection connection; // For sending direct messages
 
-  public ServerModel(DatabaseConnectionProxy db, ConnectionPool connectionPool) {
+  public ServerModel(DatabaseConnector db, ConnectionPool connectionPool) {
     this.db = db;
     this.connectionPool = connectionPool;
   }
@@ -27,7 +27,7 @@ public class ServerModel {
     return currentProfile;
   }
 
-  public DatabaseConnectionProxy getDb() {
+  public DatabaseConnector getDb() {
     return db;
   }
 

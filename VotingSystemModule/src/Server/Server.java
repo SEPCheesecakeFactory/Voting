@@ -20,7 +20,8 @@ public class Server
       while (true)
       {
         Socket socket = welcomeSocket.accept();
-        ServerConnection serverConnection = new ServerConnection(socket, connectionPool);
+        DatabaseConnectionProxy databaseConnectionProxy = new DatabaseConnectionProxy();
+        ServerConnection serverConnection = new ServerConnection(socket, connectionPool, databaseConnectionProxy);
         connectionPool.add(serverConnection);
         Logger.log("Client connected");
         new Thread(serverConnection).start();

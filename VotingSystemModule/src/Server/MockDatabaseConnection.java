@@ -82,4 +82,14 @@ public class MockDatabaseConnection implements DatabaseConnector {
     public boolean userHasAccessToPoll(int userId, int pollId) {
         return polls.containsKey(pollId); // Simplified access check
     }
+
+    @Override public void closePollAndSaveResults(int pollId)
+    {
+
+    }
+
+    @Override public boolean isOwner(int userId, int pollId)
+    {
+        return false;
+    }
 }

@@ -15,18 +15,16 @@ public class ServerConnection implements Runnable
   private final ObjectInputStream inFromClient;
   private final ObjectOutputStream outToClient;
   private final ServerProxy serverProxy;
-  private final DatabaseConnectionProxy dbp;
+  private final DatabaseConnector dbp;
 
   public ServerConnection(Socket connectionSocket,
-      ConnectionPool connectionPool) throws IOException, SQLException
+      ConnectionPool connectionPool, DatabaseConnector dbp) throws IOException, SQLException
   {
     inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
     outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
 
     this.dbp = new DatabaseConnectionProxy();
-    ServerModel serverModel = new ServerModel(dbp, connectionPool);
-    serverModel.setConnection(this);
-    this.serverProxy = new ServerProxy(serverModel);
+    this.serverProxy = new ServerProxy(new ServerModel(dbp, connectionPool));
   }
 
   @Override public void run()

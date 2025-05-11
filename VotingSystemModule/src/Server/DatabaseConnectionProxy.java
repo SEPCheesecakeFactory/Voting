@@ -71,6 +71,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     return hasAccess;
   }
 
+  @Override
   public void closePollAndSaveResults(int pollId)
   {
     databaseConnection.closePollAndSaveResults(pollId);

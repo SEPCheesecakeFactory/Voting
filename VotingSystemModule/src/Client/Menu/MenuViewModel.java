@@ -9,7 +9,6 @@ public class MenuViewModel
 {
   public MenuViewModel()
   {
-
   }
 
   public void switchScreen(String option)

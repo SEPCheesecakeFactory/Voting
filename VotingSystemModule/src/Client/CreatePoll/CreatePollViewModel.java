@@ -1,7 +1,6 @@
-package Client;
+package Client.CreatePoll;
 
 import Common.Poll;
-import Common.Question;
 
 import java.util.*;
 

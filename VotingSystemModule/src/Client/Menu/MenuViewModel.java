@@ -1,4 +1,7 @@
-package Client;
+package Client.Menu;
+
+import Client.ViewType;
+import Client.WindowManager;
 
 import java.util.Arrays;
 

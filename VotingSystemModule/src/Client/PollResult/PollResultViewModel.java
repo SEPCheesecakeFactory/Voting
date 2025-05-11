@@ -1,10 +1,14 @@
-package Client;
+package Client.PollResult;
+
+import Client.PropertyChangeSubject;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class PollResultViewModel implements PropertyChangeListener, PropertyChangeSubject {
+public class PollResultViewModel implements PropertyChangeListener,
+    PropertyChangeSubject
+{
   private final PollResultRequestService pollResultRequestService;
   private final PropertyChangeSupport support;
 

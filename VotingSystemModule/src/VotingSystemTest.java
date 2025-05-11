@@ -25,7 +25,7 @@ public class VotingSystemTest
       Vote vote = new Vote(userID, new int[]{choiceID});
       // ===
       Logger.log("Sending vote " + vote);
-      clientConnection.sendVote(vote);
+      // clientConnection.sendVote(vote);
     }
     catch (IOException e)
     {

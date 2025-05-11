@@ -1,23 +1,28 @@
 package Client;
 
+import Client.CreatePoll.CreatePollService;
+import Client.CreateVoteGroup.CreateVoteGroupService;
+import Client.PollResult.PollResultRequestService;
 import Common.*;
 import Utils.Logger;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.IOException;
 
-public class Model implements PropertyChangeSubject, PollResultRequestService, CreateVoteGroupService, CreatePollService
+public class Model implements PropertyChangeSubject, PollResultRequestService,
+    CreateVoteGroupService, CreatePollService
 {
   private final PropertyChangeSupport support;
-  private final ClientConnection connection;
   private Poll currentPoll;
   private Profile currentProfile;
+  private Client client;
 
-  public Model(ClientConnection connection)
+  public Model(Client client)
   {
-    this.connection = connection;
+    if(client == null)
+      throw new IllegalArgumentException("Client cannot be null!");
+    this.client = client;
     support = new PropertyChangeSupport(this);
   }
 
@@ -50,149 +55,107 @@ public class Model implements PropertyChangeSubject, PollResultRequestService, C
     return currentPoll;
   }
 
+  public Client getClient()
+  {
+    return client;
+  }
+
   public void sendLoginOrRegister(Profile profile)
   {
-    try
-    {
-      connection.sendLoginOrRegister(profile);
-
-    }
-    catch (Exception e)
-    {
-      Logger.log("Failed to login or register: " + e.getMessage());
-    }
+    Logger.log("Debugging - sendLoginOrRegister");
+    var message = new Message(MessageType.SendLoginOrRegister);
+    message.addParam("profile", profile);
+    boolean success = client.send(message);
   }
 
   public void sendChangeUsername(String username)
   {
-    try
-    {
-      currentProfile.changeUsername(username);
-
-      connection.sendChangeUsername(currentProfile);
-    }
-    catch (Exception e)
-    {
-      Logger.log("Failed to change username: " + e.getMessage());
-    }
+    Logger.log("Debugging - sendChangeUsername");
+    var message = new Message(MessageType.SendChangeUsername);
+    message.addParam("username", username);
+    boolean success = client.send(message);
   }
 
   public void sendVote(int userId, int[] choices)
   {
-    try
-    {
-      Vote vote = new Vote(userId, choices);
-      connection.sendVote(vote);
-    }
-    catch (Exception e)
-    {
-      Logger.log("Failed to send vote: " + e.getMessage());
-    }
+    Logger.log("Debugging - sendVote");
+    var message = new Message(MessageType.SendVote);
+    message.addParam("userId", userId);
+    message.addParam("choices", choices);
+    boolean success = client.send(message);
   }
-
-  /*public void sendFinalResult(Poll poll)
-  {
-    try
-    {
-      connection.sendFinalResults(poll);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to send final poll results: " + e.getMessage());
-    }
-  }*/
 
   public void sendPollCloseRequest(int pollId)
   {
-    try
-    {
-      connection.sendClosePollRequest(pollId);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to send poll close request: " + e.getMessage());
-    }
+    Logger.log("Debugging - sendPollCloseRequest");
+    var message = new Message(MessageType.ClosePoll);
+    message.addParam("pollId", pollId);
+    boolean success = client.send(message);
+  }
+
+  @Override public void getResult(PollResult pollResult)
+  {
+    Logger.log("Debugging - getResult");
+    support.firePropertyChange("PollResult", null, pollResult);
+    // TODO: how is this supposed to work?
+    // NOTE: I think I already know how to but I'll deal with this later - Eduard
+    // NOTE: Technically, I guess I don't even have to deal with it, just feels weird I had to do something on each function except this one
+  }
+
+  @Override public void sendResultRequest(int pollId)
+  {
+    Logger.log("Debugging - sendResultRequest");
+    var message = new Message(MessageType.SendResultRequest);
+    message.addParam("pollId", pollId);
+    boolean success = client.send(message);
+  }
+
+  @Override public void sendVoteGroup(UserGroup userGroup)
+  {
+    Logger.log("Debugging - sendVoteGroup");
+    var message = new Message(MessageType.SendVoteGroup);
+    message.addParam("userGroup", userGroup);
+    boolean success = client.send(message);
+  }
+
+  @Override public void createPoll(Poll poll)
+  {
+    Logger.log("Debugging - createPoll");
+    var message = new Message(MessageType.CreatePoll);
+    message.addParam("poll", poll);
+    boolean success = client.send(message);
   }
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)
   {
+    Logger.log("Debugging - addPropertyChangeListener");
     support.addPropertyChangeListener(listener);
   }
 
   @Override public void addPropertyChangeListener(String name,
       PropertyChangeListener listener)
   {
+    Logger.log("Debugging - addPropertyChangeListener");
     support.addPropertyChangeListener(name, listener);
   }
 
   @Override public void removePropertyChangeListener(
       PropertyChangeListener listener)
   {
+    Logger.log("Debugging - removePropertyChangeListener");
     support.removePropertyChangeListener(listener);
   }
 
   @Override public void removePropertyChangeListener(String name,
       PropertyChangeListener listener)
   {
+    Logger.log("Debugging - removePropertyChangeListener");
     support.removePropertyChangeListener(name, listener);
   }
 
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
-
-  }
-
-  @Override public void getResult(PollResult pollResult)
-  {
-    support.firePropertyChange("PollResult", null, pollResult);
-  }
-
-  public void sendFinalResult(Poll poll)
-  {
-    try
-    {
-      connection.sendFinalResults(poll);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to send final poll results: " + e.getMessage());
-    }
-  }
-
-  @Override public void sendResultRequest(int pollID)
-  {
-    try
-    {
-      connection.sendPollResultRequest(pollID);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to send poll results request: " + e.getMessage());
-    }
-  }
-
-  @Override public void sendVoteGroup(UserGroup userGroup)
-  {
-    try
-    {
-      connection.sendVoteGroup(userGroup);
-    }
-    catch (IOException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override public void createPoll(Poll poll)
-  {
-    try
-    {
-      connection.sendCreatePoll(poll);
-    }
-    catch (IOException e)
-    {
-      Logger.log("Failed to create the poll: " + e.getMessage());
-    }
+    Logger.log("Debugging - propertyChange");
   }
 }

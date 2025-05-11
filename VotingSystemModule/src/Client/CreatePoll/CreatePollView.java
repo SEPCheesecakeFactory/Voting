@@ -1,4 +1,4 @@
-package Client;
+package Client.CreatePoll;
 
 import java.util.*;
 import java.util.regex.*;

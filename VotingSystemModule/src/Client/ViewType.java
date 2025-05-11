@@ -9,5 +9,6 @@ public enum ViewType
   DisplayPoll,
   Login,
   ChangeUsername,
-  ClosePoll
+  ClosePoll,
+  Test
 }

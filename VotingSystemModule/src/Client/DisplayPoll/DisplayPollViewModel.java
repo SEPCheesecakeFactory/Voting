@@ -1,20 +1,37 @@
-package Client;
+package Client.DisplayPoll;
+
+import Client.Model;
+import Client.PropertyChangeSubject;
+import Common.Poll;
+import Utils.Logger;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class ChangeUsernameViewModel implements PropertyChangeListener, PropertyChangeSubject{
+public class DisplayPollViewModel  implements PropertyChangeListener,
+    PropertyChangeSubject
+{
   private Model model;
   private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-  public ChangeUsernameViewModel(Model model) {
+  public DisplayPollViewModel(Model model) {
     this.model = model;
-    this.model.addPropertyChangeListener("ProfileSet", this);
+    this.model.addPropertyChangeListener("PollUpdated", this);
   }
-  public void changeUserName(String username)
+
+  public Model getModel()
   {
-    model.sendChangeUsername(username);
+    return model;
+  }
+  public void sendVote(int userId, int[] choices)
+  {
+    Poll currentPoll = model.getPoll();
+
+    if (currentPoll != null && currentPoll.isClosed())
+      Logger.log("Cannot vote: Poll is closed.");
+
+    model.sendVote(userId, choices);
   }
 
   @Override public void addPropertyChangeListener(
@@ -45,6 +62,4 @@ public class ChangeUsernameViewModel implements PropertyChangeListener, Property
   {
     support.firePropertyChange(evt);
   }
-
-
 }

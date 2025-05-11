@@ -1,5 +1,6 @@
-package Client;
+package Client.Login;
 
+import Client.Model;
 import Common.Profile;
 
 public class LoginViewModel {

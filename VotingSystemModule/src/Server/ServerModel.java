@@ -77,14 +77,10 @@ public class ServerModel {
 
   public void sendPollResultsToUser(PollResult pollResult){
     try {
-      if (connection != null) {
-        Logger.log("ServerModel: Results sent");
-        Message message = new Message(MessageType.SendResultRequest);
-        message.addParam("pollResult", pollResult);
-        connectionPool.broadcast(message);
-      } else {
-        Logger.log("Cannot send pollResult to user: no connection attached.");
-      }
+      Logger.log("ServerModel: Results sent");
+      Message message = new Message(MessageType.SendResultRequest);
+      message.addParam("pollResult", pollResult);
+      connectionPool.broadcast(message);
     } catch (IOException e) {
       Logger.log("Failed to send pollResult to user: " + e.getMessage());
     }

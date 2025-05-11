@@ -78,7 +78,7 @@ public class ServerModel {
   public void sendPollResultsToUser(PollResult pollResult){
     try {
       Logger.log("ServerModel: Results sent");
-      Message message = new Message(MessageType.SendResultRequest);
+      Message message = new Message(MessageType.SendResultResults);
       message.addParam("pollResult", pollResult);
       connectionPool.broadcast(message);
     } catch (IOException e) {

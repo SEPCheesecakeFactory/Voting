@@ -21,6 +21,7 @@ public class Server
       {
         Socket socket = welcomeSocket.accept();
         DatabaseConnectionProxy databaseConnectionProxy = new DatabaseConnectionProxy();
+//        MockDatabaseConnection databaseConnectionProxy = new MockDatabaseConnection();
         ServerConnection serverConnection = new ServerConnection(socket, connectionPool, databaseConnectionProxy);
         connectionPool.add(serverConnection);
         Logger.log("Client connected");

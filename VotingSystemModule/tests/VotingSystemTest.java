@@ -1,4 +1,6 @@
 import Client.Client;
+import Client.Login.LoginView;
+import Client.Login.LoginViewModel;
 import Server.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import Client.Model;
 
 public class VotingSystemTest {
 
@@ -13,18 +16,12 @@ public class VotingSystemTest {
 
   @BeforeEach
   public void setUp() {
-    new Thread(() -> {
-      try {
-        Server.main(new String[]{});
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }).start();
-
-    votingSystemService = new VotingSystemService(new MockDatabaseConnection());
-   
+    //Change the DatabaseConnectionProxy to MockDatabaseConnection in Server and run the Server
     Client client = new Client("localhost", 2910);
     client.run();
+    votingSystemService = new VotingSystemService(new MockDatabaseConnection(), new Model(client));
+   
+
   }
 
   // TC_USR_001: Profile Creation
@@ -366,9 +363,11 @@ public class VotingSystemTest {
   // In a real scenario, this service would interact with business logic and the database.
   private static class VotingSystemService {
     private final MockDatabaseConnection databaseConnector;
+    private final Model model;
 
-    public VotingSystemService(MockDatabaseConnection databaseConnector) {
+    public VotingSystemService(MockDatabaseConnection databaseConnector, Model model) {
         this.databaseConnector = databaseConnector;
+        this.model=model;
     }
 
     public boolean createProfile(String username) {

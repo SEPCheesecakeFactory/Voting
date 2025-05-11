@@ -8,22 +8,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientConnection implements Runnable
 {
 
   private final ObjectOutputStream outToServer;
   private final ObjectInputStream inFromServer;
-
-  public void setModel(Model model)
-  {
-
-  }
+  private final List<MessageListener> messageListeners;
 
   public ClientConnection(Socket socket) throws IOException
   {
     outToServer = new ObjectOutputStream(socket.getOutputStream());
     inFromServer = new ObjectInputStream(socket.getInputStream());
+    messageListeners = new ArrayList<>();
   }
 
   @Override public void run()
@@ -35,7 +34,8 @@ public class ClientConnection implements Runnable
       {
         message = (String) inFromServer.readObject();
         Logger.log("Message received: " + message);
-        // TODO: handle it
+        Message messageObject = JsonUtil.deserialize(message, Message.class);
+        sendMessageToListeners(messageObject);
       }
     }
     catch (Exception e)
@@ -44,8 +44,19 @@ public class ClientConnection implements Runnable
     }
   }
 
+  private void sendMessageToListeners(Message message)
+  {
+    for(var listener : messageListeners)
+      listener.receiveMessage(message);
+  }
+
   public void send(String message) throws IOException
   {
     outToServer.writeObject(message);
+  }
+
+  public void registerMessageListener(MessageListener listener)
+  {
+    messageListeners.add(listener);
   }
 }

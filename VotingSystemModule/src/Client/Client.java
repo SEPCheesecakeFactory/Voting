@@ -1,13 +1,14 @@
 package Client;
 
 import Common.Message;
+import Common.MessageListener;
 import Utils.JsonUtil;
 import Utils.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
 
-public class Client
+public class Client implements MessageListener
 {
   private ClientConnection clientConnection;
   private Model model;
@@ -32,6 +33,7 @@ public class Client
     {
       Socket socket = new Socket(host, port);
       clientConnection = new ClientConnection(socket);
+      clientConnection.registerMessageListener(this);
       WindowManager.getInstance().setModel(new Model(this));
       WindowManager.getInstance().showView(ViewType.Menu);
       this.model = WindowManager.getInstance().getModel();
@@ -55,6 +57,16 @@ public class Client
     {
       Logger.log("Client - Exception",e.getMessage());
       return false;
+    }
+  }
+
+  @Override public void receiveMessage(Message message)
+  {
+    // TODO: handle messages
+    Logger.log(String.format("handling message of type %s", message.getType()));
+    switch (message.getType())
+    {
+      default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
     }
   }
 }

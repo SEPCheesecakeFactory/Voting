@@ -37,7 +37,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
 
   @Override public PollResult retrievePollResults(int id)
   {
-    return null;
+    return databaseConnection.retrievePollResults(id);
 
     // maybe this instead of null?
     // PollResult pollResult = databaseConnection.retrievePollResults(id);

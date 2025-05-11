@@ -1,5 +1,8 @@
 package Server;
 //Michal Sockets 2 class
+import Common.Message;
+import Utils.JsonUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +21,11 @@ public class ConnectionPool
     connections.add(serverConnection);
   }
 
-  public void broadcast(String message) throws IOException
+  public void broadcast(Message message) throws IOException
   {
     for (ServerConnection connection : connections)
     {
-      connection.send(message);
+      connection.send(JsonUtil.serialize(message));
     }
   }
 }

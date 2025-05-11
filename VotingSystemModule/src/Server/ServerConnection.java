@@ -24,7 +24,9 @@ public class ServerConnection implements Runnable
     outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
 
     this.dbp = new DatabaseConnectionProxy();
-    this.serverProxy = new ServerProxy(new ServerModel(dbp, connectionPool));
+    ServerModel serverModel = new ServerModel(dbp, connectionPool);
+    serverModel.setConnection(this);
+    this.serverProxy = new ServerProxy(serverModel);
   }
 
   @Override public void run()

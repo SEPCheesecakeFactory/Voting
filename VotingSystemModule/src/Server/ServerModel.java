@@ -1,8 +1,6 @@
 package Server;
 
-import Common.PollResult;
-import Common.Profile;
-import Common.Vote;
+import Common.*;
 import Utils.Logger;
 
 import java.io.IOException;
@@ -37,7 +35,9 @@ public class ServerModel {
 
   public void closePoll(int pollId) throws SQLException, IOException {
     db.closePollAndSaveResults(pollId);
-    connectionPool.broadcast("poll_closed:" + pollId); // Notify all clients
+    Message message = new Message(MessageType.ClosePoll);
+    message.addParam("pollClosed", pollId);
+    connectionPool.broadcast(message);
   }
 
   public PollResult retrievePollResult(int pollID) {
@@ -78,7 +78,10 @@ public class ServerModel {
   public void sendPollResultsToUser(PollResult pollResult){
     try {
       if (connection != null) {
-        connection.sendPollResult(pollResult);
+        Logger.log("ServerModel: Results sent");
+        Message message = new Message(MessageType.SendResultRequest);
+        message.addParam("pollResult", pollResult);
+        connectionPool.broadcast(message);
       } else {
         Logger.log("Cannot send pollResult to user: no connection attached.");
       }

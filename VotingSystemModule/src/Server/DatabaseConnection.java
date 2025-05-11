@@ -194,39 +194,30 @@ public class DatabaseConnection implements DatabaseConnector
     return null;
   }
 
-  @Override public PollResult retrievePollResults(int id)
-  {
-    try (Connection connection = openConnection())
-    {
-      //Get the ChoiceOption
-      PreparedStatement selectChoiceOptionStatement = connection.prepareStatement(
-          "SELECT id FROM ChoiceOption WHERE question_id = ("
-              + "SELECT id FROM Question WHERE poll_id = ?))");
-      selectChoiceOptionStatement.setInt(1, id);
-      ResultSet rsChoiceOption = selectChoiceOptionStatement.executeQuery();
+  @Override
+  public PollResult retrievePollResults(int id) {
+    try (Connection connection = openConnection();
+        PreparedStatement selectPollResultsStatement = connection.prepareStatement(
+            "SELECT co.id AS choice_id, COUNT(vc.choice_option_id) AS vote_count " +
+                "FROM Poll p " +
+                "JOIN Question q ON p.id = q.poll_id " +
+                "JOIN ChoiceOption co ON q.id = co.question_id " +
+                "LEFT JOIN VotedChoice vc ON co.id = vc.choice_option_id " +
+                "WHERE p.id = ? " +
+                "GROUP BY co.id")) {
 
-      //Get the count of that choice option
-      PreparedStatement selectVotedChoiceCountStatement = connection.prepareStatement(
-          "SELECT COUNT(*) as count FROM VotedChoice WHERE choice_option_id = ?");
+      selectPollResultsStatement.setInt(1, id);
+      ResultSet rsPollResults = selectPollResultsStatement.executeQuery();
 
       Map<Integer, Integer> choiceVoters = new HashMap<>();
-      while (rsChoiceOption.next())
-      {//While there are more choice options
-        selectVotedChoiceCountStatement.setInt(1,
-            rsChoiceOption.getInt("id")); //Updating the id to the new question
-        ResultSet rsVotedChoiceCount = selectVotedChoiceCountStatement.executeQuery(); //Executing
-
-        if (rsVotedChoiceCount.next())
-        { //If there is a count
-          //Save question id and count
-          choiceVoters.put(rsChoiceOption.getInt("id"),
-              rsVotedChoiceCount.getInt("count")); //Getting and saving results
-        }
+      while (rsPollResults.next()) {
+        int choiceId = rsPollResults.getInt("choice_id");
+        int voteCount = rsPollResults.getInt("vote_count");
+        choiceVoters.put(choiceId, voteCount);
       }
-      return new PollResult(retrievePoll(id), choiceVoters); //For now we are retrieving the poll
-    }
-    catch (SQLException e)
-    {
+
+      return new PollResult(retrievePoll(id), choiceVoters);
+    } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }

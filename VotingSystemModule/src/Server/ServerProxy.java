@@ -89,7 +89,7 @@ public class ServerProxy
           }
           Logger.log("Poll close request handled for ID: " + pollId + " by user " + userId);
           break;
-        case MessageType.RequestPollResult:
+        case MessageType.SendResultRequest:
           pollId = messageObject.getParam("pollId", int.class);
           PollResult pollResult = model.retrievePollResult(pollId);
           Logger.log("Poll Results handled for: " +pollId);

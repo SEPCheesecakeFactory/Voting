@@ -85,4 +85,14 @@ public class ServerModel {
       Logger.log("Failed to send pollResult to user: " + e.getMessage());
     }
   }
+  public void sendUpdatedProfile(Profile profile){
+    try {
+      Logger.log("ServerModel: Profile send");
+      Message message = new Message(MessageType.SendProfileBack);
+      message.addParam("UpdatedProfile", profile);
+      connectionPool.broadcast(message);
+    } catch (IOException e) {
+      Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
+    }
+  }
 }

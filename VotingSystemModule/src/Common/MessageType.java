@@ -7,6 +7,7 @@ public enum MessageType
   ClosePoll,
   RequestPollResult,
   SendLoginOrRegister,
+  SendProfileBack,
   SendChangeUsername,
   SendPollCloseRequest,
   SendResultRequest,

@@ -1,0 +1,98 @@
+.root-pane {
+    -fx-background-color: transparent;
+}
+
+/* Top bar */
+.top-bar {
+    -fx-background-color: rgba(255,255,255,0.85);
+    -fx-padding: 0 10;
+    -fx-alignment: CENTER_LEFT;
+    -fx-border-color: rgba(0,0,0,0.1);
+    -fx-border-width: 0 0 1 0;
+}
+
+.title-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #444;
+}
+
+.window-buttons .window-btn {
+    -fx-font-size: 12px;
+    -fx-padding: 2 6;
+    -fx-cursor: hand;
+}
+
+.window-buttons .window-btn:hover {
+    -fx-background-color: rgba(0,0,0,0.1);
+}
+
+.close-btn:hover {
+    -fx-background-color: #E81123;
+    -fx-text-fill: white;
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: rgba(255,255,255,0.9);
+    -fx-padding: 20 10;
+    -fx-border-color: rgba(0,0,0,0.05);
+    -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+}
+
+.sidebar-item {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+    -fx-cursor: hand;
+}
+
+.sidebar-item.selected {
+    -fx-text-fill: #000;
+    -fx-font-weight: bold;
+}
+
+.sidebar-create {
+    -fx-font-size: 13px;
+    -fx-text-fill: #0066CC;
+    -fx-cursor: hand;
+}
+
+/* Main content */
+.main-title {
+    -fx-font-size: 28px;
+    -fx-text-fill: #222;
+}
+
+.main-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #444;
+}
+
+.question-box {
+    -fx-background-color: rgba(255,255,255,0.9);
+    -fx-padding: 30;
+    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.question-text {
+    -fx-font-size: 18px;
+    -fx-text-fill: #111;
+}
+
+.answer-btn {
+    -fx-font-size: 16px;
+    -fx-padding: 10 30;
+    -fx-background-radius: 6;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #FFF, #EEE);
+    -fx-cursor: hand;
+}
+
+.answer-btn:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #F5F5F5, #DDD);
+}

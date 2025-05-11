@@ -8,6 +8,7 @@ import Client.CreatePoll.CreatePollView;
 import Client.CreatePoll.CreatePollViewModel;
 import Client.DisplayPoll.DisplayPollView;
 import Client.DisplayPoll.DisplayPollViewModel;
+import Client.GUITest.GUITestView;
 import Client.Login.LoginView;
 import Client.Login.LoginViewModel;
 import Client.Menu.MenuView;
@@ -16,11 +17,21 @@ import Client.PollResult.PollResultView;
 import Client.PollResult.PollResultViewModel;
 import Client.Test.TestView;
 import Client.Test.TestViewModel;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.IOException;
 
 public class WindowManager
 {
   private volatile static WindowManager instance;
   private Model model;
+  private Stage primaryStage;
 
   private WindowManager() { }
 
@@ -32,6 +43,9 @@ public class WindowManager
     }
     return instance;
   }
+
+  public Stage getPrimaryStage() { return primaryStage; }
+  public void setPrimaryStage(Stage primaryStage) { this.primaryStage = primaryStage; }
 
   // TODO: removing the old one could be implemented
   public void showView(ViewType type)
@@ -76,6 +90,9 @@ public class WindowManager
         TestView testV = new TestView(testVM);
         testV.render();
         break;
+      case GUITest:
+        openJavaFXWindow();
+        break;
     }
     WindowManager.getInstance().showView(ViewType.Menu);
   }
@@ -98,5 +115,46 @@ public class WindowManager
       return getModel().getClient();
     else
       return null;
+  }
+
+  public void showErrorPopup(String errorText) {
+    // Ensuring JavaFX Thread
+    Platform.runLater(() -> {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("An error has occurred");
+      alert.setContentText(errorText);
+      alert.showAndWait();
+    });
+  }
+
+  private void openJavaFXWindow()
+  {
+    try
+    {
+      showScene(getGUITestScene());
+    }
+    catch (IOException e)
+    {
+      showErrorPopup("Could not open a new scene!");
+    }
+  }
+
+  private Scene getGUITestScene() throws IOException
+  {
+    // create a ViewModel if needed later
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/GUITest/GUITest.fxml"));
+    fxmlLoader.setControllerFactory(controllerClass -> new GUITestView());
+    Scene scene = new Scene(fxmlLoader.load());
+    scene.setFill(Color.TRANSPARENT);
+    return scene;
+  }
+
+  private void showScene(Scene scene)
+  {
+    getPrimaryStage().setTitle("Voting System");
+    getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
+    getPrimaryStage().setScene(scene);
+    getPrimaryStage().show();
   }
 }

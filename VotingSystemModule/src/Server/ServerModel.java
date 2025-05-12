@@ -77,10 +77,10 @@ public class ServerModel {
 
   public void sendPollResultsToUser(PollResult pollResult){
     try {
-      Logger.log("ServerModel: Results sent");
       Message message = new Message(MessageType.SendResultResults);
       message.addParam("pollResult", pollResult);
       connectionPool.broadcast(message);
+      Logger.log("ServerModel: Results sent");
     } catch (IOException e) {
       Logger.log("Failed to send pollResult to user: " + e.getMessage());
     }
@@ -94,5 +94,21 @@ public class ServerModel {
     } catch (IOException e) {
       Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
     }
+  }
+
+  public void storePoll(Poll poll)
+  {
+    try
+    {
+      poll = db.storePoll(poll);
+      Message message = new Message(MessageType.SendCreatedPoll);
+      message.addParam("poll", poll);
+      connectionPool.broadcast(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("ServerModel: Failed to store poll: " + e.getMessage());
+    }
+
   }
 }

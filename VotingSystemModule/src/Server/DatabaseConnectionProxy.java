@@ -59,7 +59,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Logger.log("Username changed");
   }
 
-  @Override public void storePoll(Poll poll)
+  @Override public Poll storePoll(Poll poll)
   {
     databaseConnection.storePoll(poll);
     Logger.log("Poll stored in the database.");

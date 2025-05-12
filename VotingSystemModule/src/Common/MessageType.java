@@ -3,6 +3,7 @@ package Common;
 public enum MessageType
 {
   Response,
+  SendPollCloseRequest,
   SendVote,
   ClosePoll,
   RequestPollResult,
@@ -12,7 +13,10 @@ public enum MessageType
   SendPollCloseRequest,
   SendResultRequest,
   SendResultResults,
-  SendVoteGroup,
   CreatePoll,
+  SendCreatedPoll,
+  SendLoginOrRegister,
+  SendChangeUsername,
+  SendVoteGroup,
   Test
 }

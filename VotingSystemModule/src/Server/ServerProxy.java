@@ -6,6 +6,9 @@ import Utils.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerProxy
 {
@@ -86,12 +89,18 @@ public class ServerProxy
           }
           Logger.log("Poll close request handled for ID: " + pollId + " by user " + userId);
           break;
+
         case MessageType.SendResultRequest:
           pollId = messageObject.getParam("pollId", int.class);
           PollResult pollResult = model.retrievePollResult(pollId);
           Logger.log("Poll Results handled for: " +pollId);
           model.sendPollResultsToUser(pollResult);
-          //TODO: Send pollResult to Client ***********************************
+          break;
+
+        case MessageType.CreatePoll: //TODO: Improve and correct this ********
+          Poll poll = messageObject.getParam("poll", Poll.class);
+          model.storePoll(poll);
+          Logger.log("Poll successfully created for: " + poll.getId());
           break;
         case MessageType.SendLoginOrRegister:
           Profile profile = messageObject.getParam("profile", Profile.class);

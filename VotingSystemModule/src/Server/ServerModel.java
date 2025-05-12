@@ -111,4 +111,19 @@ public class ServerModel {
     }
 
   }
+
+  public void sendPoll(int id)
+  {
+    try
+    {
+      Poll poll = db.retrievePoll(id);
+      Message message = new Message(MessageType.SendPoll);
+      message.addParam("poll",poll);
+      connectionPool.broadcast(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("ServerModel: Failed to send the Poll: " + e.getMessage());
+    }
+  }
 }

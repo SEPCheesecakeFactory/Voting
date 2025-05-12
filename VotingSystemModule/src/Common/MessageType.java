@@ -7,6 +7,7 @@ public enum MessageType
   SendVote,
   ClosePoll,
   RequestPollResult,
+  SendPollRequest,
   SendLoginOrRegister,
   SendProfileBack,
   SendChangeUsername,
@@ -14,6 +15,5 @@ public enum MessageType
   SendResultResults,
   CreatePoll,
   SendCreatedPoll,
-  SendVoteGroup,
-  Test
+  SendVoteGroup, SendPoll, Test
 }

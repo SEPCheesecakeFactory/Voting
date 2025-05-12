@@ -64,6 +64,10 @@ public class ServerProxy
     try {
       int pollId;
       switch (messageObject.getType()) {
+        case MessageType.SendPollRequest:
+          pollId = messageObject.getParam("pollId", int.class);
+          model.sendPoll(pollId);
+          break;
         case MessageType.SendVote:
           Vote vote = messageObject.getParam("vote", Vote.class);
           model.storeVote(vote);

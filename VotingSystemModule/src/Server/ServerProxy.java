@@ -102,6 +102,19 @@ public class ServerProxy
           model.storePoll(poll);
           Logger.log("Poll successfully created for: " + poll.getId());
           break;
+        case MessageType.SendLoginOrRegister:
+          Profile profile = messageObject.getParam("profile", Profile.class);
+          int id=model.getDb().loginOrRegisterAProfile(profile);
+          Logger.log("Profile logged or registered with id: " +id);
+          profile.setId(id);
+          model.sendUpdatedProfile(profile);
+          break;
+        case MessageType.SendChangeUsername:
+          profile = messageObject.getParam("username", Profile.class);
+          model.getDb().changeUsername(profile);
+          Logger.log("Username changed for the profile with id: " +profile.getId());
+          model.sendMessageToUser("Username changed");
+          break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());
           break;

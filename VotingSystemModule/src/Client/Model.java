@@ -71,8 +71,9 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   public void sendChangeUsername(String username)
   {
     Logger.log("Debugging - sendChangeUsername");
+    currentProfile.changeUsername(username);
     var message = new Message(MessageType.SendChangeUsername);
-    message.addParam("username", username);
+    message.addParam("username", currentProfile);
     boolean success = client.send(message);
   }
 

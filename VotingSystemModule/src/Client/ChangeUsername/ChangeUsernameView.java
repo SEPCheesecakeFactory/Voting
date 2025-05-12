@@ -12,6 +12,7 @@ public class ChangeUsernameView implements PropertyChangeListener
   public ChangeUsernameView(ChangeUsernameViewModel viewModel) {
     this.viewModel = viewModel;
     viewModel.addPropertyChangeListener(this);
+    render();
   }
 
   public void render() {

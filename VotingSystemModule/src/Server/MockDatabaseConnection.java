@@ -6,9 +6,11 @@ import java.util.*;
 
 public class MockDatabaseConnection implements DatabaseConnector {
 
-    private final Map<Integer, Poll> polls = new HashMap<>();
-    private final Map<Integer, Vote> votes = new HashMap<>();
-    private final Map<String, Profile> profiles = new HashMap<>();
+    public final Map<Integer, Poll> polls = new HashMap<>();
+    public final Map<Integer, Vote> votes = new HashMap<>();
+    public final Map<Integer, Profile> profiles = new HashMap<>();
+
+    private int nextProfileId = 1;
 
     @Override
     public void storeVote(Vote vote) {
@@ -24,16 +26,18 @@ public class MockDatabaseConnection implements DatabaseConnector {
     public Poll retrievePoll(int id) {
         return polls.get(id);
     }
-    
 
     public boolean profileExists(String username) {
-        return profiles.containsKey(username);
+        // Iterate through profiles to check if any username matches
+        return profiles.values().stream()
+            .anyMatch(profile -> profile.getUsername().equals(username));
     }
 
     public void clear() {
         polls.clear();
         votes.clear();
         profiles.clear();
+        nextProfileId = 1;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class MockDatabaseConnection implements DatabaseConnector {
         Map<Integer, Integer> choiceVoters = new HashMap<>();
         for (Question question : poll.getQuestions()) {
             for (ChoiceOption option : question.getChoiceOptions()) {
-                choiceVoters.put(option.getId(), 0); // Initialize with 0 votes
+                choiceVoters.put(option.getId(), 0);
             }
         }
         for (Vote vote : votes.values()) {
@@ -58,20 +62,42 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     @Override
     public int loginOrRegisterAProfile(Profile profile) {
-        if (profiles.containsKey(profile.getUsername())) {
-            return profile.getId(); // Assume Profile ID is set externally
+        // First, check if the username already exists in the profiles
+        for (Map.Entry<Integer, Profile> entry : profiles.entrySet()) {
+            if (entry.getValue().getUsername().equals(profile.getUsername())) {
+                // If profile exists, return its existing ID
+                return entry.getKey();
+            }
         }
-        profiles.put(profile.getUsername(), profile);
-        return profile.getId();
+
+        // If the profile doesn't exist, assign a new ID
+        int id = nextProfileId++;
+        profile.setId(id);
+        profiles.put(id, profile);
+        return id;
     }
 
     @Override
     public void changeUsername(Profile profile) {
-        if (!profiles.containsKey(profile.getUsername())) {
-            throw new IllegalArgumentException("Profile does not exist.");
+        int id = profile.getId();
+        String newUsername = profile.getUsername();
+
+        // Check if the profile exists
+        if (!profiles.containsKey(id)) {
+            throw new IllegalArgumentException("Profile with ID " + id + " does not exist.");
         }
-        profiles.put(profile.getUsername(), profile);
+
+        // Check if the new username already exists in the map
+        for (Profile existingProfile : profiles.values()) {
+            if (existingProfile.getUsername().equals(newUsername)) {
+                throw new IllegalArgumentException("Username '" + newUsername + "' already exists.");
+            }
+        }
+
+        // If no conflict, update the profile
+        profiles.put(id, profile);
     }
+
 
     @Override
     public Poll storePoll(Poll poll) {
@@ -81,16 +107,16 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     @Override
     public boolean userHasAccessToPoll(int userId, int pollId) {
-        return polls.containsKey(pollId); // Simplified access check
+        return polls.containsKey(pollId);
     }
 
-    @Override public void closePollAndSaveResults(int pollId)
-    {
-
+    @Override
+    public void closePollAndSaveResults(int pollId) {
+        // No-op for mock
     }
 
-    @Override public boolean isOwner(int userId, int pollId)
-    {
+    @Override
+    public boolean isOwner(int userId, int pollId) {
         return false;
     }
 }

@@ -63,6 +63,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   {
     databaseConnection.storePoll(poll);
     Logger.log("Poll stored in the database.");
+    return poll;
   }
 
   public boolean userHasAccessToPoll(int userId, int pollId) {

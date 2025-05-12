@@ -10,13 +10,10 @@ public enum MessageType
   SendLoginOrRegister,
   SendProfileBack,
   SendChangeUsername,
-  SendPollCloseRequest,
   SendResultRequest,
   SendResultResults,
   CreatePoll,
   SendCreatedPoll,
-  SendLoginOrRegister,
-  SendChangeUsername,
   SendVoteGroup,
   Test
 }

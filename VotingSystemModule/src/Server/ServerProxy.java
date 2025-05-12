@@ -119,6 +119,10 @@ public class ServerProxy
           Logger.log("Username changed for the profile with id: " +profile.getId());
           model.sendMessageToUser("Username changed");
           break;
+        case MessageType.SendCreateVoteGroupRequest:
+          UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
+          model.storeUserGroup(userGroup);
+          break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());
           break;

@@ -126,4 +126,15 @@ public class ServerModel {
       Logger.log("ServerModel: Failed to send the Poll: " + e.getMessage());
     }
   }
+
+  public void storeUserGroup(UserGroup userGroup) {
+
+    int groupId = db.createUserGroup(userGroup.getGroupName());
+    userGroup.setId(groupId);
+
+
+    for (Profile profile : userGroup.getMembers()) {
+      db.addUserToGroup(profile.getId(), groupId);
+    }
+  }
 }

@@ -21,4 +21,9 @@ public interface DatabaseConnector
       SQLException;
   public void closePollAndSaveResults(int pollId);
   boolean isOwner(int userId, int pollId);
+  void addUserToGroup(int userId, int groupId);
+  int createUserGroup(String groupName);
+  void addUserToPoll(int userId, int pollId);
+  void addGroupToPoll(int groupId, int pollId);
+
 }

@@ -122,4 +122,24 @@ public class MockDatabaseConnection implements DatabaseConnector {
         return pollOwners.getOrDefault(pollId, -1) == userId;
     }
 
+    @Override public void addUserToGroup(int userId, int groupId)
+    {
+
+    }
+
+    @Override public int createUserGroup(String groupName)
+    {
+        return 0;
+    }
+
+    @Override public void addUserToPoll(int userId, int pollId)
+    {
+
+    }
+
+    @Override public void addGroupToPoll(int groupId, int pollId)
+    {
+
+    }
+
 }

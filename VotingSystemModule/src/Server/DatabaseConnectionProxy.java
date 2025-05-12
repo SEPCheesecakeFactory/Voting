@@ -82,4 +82,24 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   public boolean isOwner(int userId, int pollId) {
     return databaseConnection.isOwner(userId, pollId); // delegates to real DB
   }
+
+  @Override public void addUserToGroup(int userId, int groupId)
+  {
+    databaseConnection.addUserToGroup(userId,groupId);
+  }
+
+  @Override public int createUserGroup(String groupName)
+  {
+    return databaseConnection.createUserGroup(groupName);
+  }
+
+  @Override public void addUserToPoll(int userId, int pollId)
+  {
+    databaseConnection.addUserToPoll(userId,pollId);
+  }
+
+  @Override public void addGroupToPoll(int groupId, int pollId)
+  {
+    databaseConnection.addGroupToPoll(groupId,pollId);
+  }
 }

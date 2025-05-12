@@ -2,6 +2,7 @@ package Client;
 
 import Common.Message;
 import Common.MessageListener;
+import Common.Profile;
 import Utils.JsonUtil;
 import Utils.Logger;
 
@@ -66,6 +67,8 @@ public class Client implements MessageListener
     Logger.log(String.format("handling message of type %s", message.getType()));
     switch (message.getType())
     {
+      case SendProfileBack -> model.setProfile(message.getParam("UpdatedProfile",
+          Profile.class));
       default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
     }
   }

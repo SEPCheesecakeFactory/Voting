@@ -42,7 +42,6 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   {
     this.currentProfile = profile;
     support.firePropertyChange("ProfileSet", null, null);
-
   }
 
   public Profile getProfile()

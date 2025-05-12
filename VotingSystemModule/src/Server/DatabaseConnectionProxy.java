@@ -61,7 +61,7 @@ public class DatabaseConnectionProxy implements DatabaseConnector
 
   @Override public Poll storePoll(Poll poll)
   {
-    databaseConnection.storePoll(poll);
+    poll = databaseConnection.storePoll(poll);
     Logger.log("Poll stored in the database.");
     return poll;
   }

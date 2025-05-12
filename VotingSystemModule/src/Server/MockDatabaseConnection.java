@@ -9,6 +9,7 @@ public class MockDatabaseConnection implements DatabaseConnector {
     public final Map<Integer, Poll> polls = new HashMap<>();
     public final Map<Integer, Vote> votes = new HashMap<>();
     public final Map<Integer, Profile> profiles = new HashMap<>();
+    public final Map<Integer, Integer> pollOwners = new HashMap<>();
 
     private int nextProfileId = 1;
 
@@ -117,6 +118,8 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     @Override
     public boolean isOwner(int userId, int pollId) {
-        return false;
+        // Check if the given userId is the owner of the poll
+        return pollOwners.getOrDefault(pollId, -1) == userId;
     }
+
 }

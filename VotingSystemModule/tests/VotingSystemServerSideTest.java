@@ -169,6 +169,17 @@ public class VotingSystemServerSideTest {
     assertThrows(RuntimeException.class, ()->serverProxy.process(
         finalJson1));
   }
+  @Test
+  public void testProcessClosePoll_AuthorisedAttempt() {
+    //cannot test yet cause closing a poll has only 1 argument for now - pollID and we need to know who is closing
+    assertEquals(1,0);
+  }
+  @Test
+  public void testProcessClosePoll_UnauthorisedAttempt() {
+    //cannot test yet cause closing a poll has only 1 argument for now - pollID and we need to know who is closing
+    assertEquals(1,0);
+  }
+
 
 
 

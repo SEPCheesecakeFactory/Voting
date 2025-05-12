@@ -323,7 +323,7 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  @Override public void storePoll(Poll poll)
+  @Override public Poll storePoll(Poll poll)
   {
     final String SQL_INSERT_POLL = "INSERT INTO Poll(title, is_closed, is_private) VALUES (?,?,?)";
     final String SQL_INSERT_Q = "INSERT INTO Question(title, description, poll_id) VALUES (?,?,?)";
@@ -424,6 +424,7 @@ public class DatabaseConnection implements DatabaseConnector
         }
       }
     }
+    return poll;
   }
   // ===== User Group & Poll Access Methods =====
   public int createUserGroup(String groupName) throws SQLException {

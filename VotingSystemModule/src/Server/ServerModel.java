@@ -96,11 +96,11 @@ public class ServerModel {
     }
   }
 
-  public void storePoll(Poll poll)
+  public void storePoll(Poll poll, Profile profile)
   {
     try
     {
-      poll.setId(db.storePoll(poll).getId());
+      poll.setId(db.storePoll(poll, profile).getId());
       Message message = new Message(MessageType.SendCreatedPoll);
       message.addParam("poll", poll);
       connectionPool.broadcast(message);

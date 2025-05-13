@@ -123,6 +123,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     Logger.log("Debugging - createPoll");
     var message = new Message(MessageType.CreatePoll);
     message.addParam("poll", poll);
+    message.addParam("profile",currentProfile);
     boolean success = client.send(message);
   }
 

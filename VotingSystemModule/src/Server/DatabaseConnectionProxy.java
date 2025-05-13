@@ -59,9 +59,9 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     Logger.log("Username changed");
   }
 
-  @Override public Poll storePoll(Poll poll)
+  @Override public Poll storePoll(Poll poll, Profile profile)
   {
-    poll.setId(databaseConnection.storePoll(poll).getId());
+    poll.setId(databaseConnection.storePoll(poll,profile).getId());
     Logger.log("Poll stored in the database.");
     return poll;
   }

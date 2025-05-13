@@ -196,6 +196,7 @@ public class DatabaseConnection implements DatabaseConnector
 
   @Override
   public PollResult retrievePollResults(int id) {
+    /*
     try (Connection connection = openConnection();
         PreparedStatement selectPollResultsStatement = connection.prepareStatement(
             "SELECT q.title AS title, co.value AS value COUNT(vc.choice_option_id) AS vote_count " +
@@ -230,6 +231,9 @@ public class DatabaseConnection implements DatabaseConnector
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+
+     */
+    return null;
   }
 
   @Override public int loginOrRegisterAProfile(Profile profile)
@@ -333,12 +337,13 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  @Override public Poll storePoll(Poll poll)
+  @Override public Poll storePoll(Poll poll, Profile profile)
   {
     final String SQL_INSERT_POLL = "INSERT INTO Poll(title, is_closed, is_private) VALUES (?,?,?)";
     final String SQL_INSERT_Q = "INSERT INTO Question(title, description, poll_id) VALUES (?,?,?)";
     final String SQL_INSERT_OPT = "INSERT INTO ChoiceOption(value, question_id) VALUES (?,?)";
-
+    final String SQL_INSERT_OWNERSHIP = "INSERT INTO PollOwnership(user_id, poll_id) VALUES (?,?)";
+    int pollId;
     Connection conn = null;
     try
     {
@@ -359,11 +364,18 @@ public class DatabaseConnection implements DatabaseConnector
         {
           throw new SQLException("Failed to retrieve poll ID.");
         }
-        int pollId = rs.getInt(1);
+        pollId = rs.getInt(1);
         poll.setId(pollId);
       }
 
-      // 2) Insert each question + its options
+      // 2) Insert poll ownership
+      try (PreparedStatement psOwn = conn.prepareStatement(SQL_INSERT_OWNERSHIP))
+      {
+        psOwn.setInt(1, profile.getId());  // assumes profile.getId() returns the user ID
+        psOwn.setInt(2, pollId);
+        psOwn.executeUpdate();
+      }
+      // 3) Insert each question + its options
       for (Question q : poll.getQuestions())
       {
         int questionId;

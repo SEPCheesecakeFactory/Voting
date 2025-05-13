@@ -64,6 +64,10 @@ public class ServerProxy
     try {
       int pollId;
       switch (messageObject.getType()) {
+        case MessageType.SendPollRequest:
+          pollId = messageObject.getParam("pollId", int.class);
+          model.sendPoll(pollId);
+          break;
         case MessageType.SendVote:
           Vote vote = messageObject.getParam("vote", Vote.class);
           model.storeVote(vote);
@@ -97,7 +101,7 @@ public class ServerProxy
           model.sendPollResultsToUser(pollResult);
           break;
 
-        case MessageType.CreatePoll: //TODO: Improve and correct this ********
+        case MessageType.CreatePoll:
           Poll poll = messageObject.getParam("poll", Poll.class);
           model.storePoll(poll);
           Logger.log("Poll successfully created for: " + poll.getId());
@@ -114,6 +118,10 @@ public class ServerProxy
           model.getDb().changeUsername(profile);
           Logger.log("Username changed for the profile with id: " +profile.getId());
           model.sendMessageToUser("Username changed");
+          break;
+        case MessageType.SendCreateVoteGroupRequest:
+          UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
+          model.storeUserGroup(userGroup);
           break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());

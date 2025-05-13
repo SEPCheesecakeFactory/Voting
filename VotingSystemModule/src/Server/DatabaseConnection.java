@@ -427,7 +427,7 @@ public class DatabaseConnection implements DatabaseConnector
     return poll;
   }
   // ===== User Group & Poll Access Methods =====
-  public int createUserGroup(String groupName) throws SQLException {
+  public int createUserGroup(String groupName) {
     try (Connection connection = openConnection();
         PreparedStatement stmt = connection.prepareStatement(
             "INSERT INTO UserGroup (name) VALUES (?) RETURNING id")) {
@@ -438,15 +438,24 @@ public class DatabaseConnection implements DatabaseConnector
       }
       throw new SQLException("Group creation failed.");
     }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
-  public void addUserToGroup(int userId, int groupId) throws SQLException {
+  @Override
+  public void addUserToGroup(int userId, int groupId){
     try (Connection connection = openConnection();
         PreparedStatement stmt = connection.prepareStatement(
             "INSERT INTO UserGroupMembership (user_id, group_id) VALUES (?, ?)")) {
       stmt.setInt(1, userId);
       stmt.setInt(2, groupId);
       stmt.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
     }
   }
 
@@ -475,7 +484,7 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  public void addUserToPoll(int userId, int pollId) throws SQLException {
+  public void addUserToPoll(int userId, int pollId) {
     try (Connection connection = openConnection();
         PreparedStatement stmt = connection.prepareStatement(
             "INSERT INTO PollAccessControl (poll_id, user_id) VALUES (?, ?)")) {
@@ -483,15 +492,23 @@ public class DatabaseConnection implements DatabaseConnector
       stmt.setInt(2, userId);
       stmt.executeUpdate();
     }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
-  public void addGroupToPoll(int groupId, int pollId) throws SQLException {
+  public void addGroupToPoll(int groupId, int pollId){
     try (Connection connection = openConnection();
         PreparedStatement stmt = connection.prepareStatement(
             "INSERT INTO PollAccessControl (poll_id, group_id) VALUES (?, ?)")) {
       stmt.setInt(1, pollId);
       stmt.setInt(2, groupId);
       stmt.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
     }
   }
 

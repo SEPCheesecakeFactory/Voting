@@ -178,20 +178,90 @@ public class DatabaseConnection implements DatabaseConnector
 
   @Override public Poll retrievePoll(int id)
   {
+    final String SQL_POLL =
+        "SELECT title, is_private, is_closed FROM Poll WHERE id = ?";
+    final String SQL_QUESTIONS =
+        "SELECT id, title, description FROM Question WHERE poll_id = ?";
+    final String SQL_OPTIONS =
+        "SELECT id, value FROM ChoiceOption WHERE question_id = ?";
+
     try (Connection connection = openConnection())
     {
-      // ==== Example From - Database Programming in Java - part 2 ====
-      // PreparedStatement selectStatement = connection.prepareStatement("SELECT name FROM Author");
-      // Result rs = selectStatement.executeQuery();
-      // ... work with the result ...
-      // while (rs.next()) { rs.getString("name")); }
+      Poll poll = null;
 
+      // 1. Retrieve poll
+      try (PreparedStatement psPoll = connection.prepareStatement(SQL_POLL))
+      {
+        psPoll.setInt(1, id);
+        try (ResultSet rsPoll = psPoll.executeQuery())
+        {
+          if (rsPoll.next())
+          {
+            poll = new Poll();
+            poll.setId(id);
+            poll.setTitle(rsPoll.getString("title"));
+            poll.setPrivate(rsPoll.getBoolean("is_private"));
+            poll.setClosed(rsPoll.getBoolean("is_closed"));
+            poll.setQuestions(new Question[0]); // Will fill later
+          }
+          else
+          {
+            return null; // No poll with that ID
+          }
+        }
+      }
+
+      List<Question> questions = new ArrayList<>();
+
+      // 2. Retrieve questions
+      try (PreparedStatement psQ = connection.prepareStatement(SQL_QUESTIONS))
+      {
+        psQ.setInt(1, id);
+        try (ResultSet rsQ = psQ.executeQuery())
+        {
+          while (rsQ.next())
+          {
+            int questionId = rsQ.getInt("id");
+            String title = rsQ.getString("title");
+            String description = rsQ.getString("description");
+
+            List<ChoiceOption> options = new ArrayList<>();
+
+            // 3. Retrieve options for each question
+            try (PreparedStatement psOpt = connection.prepareStatement(SQL_OPTIONS))
+            {
+              psOpt.setInt(1, questionId);
+              try (ResultSet rsOpt = psOpt.executeQuery())
+              {
+                while (rsOpt.next())
+                {
+                  int optId = rsOpt.getInt("id");
+                  String value = rsOpt.getString("value");
+                  options.add(new ChoiceOption(optId, value));
+                }
+              }
+            }
+
+            Question question = new Question(
+                options.toArray(new ChoiceOption[0]),
+                questionId,
+                title,
+                description
+            );
+            questions.add(question);
+          }
+        }
+      }
+
+      // Set questions on the poll
+      poll.setQuestions(questions.toArray(new Question[0]));
+
+      return poll;
     }
     catch (SQLException e)
     {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Failed to retrieve poll with id " + id, e);
     }
-    return null;
   }
 
   @Override

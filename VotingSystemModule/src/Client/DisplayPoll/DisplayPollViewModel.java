@@ -33,6 +33,10 @@ public class DisplayPollViewModel  implements PropertyChangeListener,
 
     model.sendVote(userId, choices);
   }
+  public void sendPollRequest(int pollId)
+  {
+    model.sendPollRequest(pollId);
+  }
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)
@@ -60,6 +64,7 @@ public class DisplayPollViewModel  implements PropertyChangeListener,
 
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
+    System.out.println("?");
     support.firePropertyChange(evt);
   }
 }

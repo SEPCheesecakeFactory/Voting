@@ -2,6 +2,7 @@ package Client;
 
 import Client.CreatePoll.CreatePollService;
 import Client.CreateVoteGroup.CreateVoteGroupService;
+import Client.DisplayPoll.DisplayPollService;
 import Client.PollResult.PollResultRequestService;
 import Common.*;
 import Utils.Logger;
@@ -11,7 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class Model implements PropertyChangeSubject, PollResultRequestService,
-    CreateVoteGroupService, CreatePollService
+    CreateVoteGroupService, CreatePollService, DisplayPollService
 {
   private final PropertyChangeSupport support;
   private Poll currentPoll;
@@ -80,8 +81,8 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   {
     Logger.log("Debugging - sendVote");
     var message = new Message(MessageType.SendVote);
-    message.addParam("userId", userId);
-    message.addParam("choices", choices);
+    Vote vote = new Vote(userId, choices);
+    message.addParam("vote", vote);
     boolean success = client.send(message);
   }
 
@@ -126,6 +127,14 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     message.addParam("profile",currentProfile);
     boolean success = client.send(message);
   }
+  @Override public void sendPollRequest(int pollID)
+  {
+    Logger.log("Debugging - sendPollRequest");
+    var message = new Message(MessageType.SendPollRequest);
+    message.addParam("pollId",pollID);
+    boolean success = client.send(message);
+  }
+
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)
@@ -159,4 +168,6 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   {
     Logger.log("Debugging - propertyChange");
   }
+
+
 }

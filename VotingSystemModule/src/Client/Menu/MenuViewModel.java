@@ -13,7 +13,15 @@ public class MenuViewModel
 
   public void switchScreen(String option)
   {
-    WindowManager.getInstance().showView(ViewType.valueOf(option));
+    try
+    {
+      WindowManager.getInstance().showView(ViewType.valueOf(option));
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      System.out.println("Invalid option. Please choose a valid menu option.");
+    }
   }
 
   public String[] getOptions()

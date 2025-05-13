@@ -15,10 +15,20 @@ public class DisplayPollView implements PropertyChangeListener
 
   public DisplayPollView(DisplayPollViewModel viewModel) {
     this.viewModel = viewModel;
+    displayPollRequest();
+    this.viewModel.addPropertyChangeListener("PollUpdated", this);
+
   }
 
   public void render(Poll poll) {
     displayPoll(poll);
+  }
+  public void displayPollRequest()
+  {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Poll id: ");
+    int pollid = scanner.nextInt();
+    viewModel.sendPollRequest(pollid);
   }
   public void displayPoll(Poll poll) {
     Scanner scanner = new Scanner(System.in);
@@ -67,8 +77,10 @@ public class DisplayPollView implements PropertyChangeListener
 
   @Override  public void propertyChange(PropertyChangeEvent evt)
   {
+    System.out.println("??");
     switch (evt.getPropertyName()) {
       case "PollUpdated":
+        System.out.println("???");
         displayPoll((Poll) evt.getNewValue());
         break;
       default:

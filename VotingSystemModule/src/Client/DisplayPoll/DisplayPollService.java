@@ -1,5 +1,6 @@
 package Client.DisplayPoll;
 
-public interface DisplayPollService {
-  // TODO: define DisplayPoll model interface
+public interface DisplayPollService
+{
+  void sendPollRequest(int pollID);
 }

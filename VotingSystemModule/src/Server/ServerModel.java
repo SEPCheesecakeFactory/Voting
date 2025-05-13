@@ -100,7 +100,7 @@ public class ServerModel {
   {
     try
     {
-      poll = db.storePoll(poll);
+      poll.setId(db.storePoll(poll).getId());
       Message message = new Message(MessageType.SendCreatedPoll);
       message.addParam("poll", poll);
       connectionPool.broadcast(message);

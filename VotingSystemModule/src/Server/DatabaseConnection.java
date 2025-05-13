@@ -198,7 +198,7 @@ public class DatabaseConnection implements DatabaseConnector
   public PollResult retrievePollResults(int id) {
     try (Connection connection = openConnection();
         PreparedStatement selectPollResultsStatement = connection.prepareStatement(
-            "SELECT co.id AS choice_id, COUNT(vc.choice_option_id) AS vote_count " +
+            "SELECT co.value AS value COUNT(vc.choice_option_id) AS vote_count " +
                 "FROM Poll p " +
                 "JOIN Question q ON p.id = q.poll_id " +
                 "JOIN ChoiceOption co ON q.id = co.question_id " +
@@ -209,9 +209,9 @@ public class DatabaseConnection implements DatabaseConnector
       selectPollResultsStatement.setInt(1, id);
       ResultSet rsPollResults = selectPollResultsStatement.executeQuery();
 
-      Map<Integer, Integer> choiceVoters = new HashMap<>();
+      Map<String, Integer> choiceVoters = new HashMap<>();
       while (rsPollResults.next()) {
-        int choiceId = rsPollResults.getInt("choice_id");
+        String choiceId = (String) rsPollResults.getObject("value");
         int voteCount = rsPollResults.getInt("vote_count");
         choiceVoters.put(choiceId, voteCount);
       }

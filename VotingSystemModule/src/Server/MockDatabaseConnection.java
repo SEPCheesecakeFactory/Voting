@@ -101,7 +101,7 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
 
     @Override
-    public Poll storePoll(Poll poll) {
+    public Poll storePoll(Poll poll, Profile profile) {
         polls.put(poll.getId(), poll);
         return poll;
     }

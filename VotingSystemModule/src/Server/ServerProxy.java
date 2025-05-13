@@ -63,6 +63,7 @@ public class ServerProxy
 
     try {
       int pollId;
+      Profile profile;
       switch (messageObject.getType()) {
         case MessageType.SendPollRequest:
           pollId = messageObject.getParam("pollId", int.class);
@@ -103,11 +104,12 @@ public class ServerProxy
 
         case MessageType.CreatePoll:
           Poll poll = messageObject.getParam("poll", Poll.class);
-          model.storePoll(poll);
+          profile = messageObject.getParam("profile",Profile.class);
+          model.storePoll(poll, profile);
           Logger.log("Poll successfully created for: " + poll.getId());
           break;
         case MessageType.SendLoginOrRegister:
-          Profile profile = messageObject.getParam("profile", Profile.class);
+          profile = messageObject.getParam("profile", Profile.class);
           int id=model.getDb().loginOrRegisterAProfile(profile);
           Logger.log("Profile logged or registered with id: " +id);
           profile.setId(id);

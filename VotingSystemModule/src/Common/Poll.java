@@ -1,5 +1,7 @@
 package Common;
 
+import Client.CreatePoll.CreatePollViewModel;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

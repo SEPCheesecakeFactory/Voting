@@ -1,6 +1,7 @@
 package Client.CreatePoll;
 
 import Common.Poll;
+import Common.Question;
 
 import java.util.*;
 
@@ -8,7 +9,7 @@ import java.util.*;
 public class CreatePollViewModel {
   private String pollTitle = "";
   private String pollDescription = "";
-  private final List<Question> questions = new ArrayList<>();
+  private final List<Question> questions = new ArrayList<Question>();
   private CreatePollService model;
 
   public CreatePollViewModel(CreatePollService model)
@@ -77,8 +78,23 @@ public class CreatePollViewModel {
 
   public void createPoll()
   {
-    Question[] array = questions.toArray(Question[]::new);
-    Poll poll = new Poll(pollTitle, pollDescription, 0, new Common.Question[0], false);
+    Common.Question[] qArray = new Common.Question[questions.size()];
+
+    for (int i = 0; i < questions.size(); i++) {
+      CreatePollViewModel.Question localQ = questions.get(i);
+
+      List<String> choiceTexts = localQ.getChoices();
+      Common.ChoiceOption[] options = new Common.ChoiceOption[choiceTexts.size()];
+
+      for (int j = 0; j < choiceTexts.size(); j++) {
+        // Using the index `j` as a placeholder ID; in a real app this might come from a DB or counter
+        options[j] = new Common.ChoiceOption(j, choiceTexts.get(j));
+      }
+
+      qArray[i] = new Common.Question(options, i, localQ.getTitle(), "");
+    }
+
+    Poll poll = new Poll(pollTitle, pollDescription, 0, qArray, false);
     model.createPoll(poll);
   }
 }

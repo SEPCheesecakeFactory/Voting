@@ -101,7 +101,7 @@ public class ServerProxy
           model.sendPollResultsToUser(pollResult);
           break;
 
-        case MessageType.CreatePoll: //TODO: Improve and correct this ********
+        case MessageType.CreatePoll:
           Poll poll = messageObject.getParam("poll", Poll.class);
           model.storePoll(poll);
           Logger.log("Poll successfully created for: " + poll.getId());

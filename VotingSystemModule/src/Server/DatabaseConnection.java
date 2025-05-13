@@ -198,7 +198,7 @@ public class DatabaseConnection implements DatabaseConnector
   public PollResult retrievePollResults(int id) {
     try (Connection connection = openConnection();
         PreparedStatement selectPollResultsStatement = connection.prepareStatement(
-            "SELECT co.value AS value COUNT(vc.choice_option_id) AS vote_count " +
+            "SELECT q.title AS title, co.value AS value COUNT(vc.choice_option_id) AS vote_count " +
                 "FROM Poll p " +
                 "JOIN Question q ON p.id = q.poll_id " +
                 "JOIN ChoiceOption co ON q.id = co.question_id " +
@@ -210,13 +210,23 @@ public class DatabaseConnection implements DatabaseConnector
       ResultSet rsPollResults = selectPollResultsStatement.executeQuery();
 
       Map<String, Integer> choiceVoters = new HashMap<>();
+      String choiceValue;
+      int voteCount;
       while (rsPollResults.next()) {
-        String choiceId = (String) rsPollResults.getObject("value");
-        int voteCount = rsPollResults.getInt("vote_count");
-        choiceVoters.put(choiceId, voteCount);
+        choiceValue = (String) rsPollResults.getObject("value");
+        voteCount = rsPollResults.getInt("vote_count");
+        choiceVoters.put(choiceValue, voteCount);
+      }
+      //TODO: THIS IS A FUTURE IMPLEMENTATION ON THE CLIENT SIDE, STILL IN PROGRESS.
+      for (int i = 0; i <questions.size(); i++){
+        System.out.println("Question: " + questions.get(i));
+        for (int j = 0; j < ; j++)
+        {
+          System.out.println("Choice: " + choiceValue + ", " + choiceVoters.get(value) + " votes");
+        }
       }
 
-      return new PollResult(retrievePoll(id), choiceVoters);
+      return new PollResult(choiceVoters);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

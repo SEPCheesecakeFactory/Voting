@@ -1,9 +1,6 @@
 package Client;
 
-import Common.Message;
-import Common.MessageListener;
-import Common.Poll;
-import Common.Profile;
+import Common.*;
 import Utils.JsonUtil;
 import Utils.Logger;
 
@@ -70,6 +67,8 @@ public class Client implements MessageListener
     {
       case SendProfileBack -> model.setProfile(message.getParam("UpdatedProfile",
           Profile.class));
+      case SendResultResults -> model.getResult(message.getParam("pollResult",
+          PollResult.class));
       case SendPoll -> model.setPoll(message.getParam("poll",
          Poll.class));
       default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));

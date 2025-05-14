@@ -2,20 +2,23 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="Client.Login.LoginViewController"
             prefWidth="600" prefHeight="400"
             style="-fx-background-color: #eeeeee;">
 
-    <VBox spacing="20" alignment="CENTER" layoutX="150" layoutY="100" prefWidth="300" prefHeight="200">
+    <VBox spacing="20" alignment="CENTER" layoutX="150" layoutY="100" prefWidth="300" prefHeight="250">
         <Label text="Welcome to Voting app" style="-fx-font-size: 18px;" />
         <Label text="Username" />
         <TextField fx:id="usernameField" promptText="Enter username" maxWidth="200"/>
 
         <HBox spacing="20" alignment="CENTER">
-            <Button text="Login" onAction="#onLoginClicked" prefWidth="100"/>
-            <Button text="Register" onAction="#onRegisterClicked" prefWidth="100"/>
+            <Button fx:id="loginButton" text="Login" onAction="#onLoginClicked" prefWidth="100"/>
+            <Button fx:id="registerButton" text="Register" onAction="#onRegisterClicked" prefWidth="100"/>
         </HBox>
+
+        <Text fx:id="messageText" text="" fill="red" />
     </VBox>
 </AnchorPane>

@@ -19,7 +19,7 @@ public class MainAppRunnerGUI extends Application {
 
     // 2. creating and running the client
     Client client = new Client("localhost", 2910);
-    client.run();  // This sets the Model in WindowManager internally
+    client.run();
 
     // 3. gettin the model from the WM
     Model model = WindowManager.getInstance().getModel();

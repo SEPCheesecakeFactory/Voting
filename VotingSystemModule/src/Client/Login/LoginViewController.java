@@ -29,7 +29,7 @@ public class LoginViewController {
 
   public void init(LoginViewModel viewModel) {
     this.viewModel = viewModel;
-    // Optional: bind or listen to model changes if needed
+    // listen to model if changes needed maybe
   }
 
   @FXML

@@ -41,6 +41,6 @@ public class MainAppRunnerGUI extends Application {
   }
 
   public static void main(String[] args) {
-    launch(args); // This will call start(Stage) automatically
+    launch(args); // maybe need to start in a new thread? idk
   }
 }

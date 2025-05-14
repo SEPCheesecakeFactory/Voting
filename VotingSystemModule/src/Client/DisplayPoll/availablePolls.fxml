@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="31.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="homeNavButton" mnemonicParsing="false" text="Home" />
+            <Button fx:id="createPollNavButton" mnemonicParsing="false" text="Create Poll" />
+            <Button fx:id="myPollsNavButton" mnemonicParsing="false" text="My Polls" />
+            <Button fx:id="myUserGroupsNavButton" mnemonicParsing="false" text="My User Groups" />
+            <Button fx:id="availablePollsNavButton" mnemonicParsing="false" text="Available Polls" />
+            <Button fx:id="userSettingsNavButton" mnemonicParsing="false" text="User Settings" />
+            <Button fx:id="usernameNavButton" mnemonicParsing="false" text="Username" />
+         </children>
+      </HBox>
+      <TextField promptText="Search Polls..." />
+      <TableView prefHeight="363.0" prefWidth="600.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="Title" />
+          <TableColumn prefWidth="116.0" text="Vote on the poll" />
+            <TableColumn prefWidth="125.0" text="View the Results" />
+            <TableColumn prefWidth="125.0" text="Status" />
+        </columns>
+      </TableView>
+   </children>
+</VBox>

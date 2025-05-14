@@ -36,7 +36,7 @@ public class Client implements MessageListener
       WindowManager.getInstance().setModel(new Model(this));
       this.model = WindowManager.getInstance().getModel();
       new Thread(clientConnection).start();
-      WindowManager.getInstance().showView(ViewType.Menu); //Getting stuck here
+      // WindowManager.getInstance().showView(ViewType.Menu); //Getting stuck here
     }
     catch (IOException e)
     {

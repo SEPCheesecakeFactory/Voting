@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="31.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="homeNavButton" mnemonicParsing="false" text="Home" />
+            <Button fx:id="createPollNavButton" mnemonicParsing="false" text="Create Poll" />
+            <Button fx:id="myPollsNavButton" mnemonicParsing="false" text="My Polls" />
+            <Button fx:id="myUserGroupsNavButton" mnemonicParsing="false" text="My User Groups" />
+            <Button fx:id="availablePollsNavButton" mnemonicParsing="false" text="Available Polls" />
+            <Button fx:id="userSettingsNavButton" mnemonicParsing="false" text="User Settings" />
+            <Button fx:id="usernameNavButton" mnemonicParsing="false" text="Username" />
+         </children>
+      </HBox>
+      <VBox prefHeight="360.0" prefWidth="600.0">
+         <children>
+            <Label fx:id="titleLabel" text="Title" />
+            <Label fx:id="descriptionLabel" text="Description" />
+            <ListView fx:id="votingListView" prefHeight="200.0" prefWidth="200.0" />
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="navArrowLeftButton" mnemonicParsing="false" text="&lt;" />
+                  <Label fx:id="navigationLabel" text="Poll Title - Q 1/8 " />
+                  <Button fx:id="navArrowRightButton" mnemonicParsing="false" text="&gt;" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</VBox>

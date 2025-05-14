@@ -1,5 +1,7 @@
 package Client.Login;
 
+import Client.ViewType;
+import Client.WindowManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,60 +13,47 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class LoginViewController {
+public class LoginViewController
+{
 
-  @FXML
-  private TextField usernameField;
+  @FXML private TextField usernameField;
 
-  @FXML
-  private Button loginButton;
+  @FXML private Button loginButton;
 
-  @FXML
-  private Button registerButton;
+  @FXML private Button registerButton;
 
-  @FXML
-  private Text messageText;
+  @FXML private Text messageText;
 
   private LoginViewModel viewModel;
 
-  public void init(LoginViewModel viewModel) {
+  public void init(LoginViewModel viewModel)
+  {
     this.viewModel = viewModel;
     // listen to model if changes needed maybe
   }
 
-  @FXML
-  private void onLoginClicked() {
+  @FXML private void onLoginClicked()
+  {
     String username = usernameField.getText().trim();
-    if (!username.isEmpty()) {
-      viewModel.loginOrRegister(username);
-      // Switch to HomeScreen.fxml
-      try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../Menu/HomeScreen.fxml"));
-        Parent root = loader.load();
-
-        // Optional: pass data to the HomeScreen controller if needed
-        // HomeScreenController controller = loader.getController();
-        // controller.init(...);
-
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-      } catch (IOException e) {
-        e.printStackTrace();
-        messageText.setText("Failed to load home screen.");
-      }
-    } else {
+    if (username.isEmpty())
+    {
       messageText.setText("Username cannot be empty.");
+      return;
     }
+    viewModel.loginOrRegister(username);
+    // Switch to HomeScreen.fxml
+    WindowManager.getInstance().showView(ViewType.HomeScreen);
   }
 
-  @FXML
-  private void onRegisterClicked() {
+  @FXML private void onRegisterClicked()
+  {
     String username = usernameField.getText().trim();
-    if (!username.isEmpty()) {
+    if (!username.isEmpty())
+    {
       viewModel.loginOrRegister(username);
-    } else {
+    }
+    else
+    {
       messageText.setText("Username cannot be empty.");
     }
   }

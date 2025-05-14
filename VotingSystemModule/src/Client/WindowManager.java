@@ -105,6 +105,9 @@ public class WindowManager
       case GUITest:
         openJavaFXWindow(getGUITestScene());
         break;
+      case HomeScreen:
+        openJavaFXWindow(getHomeScreenScene());
+        break;
     }
     // WindowManager.getInstance().showView(ViewType.Menu);
   }
@@ -152,7 +155,6 @@ public class WindowManager
 
   private Scene getLoginScene()
   {
-    // 4. loadin the LoginView FXML
     FXMLLoader loader = new FXMLLoader(
         getClass().getResource("/Client/Login/LoginView.fxml"));
     Parent root = null;
@@ -165,12 +167,27 @@ public class WindowManager
       return null;
     }
 
-    // 5. setting up VM and Comtroller
     LoginViewController controller = loader.getController();
     LoginViewModel viewModel = new LoginViewModel(getModel());
     controller.init(viewModel);
 
-    // 6. returning the scene
+    return new Scene(root);
+  }
+
+  private Scene getHomeScreenScene()
+  {
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/Menu/HomeScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
     return new Scene(root);
   }
 
@@ -196,7 +213,7 @@ public class WindowManager
   private void showScene(Scene scene)
   {
     getPrimaryStage().setTitle("Voting System");
-    getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
+    // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
     getPrimaryStage().setScene(scene);
     getPrimaryStage().show();
   }

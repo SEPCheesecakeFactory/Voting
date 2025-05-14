@@ -19,7 +19,7 @@ public class NavBarController {
 
   @FXML
   public void initialize() {
-    homeNavButton.setOnAction(e -> navigate("../Menu/homeScreen.fxml"));
+    homeNavButton.setOnAction(e -> navigate("../Menu/HomeScreen.fxml"));
     createPollNavButton.setOnAction(e -> navigate("../CreatePoll/createPollScreen.fxml"));
     availablePollsNavButton.setOnAction(e -> navigate("../displayPoll/availablePolls.fxml"));
   }

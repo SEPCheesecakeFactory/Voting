@@ -11,5 +11,6 @@ public enum ViewType
   ChangeUsername,
   ClosePoll,
   Test,
-  GUITest
+  GUITest,
+  HomeScreen
 }

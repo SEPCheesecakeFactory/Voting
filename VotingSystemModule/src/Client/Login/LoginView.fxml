@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Client.Login.LoginViewController"
+            prefWidth="600" prefHeight="400"
+            style="-fx-background-color: #eeeeee;">
+
+    <VBox spacing="20" alignment="CENTER" layoutX="150" layoutY="100" prefWidth="300" prefHeight="200">
+        <Label text="Welcome to Voting app" style="-fx-font-size: 18px;" />
+        <Label text="Username" />
+        <TextField fx:id="usernameField" promptText="Enter username" maxWidth="200"/>
+
+        <HBox spacing="20" alignment="CENTER">
+            <Button text="Login" onAction="#onLoginClicked" prefWidth="100"/>
+            <Button text="Register" onAction="#onRegisterClicked" prefWidth="100"/>
+        </HBox>
+    </VBox>
+</AnchorPane>

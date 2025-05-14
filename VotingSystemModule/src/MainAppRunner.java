@@ -1,24 +1,23 @@
 import Client.Client;
 import Client.WindowManager;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import Client.ViewType;
 
 public class MainAppRunner extends Application
 {
   public static void main(String[] args)
   {
     Client client = new Client("localhost", 2910);
-    (new Thread(()->{launch(args);})).start();
     client.run();
+
+    // WindowManager.getInstance().getModel();
+    launch(args);
   }
 
   @Override public void start(Stage primaryStage) throws Exception
   {
     WindowManager.getInstance().setPrimaryStage(primaryStage);
+    WindowManager.getInstance().showView(ViewType.Menu);
   }
 }

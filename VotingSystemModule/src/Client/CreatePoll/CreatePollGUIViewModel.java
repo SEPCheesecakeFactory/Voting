@@ -24,15 +24,15 @@ public class CreatePollGUIViewModel
   }
 
   // fake
-  public CreatePollGUIViewModel()
+  public CreatePollGUIViewModel(CreatePollService service)
   {
-    this.service = new CreatePollService()
-    {
-      public void createPoll(Poll poll)
-      {
-        System.out.println("Poll created: " + poll.getTitle());
-      }
-    };
+    this.service =service;
+//    {
+//      public void createPoll(Poll poll)
+//      {
+//        System.out.println("Poll created: " + poll.getTitle());
+//      }
+//    };
   }
 
   public void setPollTitle(String title)

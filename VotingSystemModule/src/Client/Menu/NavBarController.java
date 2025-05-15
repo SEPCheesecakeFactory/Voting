@@ -1,5 +1,6 @@
 package Client.Menu;
 
+import Client.ViewType;
 import Client.WindowManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,15 +14,18 @@ public class NavBarController
 
   @FXML public void initialize()
   {
-    homeNavButton.setOnAction(e -> navigate("/Client/Menu/HomeScreen.fxml"));
-    createPollNavButton.setOnAction(
-        e -> navigate("/Client/CreatePoll/CreatePollScreen.fxml"));
+    homeNavButton.setOnAction(e -> System.out.println("edit NavBarController"));
+    createPollNavButton.setOnAction(e -> navigateToCreatePoll());
     availablePollsNavButton.setOnAction(
-        e -> navigate("/Client/DisplayPoll/AvailablePolls.fxml"));
+        e -> System.out.println("edit NavBarController"));
   }
 
   private void navigate(String fxmlPath)
   {
     WindowManager.getInstance().openJavaFXScene(fxmlPath);
+  }
+  private  void navigateToCreatePoll()
+  {
+    WindowManager.getInstance().showView(ViewType.CreatePoll);
   }
 }

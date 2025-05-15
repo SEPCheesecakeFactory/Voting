@@ -80,21 +80,7 @@ public class WindowManager
         PollResultView pollResultV = new PollResultView(pollResultVM);
         break;
       case ViewType.CreatePoll:
-        try {
-          FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/CreatePoll/CreatePollScreen.fxml"));
-          Parent root = loader.load();
-
-          CreatePollGUIView controller = loader.getController();
-
-          CreatePollGUIViewModel vm = new CreatePollGUIViewModel();
-          controller.setViewModel(vm);
-
-          Scene scene = new Scene(root);
-          showScene(scene);
-        } catch (IOException e) {
-          e.printStackTrace();
-          showErrorPopup("Failed to load Create Poll screen.");
-        }
+        openJavaFXWindow(getCreatePollScene());
         break;
       case ViewType.DisplayPoll:
         openJavaFXWindow(getDisplayPollScene());
@@ -197,10 +183,33 @@ public class WindowManager
 
     LoginViewController controller = loader.getController();
     LoginViewModel viewModel = new LoginViewModel(getModel());
+
     controller.init(viewModel);
+
 
     return new Scene(root);
   }
+  private Scene getCreatePollScene()
+  {
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/CreatePoll/CreatePollScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    CreatePollGUIView controller = loader.getController();
+    CreatePollGUIViewModel viewModel = new CreatePollGUIViewModel(getModel());
+    controller.setViewModel(viewModel);
+
+    return new Scene(root);
+  }
+
 
   private Scene getDisplayPollScene() {
     return getScene("/Client/DisplayPoll/VoteScreen.fxml");

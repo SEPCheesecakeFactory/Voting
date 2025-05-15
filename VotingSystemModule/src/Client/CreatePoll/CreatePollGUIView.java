@@ -1,5 +1,6 @@
 package Client.CreatePoll;
 
+import Client.WindowManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -19,27 +20,33 @@ public class CreatePollGUIView
 
   private CreatePollGUIViewModel viewModel;
 
+
   // injecting ViewModel from WindowManager
   public void setViewModel(CreatePollGUIViewModel viewModel)
   {
     this.viewModel = viewModel;
+    updatePrivacyButton();
   }
 
   @FXML public void initialize()
   {
-    // if no ViewModel, create default
-    if (viewModel == null)
-    {
-      viewModel = new CreatePollGUIViewModel();
-    }
 
+    System.out.println("Initialize start");
+    System.out.println("addAnotherQuestionButton is " + addAnotherQuestionButton);
+    System.out.println("createButton is " + createButton);
+    System.out.println("publicButton is " + publicButton);
     addAnotherQuestionButton.setOnAction(e -> addQuestionVBox());
+
     createButton.setOnAction(e -> createPoll());
+
     publicButton.setOnAction(e -> togglePrivacy());
-    updatePrivacyButton();
+
+
+
 
     // start with one question by default
     addQuestionVBox();
+
   }
 
   private void addQuestionVBox()
@@ -198,6 +205,7 @@ public class CreatePollGUIView
 
   private void updatePrivacyButton()
   {
+
     if (viewModel.isPrivate())
     {
       publicButton.setText("Private");

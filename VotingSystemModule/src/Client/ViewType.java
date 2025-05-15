@@ -12,5 +12,6 @@ public enum ViewType
   ClosePoll,
   Test,
   GUITest,
-  HomeScreen
+  HomeScreen,
+  CreateGroup
 }

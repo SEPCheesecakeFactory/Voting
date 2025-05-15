@@ -6,6 +6,8 @@ import Client.ClosePoll.ClosePollView;
 import Client.ClosePoll.ClosePollViewModel;
 import Client.CreatePoll.CreatePollView;
 import Client.CreatePoll.CreatePollViewModel;
+import Client.CreateVoteGroup.CreateVoteGroupView;
+import Client.CreateVoteGroup.CreateVoteGroupViewModel;
 import Client.DisplayPoll.DisplayPollView;
 import Client.DisplayPoll.DisplayPollViewModel;
 import Client.GUITest.GUITestView;
@@ -92,6 +94,12 @@ public class WindowManager
             getModel());
         ChangeUsernameView changeUsernameV = new ChangeUsernameView(
             changeUsernameVM);
+        break;
+      case CreateGroup:
+        CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
+            getModel());
+        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
+            voteGroupVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());

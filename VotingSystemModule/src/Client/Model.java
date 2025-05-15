@@ -114,9 +114,22 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   @Override public void sendVoteGroup(UserGroup userGroup)
   {
     Logger.log("Debugging - sendVoteGroup");
-    var message = new Message(MessageType.SendVoteGroup);
-    message.addParam("userGroup", userGroup);
+    var message = new Message(MessageType.SendCreateVoteGroupRequest);
+    message.addParam("voteGroup", userGroup);
     boolean success = client.send(message);
+  }
+
+  @Override public void requestUserLookup(String username) {
+    Message message = new Message(MessageType.LookupUser);
+    Profile temp = new Profile(username);
+    message.addParam("profile", temp);
+    boolean success=client.send(message);
+  }
+
+  @Override public void handleUserLookupResult(Profile profile)
+  {
+   Logger.log("Debugging - handleUserLookupResult");
+    support.firePropertyChange("LookupUserResults", null, profile);
   }
 
   @Override public void createPoll(Poll poll)

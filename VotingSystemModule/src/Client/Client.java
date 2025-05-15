@@ -71,6 +71,8 @@ public class Client implements MessageListener
           PollResult.class));
       case SendPoll -> model.setPoll(message.getParam("poll",
          Poll.class));
+      case SendLookupUserResult -> model.handleUserLookupResult(message.getParam("profile", Profile.class));
+
       default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
     }
   }

@@ -1,5 +1,7 @@
 package Client;
 
+import Client.AddUsers.AddUsersView;
+import Client.AddUsers.AddUsersViewModel;
 import Client.ChangeUsername.ChangeUsernameView;
 import Client.ChangeUsername.ChangeUsernameViewModel;
 import Client.ClosePoll.ClosePollView;
@@ -98,6 +100,12 @@ public class WindowManager
             getModel());
         CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
             voteGroupVM);
+        break;
+      case AddUsersGroups:
+        AddUsersViewModel addUsersVM = new AddUsersViewModel(
+            getModel());
+        AddUsersView addUsersV = new AddUsersView(
+            addUsersVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());

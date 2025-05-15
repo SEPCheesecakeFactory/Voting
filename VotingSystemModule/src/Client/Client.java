@@ -72,6 +72,7 @@ public class Client implements MessageListener
       case SendPoll -> model.setPoll(message.getParam("poll",
          Poll.class));
       case SendLookupUserResult -> model.handleUserLookupResult(message.getParam("profile", Profile.class));
+      case SendLookupGroupResult -> model.handleUserGroupLookupResult(message.getParam("userGroup", UserGroup.class));
 
       default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
     }

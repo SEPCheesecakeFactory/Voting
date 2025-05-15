@@ -1,5 +1,6 @@
 package Client;
 
+import Client.AddUsers.AddUsersService;
 import Client.CreatePoll.CreatePollService;
 import Client.CreateVoteGroup.CreateVoteGroupService;
 import Client.DisplayPoll.DisplayPollService;
@@ -10,9 +11,11 @@ import Utils.Logger;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Set;
 
 public class Model implements PropertyChangeSubject, PollResultRequestService,
-    CreateVoteGroupService, CreatePollService, DisplayPollService
+    CreateVoteGroupService, CreatePollService, DisplayPollService,
+    AddUsersService
 {
   private final PropertyChangeSupport support;
   private Poll currentPoll;
@@ -131,6 +134,32 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
    Logger.log("Debugging - handleUserLookupResult");
     support.firePropertyChange("LookupUserResults", null, profile);
   }
+  @Override public void handleUserGroupLookupResult(UserGroup userGroup)
+  {
+    Logger.log("Debugging - handleUserGroupLookupResult");
+    support.firePropertyChange("LookupGroupResults", null, userGroup);
+  }
+
+  @Override public void sendPollAccess(int pollId, Set<Profile> users,
+      Set<UserGroup> groups)
+  {
+    Logger.log("Debugging - sendPollAccess");
+    var message = new Message(MessageType.SendPollAccess);
+    message.addParam("pollId",pollId);
+    message.addParam("users",users);
+    message.addParam("groups",groups);
+    boolean success = client.send(message);
+  }
+
+  @Override public void requestGroupLookup(String groupName)
+  {
+    Logger.log("Debugging - requestGroupLookup");
+    var message = new Message(MessageType.LookupGroup);
+    message.addParam("groupName", groupName);
+    boolean success = client.send(message);
+  }
+
+
 
   @Override public void createPoll(Poll poll)
   {

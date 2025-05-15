@@ -132,19 +132,26 @@ public class MockDatabaseConnection implements DatabaseConnector {
         return 0;
     }
 
-    @Override public void addUserToPoll(int userId, int pollId)
-    {
 
-    }
-
-    @Override public void addGroupToPoll(int groupId, int pollId)
-    {
-
-    }
 
   @Override public Profile getProfileByUsername(String username)
   {
     return null;
   }
+
+  @Override public UserGroup getGroupByUsername(String username)
+  {
+    return null;
+  }
+
+  @Override public void grantPollAccessToUser(int pollId, int userId)
+  {
+
+  }
+
+    @Override public void grantPollAccessToGroup(int pollId, String groupName)
+    {
+
+    }
 
 }

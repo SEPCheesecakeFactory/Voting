@@ -11,11 +11,17 @@ public class CreatePollViewModel {
   private String pollDescription = "";
   private final List<Question> questions = new ArrayList<Question>();
   private CreatePollService model;
+  private boolean isPrivate = false;
 
   public CreatePollViewModel(CreatePollService model)
   {
     this.model = model;
   }
+  public void setPrivate(boolean isPrivate)
+  {
+    this.isPrivate = isPrivate;
+  }
+
 
   public void setPollTitle(String title) {
     this.pollTitle = title;
@@ -59,6 +65,11 @@ public class CreatePollViewModel {
     return map;
   }
 
+  public boolean isPrivate()
+  {
+    return isPrivate;
+  }
+
   /** Inner question placeholder, with title and choices. */
   public static class Question {
     private String title = "";
@@ -95,6 +106,8 @@ public class CreatePollViewModel {
     }
 
     Poll poll = new Poll(pollTitle, pollDescription, 0, qArray, false);
+
+    poll.setPrivate(isPrivate);
     model.createPoll(poll);
   }
 }

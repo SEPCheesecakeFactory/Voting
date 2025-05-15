@@ -11,6 +11,8 @@ public class CreatePollView {
       Pattern.compile("^set question\\s+(\\d+)\\s+title\\s+(.+)$", Pattern.CASE_INSENSITIVE);
   private static final Pattern ADD_CHOICE =
       Pattern.compile("^add choice\\s+(\\d+)\\s+(.+)$", Pattern.CASE_INSENSITIVE);
+  private static final Pattern SET_PRIVATE =
+      Pattern.compile("^set private\\s+(true|false)$", Pattern.CASE_INSENSITIVE);
 
   public CreatePollView(CreatePollViewModel viewModel) {
     this.vm = viewModel;
@@ -57,6 +59,11 @@ public class CreatePollView {
           System.out.printf("-> error: question %d does not exist%n", qid);
         }
       }
+      else if ((m = SET_PRIVATE.matcher(line)).matches()) {
+        boolean priv = Boolean.parseBoolean(m.group(1));
+        vm.setPrivate(priv);
+        System.out.printf("-> poll privacy set to %s%n", priv ? "PRIVATE" : "PUBLIC");
+      }
       else {
         System.out.println("-> unrecognized command");
       }
@@ -65,6 +72,7 @@ public class CreatePollView {
     // final summary
     System.out.println("\n=== POLL SUMMARY ===");
     System.out.println("Title: " + vm.getPollTitle());
+    System.out.println("Privacy: " + (vm.isPrivate() ? "Private" : "Public"));
     vm.getQuestions().forEach((i, q) -> {
       System.out.printf("Q%d: %s%n", i, q.getTitle());
       List<String> choices = q.getChoices();

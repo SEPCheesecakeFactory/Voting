@@ -31,6 +31,7 @@ public class Poll implements Serializable
     this.isClosed = isClosed;
     this.allowedUsers = new ArrayList<>();
     this.allowedGroups = new ArrayList<>();
+    isPrivate=false;
   }
 
   public String getTitle()
@@ -91,7 +92,7 @@ public class Poll implements Serializable
 
   public void setPrivate(boolean isPrivate)
   {
-    this.isPrivate = true;
+    this.isPrivate = isPrivate;
   }
   public void setClosed(boolean closed)
   {

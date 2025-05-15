@@ -1,9 +1,6 @@
 package Server;
 
-import Common.Poll;
-import Common.PollResult;
-import Common.Profile;
-import Common.Vote;
+import Common.*;
 import Utils.Logger;
 
 import java.sql.SQLException;
@@ -93,18 +90,25 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     return databaseConnection.createUserGroup(groupName);
   }
 
-  @Override public void addUserToPoll(int userId, int pollId)
-  {
-    databaseConnection.addUserToPoll(userId,pollId);
-  }
 
-  @Override public void addGroupToPoll(int groupId, int pollId)
-  {
-    databaseConnection.addGroupToPoll(groupId,pollId);
-  }
 
   @Override public Profile getProfileByUsername(String username)
   {
     return databaseConnection.getProfileByUsername(username);
+  }
+
+  @Override public UserGroup getGroupByUsername(String username)
+  {
+    return databaseConnection.getGroupByUsername(username);
+  }
+
+  @Override public void grantPollAccessToUser(int pollId, int userId)
+  {
+    databaseConnection.grantPollAccessToUser(pollId, userId);
+  }
+
+  @Override public void grantPollAccessToGroup(int pollId, String groupName)
+  {
+    databaseConnection.grantPollAccessToGroup(pollId, groupName);
   }
 }

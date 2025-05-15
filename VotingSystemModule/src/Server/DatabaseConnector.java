@@ -1,9 +1,6 @@
 package Server;
 
-import Common.Poll;
-import Common.PollResult;
-import Common.Profile;
-import Common.Vote;
+import Common.*;
 
 import java.sql.SQLException;
 
@@ -23,7 +20,10 @@ public interface DatabaseConnector
   boolean isOwner(int userId, int pollId);
   void addUserToGroup(int userId, int groupId);
   int createUserGroup(String groupName);
-  void addUserToPoll(int userId, int pollId);
-  void addGroupToPoll(int groupId, int pollId);
+//  void addUserToPoll(int userId, int pollId);
+//  void addGroupToPoll(int groupId, int pollId); grantPollAccess methods does the same in a better way
   Profile getProfileByUsername(String username);
+  UserGroup getGroupByUsername(String username);
+  void grantPollAccessToUser(int pollId, int userId);
+  void grantPollAccessToGroup(int pollId, String groupName);
 }

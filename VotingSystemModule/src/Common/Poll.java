@@ -24,6 +24,11 @@ public class Poll implements Serializable
   public Poll(String title, String description, int id, Question[] questions,
       boolean isClosed)
   {
+    this(title,description,id,questions,isClosed,false);
+  }
+  public Poll(String title, String description, int id, Question[] questions,
+      boolean isClosed, boolean isPrivate)
+  {
     this.title = title;
     this.description = description;
     this.id = id;
@@ -31,7 +36,7 @@ public class Poll implements Serializable
     this.isClosed = isClosed;
     this.allowedUsers = new ArrayList<>();
     this.allowedGroups = new ArrayList<>();
-    isPrivate=false;
+    this.isPrivate = isPrivate;
   }
 
   public String getTitle()

@@ -67,6 +67,7 @@ public class WindowManager
       case ViewType.Menu:
         MenuViewModel menuVM = new MenuViewModel();
         MenuView menuV = new MenuView(menuVM);
+        (new Thread(()->{showView(ViewType.Menu);})).start();
         break;
       case ViewType.PollResult:
         PollResultViewModel pollResultVM = new PollResultViewModel(getModel());

@@ -6,6 +6,8 @@ import Client.ChangeUsername.ChangeUsernameView;
 import Client.ChangeUsername.ChangeUsernameViewModel;
 import Client.ClosePoll.ClosePollView;
 import Client.ClosePoll.ClosePollViewModel;
+import Client.CreatePoll.CreatePollGUIView;
+import Client.CreatePoll.CreatePollGUIViewModel;
 import Client.CreatePoll.CreatePollView;
 import Client.CreatePoll.CreatePollViewModel;
 import Client.CreateVoteGroup.CreateVoteGroupView;
@@ -78,10 +80,21 @@ public class WindowManager
         PollResultView pollResultV = new PollResultView(pollResultVM);
         break;
       case ViewType.CreatePoll:
-        CreatePollViewModel createPollViewModel = new CreatePollViewModel(
-            getModel());
-        CreatePollView createPollView = new CreatePollView(createPollViewModel);
-        createPollView.render();
+        try {
+          FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/CreatePoll/CreatePollScreen.fxml"));
+          Parent root = loader.load();
+
+          CreatePollGUIView controller = loader.getController();
+
+          CreatePollGUIViewModel vm = new CreatePollGUIViewModel();
+          controller.setViewModel(vm);
+
+          Scene scene = new Scene(root);
+          showScene(scene);
+        } catch (IOException e) {
+          e.printStackTrace();
+          showErrorPopup("Failed to load Create Poll screen.");
+        }
         break;
       case ViewType.DisplayPoll:
         openJavaFXWindow(getDisplayPollScene());

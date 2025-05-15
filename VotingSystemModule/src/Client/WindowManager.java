@@ -174,10 +174,15 @@ public class WindowManager
     return new Scene(root);
   }
 
-  private Scene getHomeScreenScene()
+  public void openJavaFXScene(String fxmlPath)
+  {
+    showScene(getScene(fxmlPath));
+  }
+
+  private Scene getScene(String fxmlPath)
   {
     FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("/Client/Menu/HomeScreen.fxml"));
+        getClass().getResource(fxmlPath));
     Parent root = null;
     try
     {
@@ -189,6 +194,11 @@ public class WindowManager
     }
 
     return new Scene(root);
+  }
+
+  private Scene getHomeScreenScene()
+  {
+    return getScene("/Client/Menu/HomeScreen.fxml");
   }
 
   private Scene getGUITestScene()

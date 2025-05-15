@@ -1,5 +1,6 @@
 package Client.Menu;
 
+import Client.WindowManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,28 +20,12 @@ public class NavBarController {
 
   @FXML
   public void initialize() {
-    homeNavButton.setOnAction(e -> navigate("../Menu/HomeScreen.fxml"));
-    createPollNavButton.setOnAction(e -> navigate("../CreatePoll/createPollScreen.fxml"));
-    availablePollsNavButton.setOnAction(e -> navigate("../displayPoll/availablePolls.fxml"));
+    homeNavButton.setOnAction(e -> navigate("/Client/Menu/HomeScreen.fxml"));
+    createPollNavButton.setOnAction(e -> navigate("/Client/CreatePoll/createPollScreen.fxml"));
+    availablePollsNavButton.setOnAction(e -> navigate("/Client/DisplayPoll/availablePolls.fxml"));
   }
 
   private void navigate(String fxmlPath) {
-    try {
-      
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-      Scene scene = new Scene(loader.load());
-
-
-      Stage stage = (Stage) homeNavButton.getScene().getWindow();
-
-
-      stage.setScene(scene);
-
-
-      stage.setTitle(fxmlPath.replace(".fxml", "") + " Screen");
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    WindowManager.getInstance().openJavaFXScene(fxmlPath);
   }
 }

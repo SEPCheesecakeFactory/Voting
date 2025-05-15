@@ -18,6 +18,6 @@ public class MainAppRunner extends Application
   @Override public void start(Stage primaryStage) throws Exception
   {
     WindowManager.getInstance().setPrimaryStage(primaryStage);
-    WindowManager.getInstance().showView(ViewType.Menu);
+    WindowManager.getInstance().showView(ViewType.Login);
   }
 }

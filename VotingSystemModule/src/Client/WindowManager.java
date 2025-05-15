@@ -182,18 +182,7 @@ public class WindowManager
   }
 
   private Scene getDisplayPollScene() {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/DisplayPoll/VoteScreen.fxml")); // or whatever your path is
-    Parent root;
-    try {
-      root = loader.load();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    DisplayPollView controller = loader.getController();
-    controller.init(new DisplayPollViewModel(getModel()));
-    return new Scene(root);
+    return getScene("/Client/DisplayPoll/VoteScreen.fxml");
   }
 
 

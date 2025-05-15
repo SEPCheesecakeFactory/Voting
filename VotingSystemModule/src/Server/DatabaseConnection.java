@@ -268,7 +268,7 @@ public class DatabaseConnection implements DatabaseConnector
   public PollResult retrievePollResults(int id) {
     try (Connection connection = openConnection();
         PreparedStatement selectPollResultsStatement = connection.prepareStatement(
-            "SELECT co.id AS choice_id, co.value AS value, COUNT(vc.choice_option_id) AS vote_count " +
+            "SELECT co.id AS choice_id, COUNT(vc.choice_option_id) AS vote_count " +
                 "FROM Poll p " +
                 "JOIN Question q ON p.id = q.poll_id " +
                 "JOIN ChoiceOption co ON q.id = co.question_id " +
@@ -292,6 +292,7 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
   //      //TODO: THIS IS A FUTURE IMPLEMENTATION ON THE CLIENT SIDE, STILL IN PROGRESS.
+  //Create a map with choice option id as key and number of votes as value.
   //      for (int i = 0; i <questions.size(); i++){
   //        System.out.println("Question: " + questions.get(i));
   //        for (int j = 0; j < ; j++)

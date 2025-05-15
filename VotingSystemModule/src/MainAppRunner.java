@@ -10,8 +10,6 @@ public class MainAppRunner extends Application
   {
     Client client = new Client("localhost", 2910);
     client.run();
-
-    // WindowManager.getInstance().getModel();
     launch(args);
   }
 

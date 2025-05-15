@@ -7,17 +7,20 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-       <fx:include source="../Menu/NavBar.fxml"/>
-      <TextField promptText="Search Polls..." />
-      <TableView prefHeight="363.0" prefWidth="600.0">
-        <columns>
-          <TableColumn prefWidth="75.0" text="Title" />
-          <TableColumn prefWidth="116.0" text="Vote on the poll" />
-            <TableColumn prefWidth="125.0" text="View the Results" />
-            <TableColumn prefWidth="125.0" text="Status" />
-        </columns>
-      </TableView>
-   </children>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/22"
+      fx:controller="Client.DisplayPoll.AvailablePollsController">
+    <children>
+        <fx:include source="../Menu/NavBar.fxml"/>
+        <TextField fx:id="searchField" promptText="Search Polls..." />
+        <TableView fx:id="pollTable" prefHeight="363.0" prefWidth="600.0">
+            <columns>
+                <TableColumn fx:id="titleColumn" text="Title" prefWidth="150.0" />
+                <TableColumn fx:id="voteColumn" text="Vote on the poll" prefWidth="150.0" />
+                <TableColumn fx:id="resultsColumn" text="View the Results" prefWidth="150.0" />
+                <TableColumn fx:id="privacyColumn" text="Privacy" prefWidth="100.0" />
+                <TableColumn fx:id="openColumn" text="Open" prefWidth="100.0" />
+            </columns>
+        </TableView>
+    </children>
 </VBox>

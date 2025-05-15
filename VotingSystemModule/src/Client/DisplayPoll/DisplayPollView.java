@@ -1,90 +1,108 @@
 package Client.DisplayPoll;
 
+import Client.ViewType;
+import Client.WindowManager;
 import Common.ChoiceOption;
 import Common.Poll;
 import Common.Question;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.text.Text;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.security.InvalidParameterException;
-import java.util.Scanner;
 
-public class DisplayPollView implements PropertyChangeListener
-{
+public class DisplayPollView implements PropertyChangeListener {
+
+  @FXML private Label titleLabel;
+  @FXML private Label descriptionLabel;
+  @FXML private ListView<String> votingListView;
+  @FXML private Label navigationLabel;
+  @FXML private Button navArrowLeftButton;
+  @FXML private Button navArrowRightButton;
+  @FXML private Text messageText;
+  @FXML private Button submitButton;
+
   private DisplayPollViewModel viewModel;
 
-  public DisplayPollView(DisplayPollViewModel viewModel) {
+  private Poll currentPoll;
+  private int currentQuestionIndex = 0;
+  private int[] selectedChoices;
+
+  public void init(DisplayPollViewModel viewModel) {
     this.viewModel = viewModel;
-    displayPollRequest();
     this.viewModel.addPropertyChangeListener("PollUpdated", this);
 
+    // Request poll on load (you can make this more dynamic)
+    viewModel.sendPollRequest(1); // replace with real pollId source
   }
 
-  public void render(Poll poll) {
-    displayPoll(poll);
-  }
-  public void displayPollRequest()
-  {
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("Poll id: ");
-    int pollid = scanner.nextInt();
-    viewModel.sendPollRequest(pollid);
-  }
-  public void displayPoll(Poll poll) {
-    Scanner scanner = new Scanner(System.in);
+  private void renderCurrentQuestion() {
+    if (currentPoll == null) return;
 
-    System.out.println("==== New Poll ====");
-    System.out.println("Title: " + poll.getTitle());
-    System.out.println("Description: " + poll.getDescription());
-    System.out.println();
+    Question q = currentPoll.getQuestions()[currentQuestionIndex];
+    titleLabel.setText(currentPoll.getTitle());
+    descriptionLabel.setText(q.getDescription());
 
-    int[] choices = new int[poll.getQuestions().length];
+    navigationLabel.setText("Q " + (currentQuestionIndex + 1) + " / " + currentPoll.getQuestions().length);
 
-    for (int i = 0; i < poll.getQuestions().length; i++) {
-      Question question = poll.getQuestions()[i];
-      System.out.println("Q" + (i + 1) + ": " + question.getTitle());
-      System.out.println("Description: " + question.getDescription());
-
-      ChoiceOption[] options = question.getChoiceOptions();
-      for (int j = 0; j < options.length; j++) {
-        System.out.println("  " + j + ": " + options[j].getValue());
-      }
-
-      while (true) {
-        System.out.print("Choose an option (index): ");
-        String input = scanner.nextLine().trim();
-
-
-          try {
-            int answer = Integer.parseInt(input);
-            if (answer >= 0 && answer < options.length) {
-              choices[i] = options[answer].getId(); // valid vote
-              break;
-            } else {
-              System.out.println("Invalid choice. Try again.");
-            }
-          } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Enter a correct index");
-          }
-
-      }
+    votingListView.setItems(FXCollections.observableArrayList());
+    for (ChoiceOption option : q.getChoiceOptions()) {
+      votingListView.getItems().add(option.getValue());
     }
 
-    int userId = viewModel.getModel().getProfile().getId();
-    System.out.print("Your User ID: " + userId + "\n");
-    viewModel.sendVote(userId, choices);
+    votingListView.getSelectionModel().selectFirst();
+
+    navArrowLeftButton.setDisable(currentQuestionIndex == 0);
+    navArrowRightButton.setDisable(currentQuestionIndex == currentPoll.getQuestions().length - 1);
   }
 
-  @Override  public void propertyChange(PropertyChangeEvent evt)
-  {
-    System.out.println("??");
-    switch (evt.getPropertyName()) {
-      case "PollUpdated":
-        System.out.println("???");
-        displayPoll((Poll) evt.getNewValue());
-        break;
-      default:
-        throw new InvalidParameterException(String.format("Event %s does not exist in the current context.", evt.getPropertyName()));
+  @FXML
+  private void onLeftArrowClicked() {
+    if (currentQuestionIndex > 0) {
+      storeSelectedChoice();
+      currentQuestionIndex--;
+      renderCurrentQuestion();
+    }
+  }
+
+  @FXML
+  private void onRightArrowClicked() {
+    if (currentQuestionIndex < currentPoll.getQuestions().length - 1) {
+      storeSelectedChoice();
+      currentQuestionIndex++;
+      renderCurrentQuestion();
+    }
+  }
+
+  private void storeSelectedChoice() {
+    int selected = votingListView.getSelectionModel().getSelectedIndex();
+    if (selected >= 0) {
+      selectedChoices[currentQuestionIndex] = currentPoll.getQuestions()[currentQuestionIndex].getChoiceOptions()[selected].getId();
+    }
+  }
+
+  @FXML
+  private void onSubmitVoteClicked() {
+    storeSelectedChoice(); // store last question answer
+
+    int userId = viewModel.getModel().getProfile().getId();
+    viewModel.sendVote(userId, selectedChoices);
+    messageText.setText("Vote submitted!");
+    WindowManager.getInstance().showView(ViewType.HomeScreen); // or wherever you want to go
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+    if ("PollUpdated".equals(evt.getPropertyName())) {
+      currentPoll = (Poll) evt.getNewValue();
+      selectedChoices = new int[currentPoll.getQuestions().length];
+      renderCurrentQuestion();
+    } else {
+      throw new InvalidParameterException("Unhandled event: " + evt.getPropertyName());
     }
   }
 }

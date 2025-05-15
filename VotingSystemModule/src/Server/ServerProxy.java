@@ -125,6 +125,17 @@ public class ServerProxy
           UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
           model.storeUserGroup(userGroup);
           break;
+        case MessageType.LookupUser:
+          profile = messageObject.getParam("profile", Profile.class);
+          Profile fullProfile = model.getDb().getProfileByUsername(profile.getUsername());
+
+          if (fullProfile == null) {
+            fullProfile = new Profile(profile.getUsername());
+            fullProfile.setId(-1); // signal "not found"
+          }
+
+          model.sendLookupUserResults(fullProfile);
+          break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());
           break;

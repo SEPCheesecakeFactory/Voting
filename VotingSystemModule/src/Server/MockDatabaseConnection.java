@@ -142,4 +142,9 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     }
 
+  @Override public Profile getProfileByUsername(String username)
+  {
+    return null;
+  }
+
 }

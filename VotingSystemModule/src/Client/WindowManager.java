@@ -6,10 +6,13 @@ import Client.ClosePoll.ClosePollView;
 import Client.ClosePoll.ClosePollViewModel;
 import Client.CreatePoll.CreatePollView;
 import Client.CreatePoll.CreatePollViewModel;
+import Client.CreateVoteGroup.CreateVoteGroupView;
+import Client.CreateVoteGroup.CreateVoteGroupViewModel;
 import Client.DisplayPoll.DisplayPollView;
 import Client.DisplayPoll.DisplayPollViewModel;
 import Client.GUITest.GUITestView;
 import Client.Login.LoginView;
+import Client.Login.LoginViewController;
 import Client.Login.LoginViewModel;
 import Client.Menu.MenuView;
 import Client.Menu.MenuViewModel;
@@ -17,8 +20,10 @@ import Client.PollResult.PollResultView;
 import Client.PollResult.PollResultViewModel;
 import Client.Test.TestView;
 import Client.Test.TestViewModel;
+import Utils.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
@@ -33,7 +38,9 @@ public class WindowManager
   private Model model;
   private Stage primaryStage;
 
-  private WindowManager() { }
+  private WindowManager()
+  {
+  }
 
   public static WindowManager getInstance()
   {
@@ -44,8 +51,15 @@ public class WindowManager
     return instance;
   }
 
-  public Stage getPrimaryStage() { return primaryStage; }
-  public void setPrimaryStage(Stage primaryStage) { this.primaryStage = primaryStage; }
+  public Stage getPrimaryStage()
+  {
+    return primaryStage;
+  }
+
+  public void setPrimaryStage(Stage primaryStage)
+  {
+    this.primaryStage = primaryStage;
+  }
 
   // TODO: removing the old one could be implemented
   public void showView(ViewType type)
@@ -55,6 +69,7 @@ public class WindowManager
       case ViewType.Menu:
         MenuViewModel menuVM = new MenuViewModel();
         MenuView menuV = new MenuView(menuVM);
+        (new Thread(()->{showView(ViewType.Menu);})).start();
         break;
       case ViewType.PollResult:
         PollResultViewModel pollResultVM = new PollResultViewModel(getModel());
@@ -65,20 +80,26 @@ public class WindowManager
             getModel());
         CreatePollView createPollView = new CreatePollView(createPollViewModel);
         createPollView.render();
+        break;
       case ViewType.DisplayPoll:
         DisplayPollViewModel displayPollVM = new DisplayPollViewModel(
             getModel());
         DisplayPollView displayPollV = new DisplayPollView(displayPollVM);
         break;
       case Login:
-        LoginViewModel loginVM = new LoginViewModel(getModel());
-        LoginView loginV = new LoginView(loginVM);
+        openJavaFXWindow(getLoginScene());
         break;
       case ChangeUsername:
         ChangeUsernameViewModel changeUsernameVM = new ChangeUsernameViewModel(
             getModel());
         ChangeUsernameView changeUsernameV = new ChangeUsernameView(
             changeUsernameVM);
+        break;
+      case CreateGroup:
+        CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
+            getModel());
+        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
+            voteGroupVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
@@ -91,10 +112,13 @@ public class WindowManager
         testV.render();
         break;
       case GUITest:
-        openJavaFXWindow();
+        openJavaFXWindow(getGUITestScene());
+        break;
+      case HomeScreen:
+        openJavaFXWindow(getHomeScreenScene());
         break;
     }
-    WindowManager.getInstance().showView(ViewType.Menu);
+    // WindowManager.getInstance().showView(ViewType.Menu);
   }
 
   public void setModel(Model model)
@@ -105,19 +129,16 @@ public class WindowManager
   public Model getModel()
   {
     if (model == null)
-      model = new Model(getClient());
+    {
+      model = new Model(new Client());
+      Logger.log("Warning", "New Model created with Default Client...");
+    }
+
     return model;
   }
 
-  public Client getClient()
+  public void showErrorPopup(String errorText)
   {
-    if(getModel() != null)
-      return getModel().getClient();
-    else
-      return null;
-  }
-
-  public void showErrorPopup(String errorText) {
     // Ensuring JavaFX Thread
     Platform.runLater(() -> {
       Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -128,24 +149,82 @@ public class WindowManager
     });
   }
 
-  private void openJavaFXWindow()
+  private void openJavaFXWindow(Scene scene)
   {
     try
     {
-      showScene(getGUITestScene());
+      showScene(scene);
     }
-    catch (IOException e)
+    catch (Exception e)
     {
       showErrorPopup("Could not open a new scene!");
+      e.printStackTrace();
     }
   }
 
-  private Scene getGUITestScene() throws IOException
+  private Scene getLoginScene()
+  {
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/Login/LoginView.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    LoginViewController controller = loader.getController();
+    LoginViewModel viewModel = new LoginViewModel(getModel());
+    controller.init(viewModel);
+
+    return new Scene(root);
+  }
+
+  public void openJavaFXScene(String fxmlPath)
+  {
+    showScene(getScene(fxmlPath));
+  }
+
+  private Scene getScene(String fxmlPath)
+  {
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource(fxmlPath));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    return new Scene(root);
+  }
+
+  private Scene getHomeScreenScene()
+  {
+    return getScene("/Client/Menu/HomeScreen.fxml");
+  }
+
+  private Scene getGUITestScene()
   {
     // create a ViewModel if needed later
-    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/GUITest/GUITest.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        getClass().getResource("/Client/GUITest/GUITest.fxml"));
     fxmlLoader.setControllerFactory(controllerClass -> new GUITestView());
-    Scene scene = new Scene(fxmlLoader.load());
+    Scene scene = null;
+    try
+    {
+      scene = new Scene(fxmlLoader.load());
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
     scene.setFill(Color.TRANSPARENT);
     return scene;
   }
@@ -153,7 +232,7 @@ public class WindowManager
   private void showScene(Scene scene)
   {
     getPrimaryStage().setTitle("Voting System");
-    getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
+    // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
     getPrimaryStage().setScene(scene);
     getPrimaryStage().show();
   }

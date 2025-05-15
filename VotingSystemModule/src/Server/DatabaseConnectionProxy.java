@@ -102,4 +102,9 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   {
     databaseConnection.addGroupToPoll(groupId,pollId);
   }
+
+  @Override public Profile getProfileByUsername(String username)
+  {
+    return databaseConnection.getProfileByUsername(username);
+  }
 }

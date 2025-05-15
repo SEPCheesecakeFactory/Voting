@@ -25,5 +25,5 @@ public interface DatabaseConnector
   int createUserGroup(String groupName);
   void addUserToPoll(int userId, int pollId);
   void addGroupToPoll(int groupId, int pollId);
-
+  Profile getProfileByUsername(String username);
 }

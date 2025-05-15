@@ -599,4 +599,26 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
+  @Override public Profile getProfileByUsername(String username) {
+  String sql = "SELECT id, username FROM Users WHERE username = ?";
+
+  try (Connection connection = openConnection();
+      PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+    stmt.setString(1, username);
+    ResultSet rs = stmt.executeQuery();
+
+    if (rs.next()) {
+      Profile profile = new Profile(rs.getString("username"));
+      profile.setId(rs.getInt("id"));
+      return profile;
+    }
+
+  } catch (SQLException e) {
+    Logger.log("Database error during getProfileByUsername: " + e.getMessage());
+  }
+
+  return null; // Not found
+}
+
 }

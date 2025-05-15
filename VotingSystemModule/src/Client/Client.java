@@ -36,7 +36,7 @@ public class Client implements MessageListener
       WindowManager.getInstance().setModel(new Model(this));
       this.model = WindowManager.getInstance().getModel();
       new Thread(clientConnection).start();
-      WindowManager.getInstance().showView(ViewType.Menu); //Getting stuck here
+      // WindowManager.getInstance().showView(ViewType.Menu); //Getting stuck here
     }
     catch (IOException e)
     {
@@ -71,6 +71,8 @@ public class Client implements MessageListener
           PollResult.class));
       case SendPoll -> model.setPoll(message.getParam("poll",
          Poll.class));
+      case SendLookupUserResult -> model.handleUserLookupResult(message.getParam("profile", Profile.class));
+
       default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
     }
   }

@@ -85,6 +85,19 @@ public class ServerModel {
       Logger.log("Failed to send pollResult to user: " + e.getMessage());
     }
   }
+  public void sendLookupUserResults(Profile profile)
+  {
+    try
+    {
+      Message message = new Message(MessageType.SendLookupUserResult);
+      message.addParam("profile", profile);
+      connectionPool.broadcast(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to send LookupUserResults to user: " + e.getMessage());    }
+
+  }
   public void sendUpdatedProfile(Profile profile){
     try {
       Logger.log("ServerModel: Profile send");

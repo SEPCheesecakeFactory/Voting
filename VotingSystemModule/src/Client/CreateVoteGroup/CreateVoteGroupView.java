@@ -10,6 +10,7 @@ public class CreateVoteGroupView {
 
   public CreateVoteGroupView(CreateVoteGroupViewModel viewModel) {
     this.viewModel = viewModel;
+    render();
   }
 
   public void render() {
@@ -59,19 +60,14 @@ public class CreateVoteGroupView {
     System.out.println("Exiting group manager.");
   }
 
-  private void addMember()
-  {
+  private void addMember() {
     System.out.print("Enter member name: ");
     String name = scanner.nextLine();
-    Profile profile = new Profile(name);
-    if (viewModel.addMemberToGroup(profile))
-    {
-      System.out.println("Member added.");
-    }
-    else
-    {
-      System.out.println("Member already exists.");
-    }
+
+    viewModel.requestUserLookup(name); // ask server for the real Profile
+
+    System.out.println("Looking up user '" + name + "' on the server...");
+    System.out.println("Please wait for confirmation before continuing.");
   }
 
   private void removeMember()

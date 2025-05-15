@@ -40,7 +40,7 @@ public class UserGroup implements Serializable
   {
     for (Profile member : members)
     {
-      if (member.getId() == profile.getId())
+      if (member.getUsername().equals(profile.getUsername()))
       {
         return false;
       }

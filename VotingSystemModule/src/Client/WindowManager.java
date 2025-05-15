@@ -231,9 +231,11 @@ public class WindowManager
 
   private void showScene(Scene scene)
   {
-    getPrimaryStage().setTitle("Voting System");
-    // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
-    getPrimaryStage().setScene(scene);
-    getPrimaryStage().show();
+    Platform.runLater(()->{
+      getPrimaryStage().setTitle("Voting System");
+      // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
+      getPrimaryStage().setScene(scene);
+      getPrimaryStage().show();
+    });
   }
 }

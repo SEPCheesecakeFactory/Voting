@@ -15,28 +15,16 @@ public class NavBarController
 
   @FXML public void initialize()
   {
-    homeNavButton.setOnAction(e -> System.out.println("edit NavBarController"));
-    createPollNavButton.setOnAction(e -> navigateToCreatePoll());
+    homeNavButton.setOnAction(e -> navigateToView(ViewType.HomeScreen));
+    createPollNavButton.setOnAction(e -> navigateToView(ViewType.CreatePoll));
     availablePollsNavButton.setOnAction(
-        e -> System.out.println("edit NavBarController"));
+        e -> navigateToView(ViewType.AvailablePolls));
     pollResultsNavButton.setOnAction(
-        e -> navigateToPollResult());
-
-
-}
-
-  private void navigateToPollResult()
-  {
-    WindowManager.getInstance().showView(ViewType.PollResult);
-
+        e -> navigateToView(ViewType.PollResult));
   }
 
-  private void navigate(String fxmlPath)
+  private void navigateToView(ViewType viewType)
   {
-    WindowManager.getInstance().openJavaFXScene(fxmlPath);
-  }
-  private  void navigateToCreatePoll()
-  {
-    WindowManager.getInstance().showView(ViewType.CreatePoll);
+    WindowManager.getInstance().showView(viewType);
   }
 }

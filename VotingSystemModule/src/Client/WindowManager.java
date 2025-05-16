@@ -122,6 +122,9 @@ public class WindowManager
       case HomeScreen:
         openJavaFXWindow(getHomeScreenScene());
         break;
+      case AvailablePolls:
+        openJavaFXWindow(getScene("/Client/DisplayPoll/AvailablePolls.fxml"));
+        break;
     }
     // WindowManager.getInstance().showView(ViewType.Menu);
   }

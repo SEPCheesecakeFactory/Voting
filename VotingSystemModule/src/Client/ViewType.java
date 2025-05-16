@@ -14,5 +14,6 @@ public enum ViewType
   GUITest,
   HomeScreen,
   CreateGroup,
-  AddUsersGroups
+  AddUsersGroups,
+  AvailablePolls
 }

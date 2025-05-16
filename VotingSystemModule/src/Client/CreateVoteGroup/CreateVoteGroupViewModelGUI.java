@@ -8,6 +8,7 @@ import Common.UserGroup;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 
 public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
     PropertyChangeSubject
@@ -18,7 +19,7 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   public CreateVoteGroupViewModelGUI(Model model)
   {
     this.model=model;
-    this.model.addPropertyChangeListener("LookupUserResults", this);
+    this.model.addPropertyChangeListener( this);
     support = new PropertyChangeSupport(this);
   }
   public void createGroup(String groupName) {
@@ -46,6 +47,10 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   public void requestUserLookup(String username) {
     model.requestUserLookup(username);
   }
+  public void requestUserGroups()
+  {
+    model.requestUserGroups();
+  }
 
   // This method will be called by the Model when server sends the Profile back
   public void handleLookupResult(Profile profile) {
@@ -62,8 +67,18 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
 
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
-    handleLookupResult((Profile)evt.getNewValue());
+    if(evt.getPropertyName().equals("LookupUserResults"))
+    {
+      handleLookupResult((Profile)evt.getNewValue());
+    }
+    if(evt.getPropertyName().equals("receiveUserGroups"))
+    {
+      support.firePropertyChange(evt);
+    }
+
   }
+
+
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)

@@ -135,7 +135,18 @@ public class ServerProxy
           break;
         case MessageType.SendCreateVoteGroupRequest:
           UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
-          model.storeUserGroup(userGroup);
+          userId = messageObject.getParam("userId",int.class);
+          model.storeUserGroup(userGroup, userId);
+          break;
+        case MessageType.SendUserGroupsRequest:
+          userId = messageObject.getParam("userId",int.class);
+          List<UserGroup> userGroups=model.getGroupsCreatedByUser(userId);
+
+
+
+
+
+          model.sendUserGroups(userGroups);
           break;
 
         case MessageType.SendPollAccess:

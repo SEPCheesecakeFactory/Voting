@@ -127,10 +127,12 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     }
 
-    @Override public int createUserGroup(String groupName)
-    {
-        return 0;
-    }
+  @Override public int createUserGroup(String groupName, int creatorId)
+  {
+    return 0;
+  }
+
+
 
 
 
@@ -164,5 +166,10 @@ public class MockDatabaseConnection implements DatabaseConnector {
         }
         return availablePolls;
     }
+
+  @Override public List<UserGroup> getGroupsCreatedByUser(int userId)
+  {
+    return List.of();
+  }
 
 }

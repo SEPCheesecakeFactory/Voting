@@ -5,6 +5,7 @@ import Utils.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
 public class ServerModel {
@@ -141,9 +142,9 @@ public class ServerModel {
     }
   }
 
-  public void storeUserGroup(UserGroup userGroup) {
+  public void storeUserGroup(UserGroup userGroup, int creatorId) {
 
-    int groupId = db.createUserGroup(userGroup.getGroupName());
+    int groupId = db.createUserGroup(userGroup.getGroupName(), creatorId);
     userGroup.setId(groupId);
 
 
@@ -175,5 +176,25 @@ public class ServerModel {
     catch (IOException e)
     {
       Logger.log("Failed to send sendLookupGroupResults to user: " + e.getMessage());    }
+  }
+
+  public List<UserGroup> getGroupsCreatedByUser(int userId)
+  {
+    List<UserGroup> groups = db.getGroupsCreatedByUser(userId);
+    return groups;
+  }
+
+  public void sendUserGroups(List<UserGroup> groups)
+  {
+
+    try{
+      Message message = new Message(MessageType.SendUserGroups);
+      message.addParam("userGroups",groups);
+      connectionPool.broadcast(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to send sendUserGroups to user: " + e.getMessage());
+    }
   }
 }

@@ -20,7 +20,7 @@ public interface DatabaseConnector
   public void closePollAndSaveResults(int pollId);
   boolean isOwner(int userId, int pollId);
   void addUserToGroup(int userId, int groupId);
-  int createUserGroup(String groupName);
+  int createUserGroup(String groupName, int creatorId);
 //  void addUserToPoll(int userId, int pollId);
 //  void addGroupToPoll(int groupId, int pollId); grantPollAccess methods does the same in a better way
   Profile getProfileByUsername(String username);
@@ -28,4 +28,5 @@ public interface DatabaseConnector
   void grantPollAccessToUser(int pollId, int userId);
   void grantPollAccessToGroup(int pollId, String groupName);
   List<Poll> getAllAvailablePolls();
+  List<UserGroup> getGroupsCreatedByUser(int userId);
 }

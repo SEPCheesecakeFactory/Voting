@@ -147,10 +147,12 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     Logger.log("Debugging - sendVoteGroup");
     var message = new Message(MessageType.SendCreateVoteGroupRequest);
     message.addParam("voteGroup", userGroup);
+    message.addParam("userId", getProfile().getId());
     boolean success = client.send(message);
   }
 
   @Override public void requestUserLookup(String username) {
+    Logger.log("Debugging - requestUserLookup");
     Message message = new Message(MessageType.LookupUser);
     Profile temp = new Profile(username);
     message.addParam("profile", temp);
@@ -162,6 +164,21 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
    Logger.log("Debugging - handleUserLookupResult");
     support.firePropertyChange("LookupUserResults", null, profile);
   }
+
+  @Override public void requestUserGroups()
+  {
+    Logger.log("Debugging - requestUserGroups");
+    Message message = new Message(MessageType.SendUserGroupsRequest);
+    message.addParam("userId",getProfile().getId());
+    boolean success = client.send(message);
+  }
+
+  @Override public void receiveUserGroups(List<UserGroup> groups)
+  {
+    Logger.log("Debugging - receiveUserGroups");
+    support.firePropertyChange("receiveUserGroups",null,groups);
+  }
+
   @Override public void handleUserGroupLookupResult(UserGroup userGroup)
   {
     Logger.log("Debugging - handleUserGroupLookupResult");

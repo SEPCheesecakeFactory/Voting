@@ -86,10 +86,12 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     databaseConnection.addUserToGroup(userId,groupId);
   }
 
-  @Override public int createUserGroup(String groupName)
+  @Override public int createUserGroup(String groupName, int creatorId)
   {
-    return databaseConnection.createUserGroup(groupName);
+    return databaseConnection.createUserGroup(groupName, creatorId);
   }
+
+
 
 
 
@@ -116,5 +118,10 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   @Override
   public List<Poll> getAllAvailablePolls() {
     return databaseConnection.getAllAvailablePolls();
+  }
+
+  @Override public List<UserGroup> getGroupsCreatedByUser(int userId)
+  {
+    return databaseConnection.getGroupsCreatedByUser(userId);
   }
 }

@@ -2,6 +2,7 @@ package Client.CreateVoteGroup;
 
 import Client.Model;
 import Common.Profile;
+import Common.UserGroup;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -36,7 +37,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
   public void setViewModel(CreateVoteGroupViewModelGUI viewModel) {
     this.viewModel = viewModel;
     viewModel.addPropertyChangeListener(this);
-    //TODO: display user's created groups (from db)
+    viewModel.requestUserGroups();
   }
 
   @FXML
@@ -242,36 +243,56 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
   // Called when Model returns a user lookup result
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-    if ("LookupUserResults".equals(evt.getPropertyName())) {
-      Profile profile = (Profile) evt.getNewValue();
-      Platform.runLater(() -> {
-        String username = profile.getUsername().trim().toLowerCase();
-        HBox memberRow = memberRowMap.get(username);
-        if (memberRow != null) {
-          if (profile.getId() == -1) {
-            showAlert("User Lookup Failed", "User not found.");
-          } else {
-            viewModel.addMemberToGroup(profile);
-            int index = -1;
-            for (int i = 0; i < memberRow.getChildren().size(); i++) {
-              if (memberRow.getChildren().get(i) instanceof Button b &&
-                  "Validate".equals(b.getText())) {
-                index = i;
-                break;
+    switch (evt.getPropertyName()) {
+      case "LookupUserResults" -> {
+        Profile profile = (Profile) evt.getNewValue();
+        Platform.runLater(() -> {
+          String username = profile.getUsername().trim().toLowerCase();
+          HBox memberRow = memberRowMap.get(username);
+          if (memberRow != null) {
+            if (profile.getId() == -1) {
+              showAlert("User Lookup Failed", "User not found.");
+            } else {
+              viewModel.addMemberToGroup(profile);
+              int index = -1;
+              for (int i = 0; i < memberRow.getChildren().size(); i++) {
+                if (memberRow.getChildren().get(i) instanceof Button b &&
+                    "Validate".equals(b.getText())) {
+                  index = i;
+                  break;
+                }
+              }
+              if (index != -1) {
+                Label validLabel = new Label("Valid");
+                validLabel.setStyle("-fx-text-fill: green;");
+                memberRow.getChildren().remove(index);
+                memberRow.getChildren().add(index, validLabel);
               }
             }
-            if (index != -1) {
-              Label validLabel = new Label("Valid");
-              validLabel.setStyle("-fx-text-fill: green;");
-              memberRow.getChildren().remove(index);
-              memberRow.getChildren().add(index, validLabel);
-            }
           }
-        }
-      });
-    }
+        });
+      }
 
+      case "receiveUserGroups" -> {
+        List<UserGroup> groups = (List<UserGroup>) evt.getNewValue();
+        Platform.runLater(() -> {
+          groupData.clear(); // clear previous entries
+
+          for (UserGroup group : groups) {
+            GroupEntry entry = new GroupEntry(group.getGroupName());
+            List<String> memberNames = group.getMembers().stream()
+                .map(Profile::getUsername)
+                .toList();
+            entry.setMembers(memberNames);
+            groupData.add(entry);
+          }
+
+          groupTable.refresh();
+        });
+      }
+    }
   }
+
 
   public static class GroupEntry {
     private final SimpleStringProperty groupName = new SimpleStringProperty();

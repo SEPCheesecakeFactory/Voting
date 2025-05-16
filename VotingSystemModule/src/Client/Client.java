@@ -97,6 +97,14 @@ public class Client implements MessageListener
 
       case SendLookupGroupResult -> model.handleUserGroupLookupResult(
           message.getParam("userGroup", UserGroup.class));
+      case SendUserGroups ->
+      {
+        Type userGroupListType = new TypeToken<List<UserGroup>>() {}.getType();
+        model.receiveUserGroups(
+            message.getParam("userGroups", userGroupListType));
+      }
+
+
 
       default -> Logger.log(
           String.format("Could not handle message of type %s", message.getType()));

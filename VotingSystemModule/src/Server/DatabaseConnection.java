@@ -514,19 +514,19 @@ public class DatabaseConnection implements DatabaseConnector
     return poll;
   }
   // ===== User Group & Poll Access Methods =====
-  public int createUserGroup(String groupName) {
+  public int createUserGroup(String groupName, int creatorId) {
     try (Connection connection = openConnection();
         PreparedStatement stmt = connection.prepareStatement(
-            "INSERT INTO UserGroup (name) VALUES (?) RETURNING id")) {
+            "INSERT INTO UserGroup (name, creator_id) VALUES (?, ?) RETURNING id")) {
       stmt.setString(1, groupName);
+      stmt.setInt(2, creatorId);
+
       ResultSet rs = stmt.executeQuery();
       if (rs.next()) {
         return rs.getInt(1);
       }
       throw new SQLException("Group creation failed.");
-    }
-    catch (SQLException e)
-    {
+    } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
@@ -625,28 +625,50 @@ public class DatabaseConnection implements DatabaseConnector
   return null; // Not found
 }
 
+
   @Override
   public UserGroup getGroupByUsername(String groupName) {
-    String sql = "SELECT id, name FROM UserGroup WHERE name = ?";
+    String groupSql = "SELECT id, name FROM UserGroup WHERE name = ?";
+    String membersSql = "SELECT u.id, u.username " +
+        "FROM Users u " +
+        "JOIN UserGroupMembership ugm ON u.id = ugm.user_id " +
+        "WHERE ugm.group_id = ?";
 
     try (Connection connection = openConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
+        PreparedStatement groupStmt = connection.prepareStatement(groupSql)) {
 
-      stmt.setString(1, groupName);
-      ResultSet rs = stmt.executeQuery();
+      groupStmt.setString(1, groupName);
+      ResultSet groupRs = groupStmt.executeQuery();
 
-      if (rs.next()) {
-        UserGroup group = new UserGroup(rs.getString("name"));
-        group.setId(rs.getInt("id"));
+      if (groupRs.next()) {
+        int groupId = groupRs.getInt("id");
+        String name = groupRs.getString("name");
+
+        UserGroup group = new UserGroup(name);
+        group.setId(groupId);
+
+        // Fetch members now
+        try (PreparedStatement memberStmt = connection.prepareStatement(membersSql)) {
+          memberStmt.setInt(1, groupId);
+          ResultSet memberRs = memberStmt.executeQuery();
+
+          while (memberRs.next()) {
+            Profile profile = new Profile(memberRs.getString("username"));
+            profile.setId(memberRs.getInt("id"));
+            group.addMember(profile);
+          }
+        }
+
         return group;
       }
 
     } catch (SQLException e) {
-      Logger.log("Database error during getGroupByName: " + e.getMessage());
+      Logger.log("Database error during getGroupByUsername: " + e.getMessage());
     }
 
-    return null; // Not found
+    return null;
   }
+
 
   @Override
   public void grantPollAccessToUser(int pollId, int userId) {
@@ -712,4 +734,51 @@ public class DatabaseConnection implements DatabaseConnector
 
     return polls;
   }
+
+  @Override
+  public List<UserGroup> getGroupsCreatedByUser(int userId) {
+    String groupSql = "SELECT id, name FROM UserGroup WHERE creator_id = ?";
+    String membersSql =
+        "SELECT u.id, u.username " +
+            "FROM Users u " +
+            "JOIN UserGroupMembership ugm ON u.id = ugm.user_id " +
+            "WHERE ugm.group_id = ?";
+
+    List<UserGroup> groups = new ArrayList<>();
+
+    try (Connection connection = openConnection();
+        PreparedStatement groupStmt = connection.prepareStatement(groupSql);
+        PreparedStatement membersStmt = connection.prepareStatement(membersSql)) {
+
+      groupStmt.setInt(1, userId);
+      ResultSet groupRs = groupStmt.executeQuery();
+
+      while (groupRs.next()) {
+        UserGroup group = new UserGroup(groupRs.getString("name"));
+        int groupId = groupRs.getInt("id");
+        group.setId(groupId);
+
+        // Fetch members for this group
+        membersStmt.setInt(1, groupId);
+        ResultSet membersRs = membersStmt.executeQuery();
+
+        while (membersRs.next()) {
+          Profile profile = new Profile(membersRs.getString("username"));
+          profile.setId(membersRs.getInt("id"));
+          group.addMember(profile);
+        }
+        membersRs.close();
+
+        groups.add(group);
+      }
+      groupRs.close();
+
+    } catch (SQLException e) {
+      Logger.log("Database error during getGroupsCreatedByUser: " + e.getMessage());
+    }
+
+    return groups;
+  }
+
+
 }

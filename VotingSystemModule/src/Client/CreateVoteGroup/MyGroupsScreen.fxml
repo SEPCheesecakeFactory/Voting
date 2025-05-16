@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.CreateVoteGroup.CreateVoteGroupViewController">
+   <children>
+      <fx:include source="../Menu/NavBar.fxml" />
+      <Label prefHeight="17.0" prefWidth="599.0" text="Manage your user groups">
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </Label>
+
+      <!-- ScrollPane wrapping questionsContainer -->
+      <ScrollPane fitToWidth="true" prefHeight="350.0" prefWidth="580.0" style="-fx-border-color: lightgray; -fx-padding: 10;">
+         <content>
+            <VBox fx:id="groupsContainer" spacing="10.0" />
+         </content>
+      </ScrollPane>
+
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Button fx:id="addGroupButton" mnemonicParsing="false" text="+ Add Group">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</VBox>

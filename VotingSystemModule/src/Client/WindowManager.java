@@ -11,7 +11,9 @@ import Client.CreatePoll.CreatePollGUIViewModel;
 import Client.CreatePoll.CreatePollView;
 import Client.CreatePoll.CreatePollViewModel;
 import Client.CreateVoteGroup.CreateVoteGroupView;
+import Client.CreateVoteGroup.CreateVoteGroupViewController;
 import Client.CreateVoteGroup.CreateVoteGroupViewModel;
+import Client.CreateVoteGroup.CreateVoteGroupViewModelGUI;
 import Client.DisplayPoll.DisplayPollView;
 import Client.DisplayPoll.DisplayPollViewModel;
 import Client.GUITest.GUITestView;
@@ -97,10 +99,11 @@ public class WindowManager
             changeUsernameVM);
         break;
       case CreateGroup:
-        CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
-            getModel());
-        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
-            voteGroupVM);
+//        CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
+//            getModel());
+//        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
+//            voteGroupVM);
+        openJavaFXWindow(getMyUserGroupsScene());
         break;
       case AddUsersGroups:
         AddUsersViewModel addUsersVM = new AddUsersViewModel(
@@ -188,6 +191,26 @@ public class WindowManager
     PollResultViewController controller = loader.getController();
     PollResultViewModel viewModel = new PollResultViewModel(getModel());
     controller.init(viewModel);
+
+    return new Scene(root);
+  }
+
+  private Scene getMyUserGroupsScene(){
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/CreateVoteGroup/MyGroupsScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    CreateVoteGroupViewController controller = loader.getController();
+    CreateVoteGroupViewModelGUI viewModel = new CreateVoteGroupViewModelGUI(getModel());
+    controller.setViewModel(viewModel);
 
     return new Scene(root);
   }

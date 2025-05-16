@@ -12,6 +12,7 @@ public class NavBarController
   @FXML private Button createPollNavButton;
   @FXML private Button availablePollsNavButton;
   @FXML private Button pollResultsNavButton;
+  @FXML private Button myUserGroupsNavButton;
 
   @FXML public void initialize()
   {
@@ -21,6 +22,8 @@ public class NavBarController
         e -> navigateToView(ViewType.AvailablePolls));
     pollResultsNavButton.setOnAction(
         e -> navigateToView(ViewType.PollResult));
+    myUserGroupsNavButton.setOnAction(
+        e -> navigateToView(ViewType.CreateGroup));
   }
 
   private void navigateToView(ViewType viewType)

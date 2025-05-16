@@ -4,6 +4,7 @@ import Common.*;
 import Utils.Logger;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class DatabaseConnectionProxy implements DatabaseConnector
 {
@@ -110,5 +111,10 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   @Override public void grantPollAccessToGroup(int pollId, String groupName)
   {
     databaseConnection.grantPollAccessToGroup(pollId, groupName);
+  }
+
+  @Override
+  public List<Poll> getAllAvailablePolls() {
+    return databaseConnection.getAllAvailablePolls();
   }
 }

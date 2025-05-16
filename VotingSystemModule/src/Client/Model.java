@@ -11,6 +11,8 @@ import Utils.Logger;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class Model implements PropertyChangeSubject, PollResultRequestService,
@@ -21,6 +23,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   private Poll currentPoll;
   private Profile currentProfile;
   private Client client;
+  private List<Poll> availablePolls = new ArrayList<>();
 
   public Model(Client client)
   {
@@ -95,6 +98,31 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     var message = new Message(MessageType.ClosePoll);
     message.addParam("pollId", pollId);
     boolean success = client.send(message);
+  }
+
+  public void sendDisplayPollRequest(int pollId) {
+    Logger.log("Debugging - sendDisplayPollRequest");
+    Message message = new Message(MessageType.DisplayPollRequest);
+    message.addParam("pollId", pollId);
+    boolean success = client.send(message);
+    if (!success) {
+      Logger.log("Failed to send DisplayPollRequest for poll ID: " + pollId);
+    }
+  }
+
+  public void requestAvailablePolls() {
+    Logger.log("Debugging - requestAvailablePolls");
+    Message message = new Message(MessageType.GetAvailablePolls);
+    client.send(message);
+  }
+
+  public void handleAvailablePolls(List<Poll> polls) {
+    this.availablePolls = polls;
+    support.firePropertyChange("AvailablePolls", null, polls); // notify listeners
+  }
+
+  public List<Poll> getAvailablePolls() {
+    return availablePolls;
   }
 
   @Override public void getResult(PollResult pollResult)

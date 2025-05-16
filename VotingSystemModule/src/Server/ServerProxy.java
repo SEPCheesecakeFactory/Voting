@@ -8,10 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ServerProxy
 {
@@ -71,6 +68,18 @@ public class ServerProxy
         case MessageType.SendPollRequest:
           pollId = messageObject.getParam("pollId", int.class);
           model.sendPoll(pollId);
+          break;
+        case MessageType.DisplayPollRequest:
+          pollId = messageObject.getParam("pollId", int.class);
+          model.sendPoll(pollId);
+          Logger.log("Poll display request handled for ID: " + pollId);
+          break;
+        case MessageType.GetAvailablePolls:
+          List<Poll> availablePolls = model.getDb().getAllAvailablePolls();  // 🔧 You'll write this method next
+          Message sendMsg = new Message(MessageType.SendAvailablePolls);
+          sendMsg.addParam("polls", availablePolls);
+          model.sendMessageToUser(JsonUtil.serialize(sendMsg));
+          Logger.log("Sent available polls to client.");
           break;
         case MessageType.SendVote:
           Vote vote = messageObject.getParam("vote", Vote.class);

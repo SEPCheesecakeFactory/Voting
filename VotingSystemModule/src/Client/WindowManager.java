@@ -260,7 +260,7 @@ public class WindowManager
 
 
   private Scene getDisplayPollScene() {
-    return getScene("/Client/DisplayPoll/VoteScreen.fxml");
+    return getScene("/Client/DisplayPoll/Vote.fxml");
   }
 
 

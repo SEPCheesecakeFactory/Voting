@@ -3,9 +3,13 @@ package Client;
 import Common.*;
 import Utils.JsonUtil;
 import Utils.Logger;
+import com.google.gson.reflect.TypeToken;
+import javafx.application.Platform;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.Socket;
+import java.util.List;
 
 public class Client implements MessageListener
 {
@@ -61,22 +65,42 @@ public class Client implements MessageListener
     }
   }
 
-  @Override public void receiveMessage(Message message)
+  @Override
+  public void receiveMessage(Message message)
   {
-    // TODO: handle messages
     Logger.log(String.format("handling message of type %s", message.getType()));
+
     switch (message.getType())
     {
-      case SendProfileBack -> model.setProfile(message.getParam("UpdatedProfile",
-          Profile.class));
-      case SendResultResults -> model.getResult(message.getParam("pollResult",
-          PollResult.class));
-      case SendPoll -> model.setPoll(message.getParam("poll",
-         Poll.class));
-      case SendLookupUserResult -> model.handleUserLookupResult(message.getParam("profile", Profile.class));
-      case SendLookupGroupResult -> model.handleUserGroupLookupResult(message.getParam("userGroup", UserGroup.class));
+      case SendProfileBack -> model.setProfile(
+          message.getParam("UpdatedProfile", Profile.class));
 
-      default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
+      case SendAvailablePolls -> {
+        Type listType = new TypeToken<List<Poll>>() {}.getType();
+        List<Poll> polls = message.getParam("polls", listType);
+        model.handleAvailablePolls(polls);
+      }
+      case SendResultResults -> model.getResult(
+          message.getParam("pollResult", PollResult.class));
+
+      case SendPoll -> {
+        Poll poll = message.getParam("poll", Poll.class);
+        model.setPoll(poll);
+        System.out.println("Switching to DisplayPoll view...");
+        javafx.application.Platform.runLater(() -> {
+          WindowManager.getInstance().showView(ViewType.DisplayPoll);
+        });
+      }
+
+      case SendLookupUserResult -> model.handleUserLookupResult(
+          message.getParam("profile", Profile.class));
+
+      case SendLookupGroupResult -> model.handleUserGroupLookupResult(
+          message.getParam("userGroup", UserGroup.class));
+
+      default -> Logger.log(
+          String.format("Could not handle message of type %s", message.getType()));
     }
   }
+
 }

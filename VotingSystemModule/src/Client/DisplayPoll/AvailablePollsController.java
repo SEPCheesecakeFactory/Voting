@@ -3,6 +3,7 @@ package Client.DisplayPoll;
 import Client.ViewType;
 import Client.WindowManager;
 import Common.Poll;
+import Utils.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +12,8 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+
+import java.util.List;
 
 public class AvailablePollsController
 {
@@ -44,11 +47,14 @@ public class AvailablePollsController
     addVoteButtonToTable();
     addResultsButtonToTable();
 
-    // Dummy data to test
-    masterData.addAll(new Poll("Election 2025", "Presidential vote", 1,
-            new Common.Question[0], false, true),
-        new Poll("Feedback Survey", "Course feedback", 2,
-            new Common.Question[0], true, false));
+    WindowManager.getInstance().getModel().addPropertyChangeListener("AvailablePolls", evt -> {
+      List<Poll> polls = (List<Poll>) evt.getNewValue();
+      System.out.println("Received available polls: " + polls.size());
+      masterData.setAll(polls);
+    });
+
+    Logger.log("Requesting available polls...");
+    WindowManager.getInstance().getModel().requestAvailablePolls();
 
     // Wrap in FilteredList
     FilteredList<Poll> filteredData = new FilteredList<>(masterData, p -> true);
@@ -69,8 +75,7 @@ public class AvailablePollsController
       {
         btn.setOnAction(event -> {
           Poll poll = getTableView().getItems().get(getIndex());
-          WindowManager.getInstance().showView(ViewType.DisplayPoll);
-          // TODO: pass poll.getId() to DisplayPollViewModel
+          WindowManager.getInstance().getModel().sendDisplayPollRequest(poll.getId());
         });
       }
       @Override protected void updateItem(Void item, boolean empty) {
@@ -87,8 +92,8 @@ public class AvailablePollsController
       {
         btn.setOnAction(event -> {
           Poll poll = getTableView().getItems().get(getIndex());
+          WindowManager.getInstance().getModel().sendResultRequest(poll.getId());
           WindowManager.getInstance().showView(ViewType.PollResult);
-          // TODO: pass poll.getId() to PollResultViewController
         });
       }
       @Override protected void updateItem(Void item, boolean empty) {

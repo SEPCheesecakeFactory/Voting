@@ -74,7 +74,9 @@ public class WindowManager
       case ViewType.Menu:
         MenuViewModel menuVM = new MenuViewModel();
         MenuView menuV = new MenuView(menuVM);
-        (new Thread(()->{showView(ViewType.Menu);})).start();
+        var thread = new Thread(()->{showView(ViewType.Menu);});
+        thread.setDaemon(true);
+        thread.start();
         break;
       case ViewType.PollResult:
           openJavaFXWindow(getPollResultScene());

@@ -74,14 +74,12 @@ public class WindowManager
       case ViewType.Menu:
         MenuViewModel menuVM = new MenuViewModel();
         MenuView menuV = new MenuView(menuVM);
-        var thread = new Thread(() -> {
-          showView(ViewType.Menu);
-        });
+        var thread = new Thread(()->{showView(ViewType.Menu);});
         thread.setDaemon(true);
         thread.start();
         break;
       case ViewType.PollResult:
-        openJavaFXWindow(getPollResultScene());
+          openJavaFXWindow(getPollResultScene());
         break;
       case ViewType.CreatePoll:
         openJavaFXWindow(getCreatePollScene());
@@ -101,11 +99,14 @@ public class WindowManager
       case CreateGroup:
         CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
             getModel());
-        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(voteGroupVM);
+        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
+            voteGroupVM);
         break;
       case AddUsersGroups:
-        AddUsersViewModel addUsersVM = new AddUsersViewModel(getModel());
-        AddUsersView addUsersV = new AddUsersView(addUsersVM);
+        AddUsersViewModel addUsersVM = new AddUsersViewModel(
+            getModel());
+        AddUsersView addUsersV = new AddUsersView(
+            addUsersVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
@@ -171,8 +172,7 @@ public class WindowManager
     }
   }
 
-  private Scene getPollResultScene()
-  {
+  private Scene getPollResultScene(){
     FXMLLoader loader = new FXMLLoader(
         getClass().getResource("/Client/PollResult/PollResultView.fxml"));
     Parent root = null;
@@ -194,23 +194,52 @@ public class WindowManager
 
   private Scene getLoginScene()
   {
-    return getScene("/Client/Login/LoginView.fxml");
-  }
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/Login/LoginView.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
 
+    LoginViewController controller = loader.getController();
+    LoginViewModel viewModel = new LoginViewModel(getModel());
+
+    controller.init(viewModel);
+
+
+    return new Scene(root);
+  }
   private Scene getCreatePollScene()
   {
-    return getScene("/Client/CreatePoll/CreatePollScreen.fxml");
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/CreatePoll/CreatePollScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    CreatePollGUIView controller = loader.getController();
+    CreatePollGUIViewModel viewModel = new CreatePollGUIViewModel(getModel());
+    controller.setViewModel(viewModel);
+
+    return new Scene(root);
   }
 
-  private Scene getDisplayPollScene()
-  {
+
+  private Scene getDisplayPollScene() {
     return getScene("/Client/DisplayPoll/VoteScreen.fxml");
   }
 
-  private Scene getHomeScreenScene()
-  {
-    return getScene("/Client/Menu/HomeScreen.fxml");
-  }
 
   public void openJavaFXScene(String fxmlPath)
   {
@@ -219,7 +248,8 @@ public class WindowManager
 
   private Scene getScene(String fxmlPath)
   {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource(fxmlPath));
     Parent root = null;
     try
     {
@@ -231,6 +261,11 @@ public class WindowManager
     }
 
     return new Scene(root);
+  }
+
+  private Scene getHomeScreenScene()
+  {
+    return getScene("/Client/Menu/HomeScreen.fxml");
   }
 
   private Scene getGUITestScene()
@@ -254,7 +289,7 @@ public class WindowManager
 
   private void showScene(Scene scene)
   {
-    Platform.runLater(() -> {
+    Platform.runLater(()->{
       getPrimaryStage().setTitle("Voting System");
       // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
       getPrimaryStage().setScene(scene);

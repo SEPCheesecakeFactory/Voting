@@ -16,6 +16,7 @@ import Client.Login.LoginViewController;
 import Client.Login.LoginViewModel;
 import Client.Menu.MenuView;
 import Client.Menu.MenuViewModel;
+import Client.PollResult.PollResultViewController;
 import Client.PollResult.PollResultView;
 import Client.PollResult.PollResultViewModel;
 import Client.Test.TestView;
@@ -72,8 +73,7 @@ public class WindowManager
         (new Thread(()->{showView(ViewType.Menu);})).start();
         break;
       case ViewType.PollResult:
-        PollResultViewModel pollResultVM = new PollResultViewModel(getModel());
-        PollResultView pollResultV = new PollResultView(pollResultVM);
+          openJavaFXWindow(getPollResultScene());
         break;
       case ViewType.CreatePoll:
         CreatePollViewModel createPollViewModel = new CreatePollViewModel(
@@ -158,6 +158,26 @@ public class WindowManager
       showErrorPopup("Could not open a new scene!");
       e.printStackTrace();
     }
+  }
+
+  private Scene getPollResultScene(){
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/PollResult/PollResultView.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    PollResultViewController controller = loader.getController();
+    PollResultViewModel viewModel = new PollResultViewModel(getModel());
+    controller.init(viewModel);
+
+    return new Scene(root);
   }
 
   private Scene getLoginScene()

@@ -12,5 +12,6 @@
         <Button fx:id="availablePollsNavButton" text="Available Polls"/>
         <Button fx:id="userSettingsNavButton" text="User Settings"/>
         <Button fx:id="usernameNavButton" text="Username"/>
+        <Button fx:id="pollResultsNavButton" text="Poll Results"/>
     </children>
 </HBox>

@@ -10,6 +10,7 @@ public class NavBarController
   @FXML private Button homeNavButton;
   @FXML private Button createPollNavButton;
   @FXML private Button availablePollsNavButton;
+  @FXML private Button pollResultsNavButton;
 
   @FXML public void initialize()
   {
@@ -18,6 +19,8 @@ public class NavBarController
         e -> navigate("/Client/CreatePoll/CreatePollScreen.fxml"));
     availablePollsNavButton.setOnAction(
         e -> navigate("/Client/DisplayPoll/AvailablePolls.fxml"));
+    pollResultsNavButton.setOnAction(
+        e -> navigate("/Client/PollResult/PollResultView.fxml"));
   }
 
   private void navigate(String fxmlPath)

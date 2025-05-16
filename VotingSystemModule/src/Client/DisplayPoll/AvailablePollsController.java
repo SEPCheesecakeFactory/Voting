@@ -22,15 +22,24 @@ public class AvailablePollsController
 
   private final ObservableList<Poll> pollList = FXCollections.observableArrayList();
 
-  @FXML
-  public void initialize() {
-    titleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitle()));
+  @FXML public void initialize()
+  {
+    titleColumn.setCellValueFactory(
+        data -> new SimpleStringProperty(data.getValue().getTitle()));
+    voteColumn.setCellValueFactory(data -> new SimpleStringProperty(
+        data.getValue().getTitle())); // convert to button
+    resultsColumn.setCellValueFactory(data -> new SimpleStringProperty(
+        data.getValue().getTitle())); // convert to button
+    privacyColumn.setCellValueFactory(data -> new SimpleStringProperty(
+        String.valueOf(data.getValue().isPrivate())));
+    openColumn.setCellValueFactory(data -> new SimpleStringProperty(
+        String.valueOf(data.getValue().isClosed())));
 
     // Dummy data to test
-    pollList.addAll(
-        new Poll("Election 2025", "Presidential vote", 1, new Common.Question[0], false),
-        new Poll("Feedback Survey", "Course feedback", 2, new Common.Question[0], true)
-    );
+    pollList.addAll(new Poll("Election 2025", "Presidential vote", 1,
+            new Common.Question[0], false, true),
+        new Poll("Feedback Survey", "Course feedback", 2,
+            new Common.Question[0], true, false));
 
     pollTable.setItems(pollList);
   }

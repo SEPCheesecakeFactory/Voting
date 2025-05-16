@@ -19,6 +19,16 @@ public class NavBarController
     createPollNavButton.setOnAction(e -> navigateToCreatePoll());
     availablePollsNavButton.setOnAction(
         e -> System.out.println("edit NavBarController"));
+    pollResultsNavButton.setOnAction(
+        e -> navigateToPollResult());
+
+
+}
+
+  private void navigateToPollResult()
+  {
+    WindowManager.getInstance().showView(ViewType.PollResult);
+
   }
 
   private void navigate(String fxmlPath)

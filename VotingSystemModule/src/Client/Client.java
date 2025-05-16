@@ -16,6 +16,7 @@ public class Client implements MessageListener
 
   public Client()
   {
+    Logger.log("Warning", "Running the client on default host and port...");
     host = "localhost";
     port = 2910;
   }
@@ -35,8 +36,9 @@ public class Client implements MessageListener
       clientConnection.registerMessageListener(this);
       WindowManager.getInstance().setModel(new Model(this));
       this.model = WindowManager.getInstance().getModel();
-      new Thread(clientConnection).start();
-      // WindowManager.getInstance().showView(ViewType.Menu); //Getting stuck here
+      var thread = new Thread(clientConnection);
+      thread.setDaemon(true);
+      thread.start();
     }
     catch (IOException e)
     {
@@ -72,6 +74,7 @@ public class Client implements MessageListener
       case SendPoll -> model.setPoll(message.getParam("poll",
          Poll.class));
       case SendLookupUserResult -> model.handleUserLookupResult(message.getParam("profile", Profile.class));
+      case SendLookupGroupResult -> model.handleUserGroupLookupResult(message.getParam("userGroup", UserGroup.class));
 
       default -> Logger.log(String.format("Could not handle message of type %s", message.getType()));
     }

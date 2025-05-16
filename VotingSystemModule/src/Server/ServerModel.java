@@ -5,6 +5,7 @@ import Utils.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Set;
 
 public class ServerModel {
   private final DatabaseConnector db;
@@ -149,5 +150,30 @@ public class ServerModel {
     for (Profile profile : userGroup.getMembers()) {
       db.addUserToGroup(profile.getId(), groupId);
     }
+  }
+  public void grantPollAccessToUsers(int pollId, Set<Profile> users)
+  {
+    for (Profile user : users) {
+      db.grantPollAccessToUser(pollId, user.getId());
+    }
+  }
+  public void grantPollAccessToGroups(int pollId, Set<UserGroup> groups)
+  {
+    for (UserGroup group : groups) {
+      db.grantPollAccessToGroup(pollId, group.getGroupName());
+    }
+  }
+
+  public void sendLookupGroupResults(UserGroup group)
+  {
+    try
+    {
+      Message message = new Message(MessageType.SendLookupGroupResult);
+      message.addParam("userGroup", group);
+      connectionPool.broadcast(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to send sendLookupGroupResults to user: " + e.getMessage());    }
   }
 }

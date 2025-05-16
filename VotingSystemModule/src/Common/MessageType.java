@@ -17,5 +17,5 @@ public enum MessageType
   SendCreatedPoll,
   LookupUser,
   SendLookupUserResult,
-  SendVoteGroup, SendPoll, SendCreateVoteGroupRequest, Test
+  SendVoteGroup, SendPoll, SendCreateVoteGroupRequest, SendPollAccess, LookupGroup, SendLookupGroupResult, Test
 }

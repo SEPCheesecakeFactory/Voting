@@ -420,8 +420,8 @@ public class DatabaseConnection implements DatabaseConnector
           Statement.RETURN_GENERATED_KEYS))
       {
         ps.setString(1, poll.getTitle());
-        ps.setBoolean(2, poll.isPrivate());
-        ps.setBoolean(3, poll.isClosed());
+        ps.setBoolean(2, poll.isClosed());
+        ps.setBoolean(3, poll.isPrivate());
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -547,17 +547,21 @@ public class DatabaseConnection implements DatabaseConnector
   }
 
   public boolean userHasAccessToPoll(int userId, int pollId) {
+    // Poll is accessible if:
+    //  - poll.is_private = false (public poll)
+    //  - or user has explicit access via PollAccessControl.user_id
+    //  - or user belongs to a group with access via PollAccessControl.group_id and UserGroupMembership
+
     String sql = """
-          SELECT 1
-          FROM Poll p
-          LEFT JOIN PollAccessControl pac ON p.id = pac.poll_id
-          LEFT JOIN UserGroupMembership ugm ON pac.group_id = ugm.group_id
-          WHERE p.id = ? AND (
-              p.is_private = FALSE OR
-              pac.user_id = ? OR
-              ugm.user_id = ?
-          )
-          """;
+    SELECT 1 FROM Poll p
+    LEFT JOIN PollAccessControl pac ON p.id = pac.poll_id
+    LEFT JOIN UserGroupMembership ugm ON pac.group_id = ugm.group_id
+    WHERE p.id = ? AND (
+      p.is_private = FALSE
+      OR pac.user_id = ?
+      OR ugm.user_id = ?
+    ) LIMIT 1
+    """;
 
     try (Connection connection = openConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -571,33 +575,33 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  public void addUserToPoll(int userId, int pollId) {
-    try (Connection connection = openConnection();
-        PreparedStatement stmt = connection.prepareStatement(
-            "INSERT INTO PollAccessControl (poll_id, user_id) VALUES (?, ?)")) {
-      stmt.setInt(1, pollId);
-      stmt.setInt(2, userId);
-      stmt.executeUpdate();
-    }
-    catch (SQLException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void addGroupToPoll(int groupId, int pollId){
-    try (Connection connection = openConnection();
-        PreparedStatement stmt = connection.prepareStatement(
-            "INSERT INTO PollAccessControl (poll_id, group_id) VALUES (?, ?)")) {
-      stmt.setInt(1, pollId);
-      stmt.setInt(2, groupId);
-      stmt.executeUpdate();
-    }
-    catch (SQLException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
+//  public void addUserToPoll(int userId, int pollId) {
+//    try (Connection connection = openConnection();
+//        PreparedStatement stmt = connection.prepareStatement(
+//            "INSERT INTO PollAccessControl (poll_id, user_id) VALUES (?, ?)")) {
+//      stmt.setInt(1, pollId);
+//      stmt.setInt(2, userId);
+//      stmt.executeUpdate();
+//    }
+//    catch (SQLException e)
+//    {
+//      throw new RuntimeException(e);
+//    }
+//  }
+//
+//  public void addGroupToPoll(int groupId, int pollId){
+//    try (Connection connection = openConnection();
+//        PreparedStatement stmt = connection.prepareStatement(
+//            "INSERT INTO PollAccessControl (poll_id, group_id) VALUES (?, ?)")) {
+//      stmt.setInt(1, pollId);
+//      stmt.setInt(2, groupId);
+//      stmt.executeUpdate();
+//    }
+//    catch (SQLException e)
+//    {
+//      throw new RuntimeException(e);
+//    }
+//  }
 
   @Override public Profile getProfileByUsername(String username) {
   String sql = "SELECT id, username FROM Users WHERE username = ?";
@@ -620,5 +624,66 @@ public class DatabaseConnection implements DatabaseConnector
 
   return null; // Not found
 }
+
+  @Override
+  public UserGroup getGroupByUsername(String groupName) {
+    String sql = "SELECT id, name FROM UserGroup WHERE name = ?";
+
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+      stmt.setString(1, groupName);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        UserGroup group = new UserGroup(rs.getString("name"));
+        group.setId(rs.getInt("id"));
+        return group;
+      }
+
+    } catch (SQLException e) {
+      Logger.log("Database error during getGroupByName: " + e.getMessage());
+    }
+
+    return null; // Not found
+  }
+
+  @Override
+  public void grantPollAccessToUser(int pollId, int userId) {
+    String sql = "INSERT INTO PollAccessControl (poll_id, user_id, group_id) VALUES (?, ?, NULL) ON CONFLICT DO NOTHING";
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setInt(1, pollId);
+      stmt.setInt(2, userId);
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to grant poll access to user", e);
+    }
+  }
+
+  @Override
+  public void grantPollAccessToGroup(int pollId, String groupName) {
+    String getGroupIdSQL = "SELECT id FROM UserGroup WHERE name = ?";
+    String insertSQL = "INSERT INTO PollAccessControl (poll_id, user_id, group_id) VALUES (?, NULL, ?) ON CONFLICT DO NOTHING";
+
+    try (Connection connection = openConnection();
+        PreparedStatement getStmt = connection.prepareStatement(getGroupIdSQL)) {
+      getStmt.setString(1, groupName);
+      ResultSet rs = getStmt.executeQuery();
+      if (rs.next()) {
+        int groupId = rs.getInt("id");
+
+        try (PreparedStatement insertStmt = connection.prepareStatement(insertSQL)) {
+          insertStmt.setInt(1, pollId);
+          insertStmt.setInt(2, groupId);
+          insertStmt.executeUpdate();
+        }
+      } else {
+        throw new RuntimeException("Group not found: " + groupName);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to grant poll access to group", e);
+    }
+  }
 
 }

@@ -3,12 +3,15 @@ package Server;
 import Common.*;
 import Utils.JsonUtil;
 import Utils.Logger;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerProxy
 {
@@ -125,6 +128,19 @@ public class ServerProxy
           UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
           model.storeUserGroup(userGroup);
           break;
+
+        case MessageType.SendPollAccess:
+          pollId = messageObject.getParam("pollId", int.class);
+
+          Type userSetType = new TypeToken<Set<Profile>>() {}.getType();
+          Set<Profile> users = messageObject.getParam("users", userSetType);
+
+          Type groupSetType = new TypeToken<Set<UserGroup>>() {}.getType();
+          Set<UserGroup> groups = messageObject.getParam("groups", groupSetType);
+
+          model.grantPollAccessToUsers(pollId, users);
+          model.grantPollAccessToGroups(pollId, groups);
+          break;
         case MessageType.LookupUser:
           profile = messageObject.getParam("profile", Profile.class);
           Profile fullProfile = model.getDb().getProfileByUsername(profile.getUsername());
@@ -135,6 +151,19 @@ public class ServerProxy
           }
 
           model.sendLookupUserResults(fullProfile);
+          break;
+        case MessageType.LookupGroup:
+          String groupName = messageObject.getParam("groupName", String.class);
+          UserGroup group = model.getDb().getGroupByUsername(groupName);
+
+          if (group == null) {
+            // Create a dummy UserGroup to signal "not found"
+            group = new UserGroup(groupName);
+            group.setId(-1); // signal "not found"
+          }
+
+          // Send back the full group (or the dummy with id -1)
+          model.sendLookupGroupResults(group);
           break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());

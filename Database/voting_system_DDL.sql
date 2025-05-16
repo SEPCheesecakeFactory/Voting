@@ -58,16 +58,25 @@ CREATE TABLE UserGroupMembership
     PRIMARY KEY (user_id, group_id)
 );
 
-CREATE TABLE PollAccessControl
-(
-    poll_id  INT REFERENCES Poll(id),
-    user_id  INT REFERENCES Users(id) NULL,
-    group_id INT REFERENCES UserGroup(id) NULL,
-    PRIMARY KEY (poll_id, user_id, group_id),
-    CONSTRAINT user_or_group CHECK (user_id IS NOT NULL OR group_id IS NOT NULL)
+CREATE TABLE PollAccessControl (
+    id SERIAL PRIMARY KEY,
+    poll_id INT NOT NULL REFERENCES Poll(id),
+    user_id INT REFERENCES Users(id),
+    group_id INT REFERENCES UserGroup(id),
+
+    -- Exactly one of user_id or group_id must be non-null:
+    CHECK (
+        (user_id IS NOT NULL AND group_id IS NULL) OR
+        (user_id IS NULL AND group_id IS NOT NULL)
+    ),
+
+    -- Unique constraint on poll_id + user_id (ignoring NULL user_id):
+    CONSTRAINT unique_poll_user UNIQUE (poll_id, user_id),
+
+    -- Unique constraint on poll_id + group_id (ignoring NULL group_id):
+    CONSTRAINT unique_poll_group UNIQUE (poll_id, group_id)
 );
 
------
 --INSERT INTO Poll (title)
 --VALUES ('Dupa');
 --INSERT INTO Question (title, description, poll_id)
@@ -110,7 +119,3 @@ INSERT INTO ChoiceOption (value, question_id) VALUES
 ('4 - Satisfied', 2),
 ('5 - Very Satisfied', 2);
 
--- Test alice owns Dummy Title 0 --
---INSERT INTO pollownership (user_id, poll_id) VALUES (1, 3);
---SELECT * FROM pollownership WHERE user_id = 1 AND poll_id = 3;
---UPDATE poll SET is_closed = false WHERE id = 3;

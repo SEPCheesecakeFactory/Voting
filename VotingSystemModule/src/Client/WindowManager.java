@@ -1,9 +1,13 @@
 package Client;
 
+import Client.AddUsers.AddUsersView;
+import Client.AddUsers.AddUsersViewModel;
 import Client.ChangeUsername.ChangeUsernameView;
 import Client.ChangeUsername.ChangeUsernameViewModel;
 import Client.ClosePoll.ClosePollView;
 import Client.ClosePoll.ClosePollViewModel;
+import Client.CreatePoll.CreatePollGUIView;
+import Client.CreatePoll.CreatePollGUIViewModel;
 import Client.CreatePoll.CreatePollView;
 import Client.CreatePoll.CreatePollViewModel;
 import Client.CreateVoteGroup.CreateVoteGroupView;
@@ -76,10 +80,7 @@ public class WindowManager
           openJavaFXWindow(getPollResultScene());
         break;
       case ViewType.CreatePoll:
-        CreatePollViewModel createPollViewModel = new CreatePollViewModel(
-            getModel());
-        CreatePollView createPollView = new CreatePollView(createPollViewModel);
-        createPollView.render();
+        openJavaFXWindow(getCreatePollScene());
         break;
       case ViewType.DisplayPoll:
         openJavaFXWindow(getDisplayPollScene());
@@ -98,6 +99,12 @@ public class WindowManager
             getModel());
         CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
             voteGroupVM);
+        break;
+      case AddUsersGroups:
+        AddUsersViewModel addUsersVM = new AddUsersViewModel(
+            getModel());
+        AddUsersView addUsersV = new AddUsersView(
+            addUsersVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
@@ -196,24 +203,36 @@ public class WindowManager
 
     LoginViewController controller = loader.getController();
     LoginViewModel viewModel = new LoginViewModel(getModel());
+
     controller.init(viewModel);
+
+
+    return new Scene(root);
+  }
+  private Scene getCreatePollScene()
+  {
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/CreatePoll/CreatePollScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    CreatePollGUIView controller = loader.getController();
+    CreatePollGUIViewModel viewModel = new CreatePollGUIViewModel(getModel());
+    controller.setViewModel(viewModel);
 
     return new Scene(root);
   }
 
-  private Scene getDisplayPollScene() {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/DisplayPoll/VoteScreen.fxml")); // or whatever your path is
-    Parent root;
-    try {
-      root = loader.load();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
-    }
 
-    DisplayPollView controller = loader.getController();
-    controller.init(new DisplayPollViewModel(getModel()));
-    return new Scene(root);
+  private Scene getDisplayPollScene() {
+    return getScene("/Client/DisplayPoll/VoteScreen.fxml");
   }
 
 

@@ -36,8 +36,11 @@ public class DisplayPollView implements PropertyChangeListener {
     this.viewModel = viewModel;
     this.viewModel.addPropertyChangeListener("PollUpdated", this);
 
-    // Request poll on load (you can make this more dynamic)
-    viewModel.sendPollRequest(1); // replace with real pollId source
+    // Get the poll from the model
+    Poll poll = viewModel.getModel().getPoll();
+    if (poll != null) {
+      viewModel.setPoll(poll); // manually fire "PollUpdated"
+    }
   }
 
   private void renderCurrentQuestion() {

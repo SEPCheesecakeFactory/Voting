@@ -154,4 +154,15 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     }
 
+    @Override
+    public List<Poll> getAllAvailablePolls() {
+        List<Poll> availablePolls = new ArrayList<>();
+        for (Poll poll : polls.values()) {
+            if (!poll.isClosed()) {
+                availablePolls.add(poll);
+            }
+        }
+        return availablePolls;
+    }
+
 }

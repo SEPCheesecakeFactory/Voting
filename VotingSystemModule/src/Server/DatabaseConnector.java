@@ -3,6 +3,7 @@ package Server;
 import Common.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 // TODO: Needs rethinking - should be split into several depending on usage? (poll, vote or get/post)
 public interface DatabaseConnector
@@ -26,4 +27,5 @@ public interface DatabaseConnector
   UserGroup getGroupByUsername(String username);
   void grantPollAccessToUser(int pollId, int userId);
   void grantPollAccessToGroup(int pollId, String groupName);
+  List<Poll> getAllAvailablePolls();
 }

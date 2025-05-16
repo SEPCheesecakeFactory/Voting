@@ -685,5 +685,31 @@ public class DatabaseConnection implements DatabaseConnector
       throw new RuntimeException("Failed to grant poll access to group", e);
     }
   }
+  @Override
+  public List<Poll> getAllAvailablePolls() {
+    final String SQL = "SELECT id, title, is_private, is_closed FROM Poll WHERE is_closed = FALSE";
 
+    List<Poll> polls = new ArrayList<>();
+
+    try (Connection conn = openConnection();
+        PreparedStatement stmt = conn.prepareStatement(SQL);
+        ResultSet rs = stmt.executeQuery()) {
+
+      while (rs.next()) {
+        Poll poll = new Poll();
+        poll.setId(rs.getInt("id"));
+        poll.setTitle(rs.getString("title"));
+        poll.setPrivate(rs.getBoolean("is_private"));
+        poll.setClosed(rs.getBoolean("is_closed"));
+        poll.setQuestions(new Question[0]); // we skip loading questions for list
+
+        polls.add(poll);
+      }
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to fetch available polls", e);
+    }
+
+    return polls;
+  }
 }

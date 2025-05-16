@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Client.DisplayPoll.DisplayPollController"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <top>
+        <VBox spacing="5" padding="10">
+            <Label fx:id="questionTitle" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Label fx:id="questionDescription" style="-fx-font-size: 14px;" />
+        </VBox>
+    </top>
+
+    <center>
+        <VBox fx:id="choicesContainer" spacing="10" alignment="CENTER">
+            <padding>
+                <Insets top="20" bottom="20" left="50" right="50"/>
+            </padding>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="20" alignment="CENTER" padding="10">
+            <Button fx:id="prevButton" text="<" onAction="#handlePrev"/>
+            <Label fx:id="progressLabel" />
+            <Button fx:id="nextButton" text=">" onAction="#handleNext"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

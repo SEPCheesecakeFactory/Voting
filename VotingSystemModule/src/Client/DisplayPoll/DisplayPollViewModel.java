@@ -38,6 +38,13 @@ public class DisplayPollViewModel  implements PropertyChangeListener,
     model.sendPollRequest(pollId);
   }
 
+  public void sendDisplayPollRequest(int pollId) {
+    model.sendDisplayPollRequest(pollId);
+  }
+
+  public void setPoll(Poll poll) {
+    propertyChange(new PropertyChangeEvent(this, "PollUpdated", null, poll));
+  }
 
   @Override public void addPropertyChangeListener(
       PropertyChangeListener listener)

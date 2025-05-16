@@ -72,8 +72,9 @@ public class CreatePollGUIViewModel
     }
 
     Poll poll = new Poll(pollTitle, pollDescription, 0, qArray, false);
-    service.createPoll(poll);
     poll.setPrivate(isPrivate);
+    service.createPoll(poll);
+
   }
 
 }

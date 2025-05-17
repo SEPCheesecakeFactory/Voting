@@ -35,6 +35,9 @@ public class ClientConnection implements Runnable
         message = (String) inFromServer.readObject();
         Logger.log("Message received: " + message);
         Message messageObject = JsonUtil.deserialize(message, Message.class);
+        if (messageObject.getType() == MessageType.SendProfileBack){
+
+        }
         sendMessageToListeners(messageObject);
       }
     }

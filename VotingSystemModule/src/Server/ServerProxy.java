@@ -131,7 +131,11 @@ public class ServerProxy
           profile = messageObject.getParam("username", Profile.class);
           model.getDb().changeUsername(profile);
           Logger.log("Username changed for the profile with id: " +profile.getId());
-          model.sendMessageToUser("Username changed");
+          // model.sendMessageToUser("Username changed");
+          Message response = new Message(MessageType.SendChangeUsername);
+          response.addParam("status", "Username successfully changed");
+          model.sendMessageToUser(JsonUtil.serialize(response));
+
           break;
         case MessageType.SendCreateVoteGroupRequest:
           UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);

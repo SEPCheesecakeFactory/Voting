@@ -13,6 +13,8 @@ public class ChangeUsernameViewModel implements PropertyChangeListener,
   private Model model;
   private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
+
+
   public ChangeUsernameViewModel(Model model) {
     this.model = model;
     this.model.addPropertyChangeListener("ProfileSet", this);
@@ -49,6 +51,13 @@ public class ChangeUsernameViewModel implements PropertyChangeListener,
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
     support.firePropertyChange(evt);
+  }
+
+  public String getCurrentUsername() {
+    if (model.getProfile() != null) {
+      return model.getProfile().getUsername();
+    }
+    return "";
   }
 
 

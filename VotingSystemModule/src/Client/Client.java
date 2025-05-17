@@ -46,8 +46,9 @@ public class Client implements MessageListener
     }
     catch (IOException e)
     {
-      Logger.log("Could not establish a connection with the server. Shutting down...");
-      Logger.log("Exception",e.getMessage());
+      Logger.log(
+          "Could not establish a connection with the server. Shutting down...");
+      Logger.log("Exception", e.getMessage());
     }
   }
 
@@ -60,30 +61,39 @@ public class Client implements MessageListener
     }
     catch (IOException e)
     {
-      Logger.log("Client - Exception",e.getMessage());
+      Logger.log("Client - Exception", e.getMessage());
       return false;
     }
   }
 
-  @Override
-  public void receiveMessage(Message message)
+  @Override public void receiveMessage(Message message)
   {
     Logger.log(String.format("handling message of type %s", message.getType()));
 
     switch (message.getType())
     {
-      case SendProfileBack -> model.setProfile(
-          message.getParam("UpdatedProfile", Profile.class));
+      case SendProfileBack ->
+          model.setProfile(message.getParam("UpdatedProfile", Profile.class));
 
-      case SendAvailablePolls -> {
-        Type listType = new TypeToken<List<Poll>>() {}.getType();
+      case SendAvailablePolls ->
+      {
+        Type listType = new TypeToken<List<Poll>>()
+        {
+        }.getType();
         List<Poll> polls = message.getParam("polls", listType);
         model.handleAvailablePolls(polls);
       }
-      case SendResultResults -> model.getResult(
-          message.getParam("pollResult", PollResult.class));
+      case SendResultResults ->
+          model.getResult(message.getParam("pollResult", PollResult.class));
 
-      case SendPoll -> {
+      case SendChangeUsername ->
+      {
+        String status = message.getParam("status", String.class);
+        Platform.runLater(() -> model.setMessage(status));
+      }
+
+      case SendPoll ->
+      {
         Poll poll = message.getParam("poll", Poll.class);
         model.setPoll(poll);
         System.out.println("Switching to DisplayPoll view...");
@@ -99,16 +109,15 @@ public class Client implements MessageListener
           message.getParam("userGroup", UserGroup.class));
       case SendUserGroups ->
       {
-        Type userGroupListType = new TypeToken<List<UserGroup>>() {}.getType();
+        Type userGroupListType = new TypeToken<List<UserGroup>>()
+        {
+        }.getType();
         model.receiveUserGroups(
             message.getParam("userGroups", userGroupListType));
       }
 
-
-
-      default -> Logger.log(
-          String.format("Could not handle message of type %s", message.getType()));
+      default -> Logger.log(String.format("Could not handle message of type %s",
+          message.getType()));
     }
   }
-
 }

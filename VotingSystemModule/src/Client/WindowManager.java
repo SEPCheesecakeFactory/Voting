@@ -2,6 +2,7 @@ package Client;
 
 import Client.AddUsers.AddUsersView;
 import Client.AddUsers.AddUsersViewModel;
+import Client.ChangeUsername.ChangeUsernameController;
 import Client.ChangeUsername.ChangeUsernameView;
 import Client.ChangeUsername.ChangeUsernameViewModel;
 import Client.ClosePoll.ClosePollView;
@@ -76,12 +77,14 @@ public class WindowManager
       case ViewType.Menu:
         MenuViewModel menuVM = new MenuViewModel();
         MenuView menuV = new MenuView(menuVM);
-        var thread = new Thread(()->{showView(ViewType.Menu);});
+        var thread = new Thread(() -> {
+          showView(ViewType.Menu);
+        });
         thread.setDaemon(true);
         thread.start();
         break;
       case ViewType.PollResult:
-          openJavaFXWindow(getPollResultScene());
+        openJavaFXWindow(getPollResultScene());
         break;
       case ViewType.CreatePoll:
         openJavaFXWindow(getCreatePollScene());
@@ -93,23 +96,22 @@ public class WindowManager
         openJavaFXWindow(getLoginScene());
         break;
       case ChangeUsername:
-        ChangeUsernameViewModel changeUsernameVM = new ChangeUsernameViewModel(
-            getModel());
-        ChangeUsernameView changeUsernameV = new ChangeUsernameView(
-            changeUsernameVM);
+        //        ChangeUsernameViewModel changeUsernameVM = new ChangeUsernameViewModel(
+        //            getModel());
+        //        ChangeUsernameView changeUsernameV = new ChangeUsernameView(
+        //            changeUsernameVM);
+        openJavaFXWindow(getChangeUsernameScreen());
         break;
       case CreateGroup:
-//        CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
-//            getModel());
-//        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
-//            voteGroupVM);
+        //        CreateVoteGroupViewModel voteGroupVM = new CreateVoteGroupViewModel(
+        //            getModel());
+        //        CreateVoteGroupView voteGroupV = new CreateVoteGroupView(
+        //            voteGroupVM);
         openJavaFXWindow(getMyUserGroupsScene());
         break;
       case AddUsersGroups:
-        AddUsersViewModel addUsersVM = new AddUsersViewModel(
-            getModel());
-        AddUsersView addUsersV = new AddUsersView(
-            addUsersVM);
+        AddUsersViewModel addUsersVM = new AddUsersViewModel(getModel());
+        AddUsersView addUsersV = new AddUsersView(addUsersVM);
         break;
       case ClosePoll:
         ClosePollViewModel closePollVM = new ClosePollViewModel(getModel());
@@ -146,7 +148,6 @@ public class WindowManager
       model = new Model(new Client());
       Logger.log("Warning", "New Model created with Default Client...");
     }
-
     return model;
   }
 
@@ -175,7 +176,8 @@ public class WindowManager
     }
   }
 
-  private Scene getPollResultScene(){
+  private Scene getPollResultScene()
+  {
     FXMLLoader loader = new FXMLLoader(
         getClass().getResource("/Client/PollResult/PollResultView.fxml"));
     Parent root = null;
@@ -195,7 +197,8 @@ public class WindowManager
     return new Scene(root);
   }
 
-  private Scene getMyUserGroupsScene(){
+  private Scene getMyUserGroupsScene()
+  {
     FXMLLoader loader = new FXMLLoader(
         getClass().getResource("/Client/CreateVoteGroup/MyGroupsScreen.fxml"));
     Parent root = null;
@@ -209,7 +212,8 @@ public class WindowManager
     }
 
     CreateVoteGroupViewController controller = loader.getController();
-    CreateVoteGroupViewModelGUI viewModel = new CreateVoteGroupViewModelGUI(getModel());
+    CreateVoteGroupViewModelGUI viewModel = new CreateVoteGroupViewModelGUI(
+        getModel());
     controller.setViewModel(viewModel);
 
     return new Scene(root);
@@ -234,9 +238,9 @@ public class WindowManager
 
     controller.init(viewModel);
 
-
     return new Scene(root);
   }
+
   private Scene getCreatePollScene()
   {
     FXMLLoader loader = new FXMLLoader(
@@ -258,11 +262,10 @@ public class WindowManager
     return new Scene(root);
   }
 
-
-  private Scene getDisplayPollScene() {
+  private Scene getDisplayPollScene()
+  {
     return getScene("/Client/DisplayPoll/Vote.fxml");
   }
-
 
   public void openJavaFXScene(String fxmlPath)
   {
@@ -271,8 +274,7 @@ public class WindowManager
 
   private Scene getScene(String fxmlPath)
   {
-    FXMLLoader loader = new FXMLLoader(
-        getClass().getResource(fxmlPath));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
     Parent root = null;
     try
     {
@@ -312,11 +314,32 @@ public class WindowManager
 
   private void showScene(Scene scene)
   {
-    Platform.runLater(()->{
+    Platform.runLater(() -> {
       getPrimaryStage().setTitle("Voting System");
       // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
       getPrimaryStage().setScene(scene);
       getPrimaryStage().show();
     });
+  }
+
+  public Scene getChangeUsernameScreen()
+  {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource(
+        "/Client/ChangeUsername/ChangeUsernameScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    ChangeUsernameController controller = loader.getController();
+    ChangeUsernameViewModel viewModel = new ChangeUsernameViewModel(getModel());
+    controller.setViewModel(viewModel);
+
+    return new Scene(root);
   }
 }

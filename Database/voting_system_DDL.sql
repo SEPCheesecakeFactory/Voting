@@ -48,7 +48,8 @@ CREATE TABLE PollOwnership
 CREATE TABLE UserGroup
 (
     id   SERIAL PRIMARY KEY,
-    name VARCHAR(40) UNIQUE NOT NULL
+    name VARCHAR(40) UNIQUE NOT NULL,
+    creator_id  INT REFERENCES Users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE UserGroupMembership

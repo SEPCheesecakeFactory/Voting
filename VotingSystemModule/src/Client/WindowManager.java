@@ -15,6 +15,8 @@ import Client.CreateVoteGroup.CreateVoteGroupView;
 import Client.CreateVoteGroup.CreateVoteGroupViewController;
 import Client.CreateVoteGroup.CreateVoteGroupViewModel;
 import Client.CreateVoteGroup.CreateVoteGroupViewModelGUI;
+import Client.DisplayPoll.AvailablePollsController;
+import Client.DisplayPoll.AvailablePollsViewModel;
 import Client.DisplayPoll.DisplayPollView;
 import Client.DisplayPoll.DisplayPollViewModel;
 import Client.GUITest.GUITestView;
@@ -130,7 +132,7 @@ public class WindowManager
         openJavaFXWindow(getHomeScreenScene());
         break;
       case AvailablePolls:
-        openJavaFXWindow(getScene("/Client/DisplayPoll/AvailablePolls.fxml"));
+        openJavaFXWindow(getAvailablePollsScene());
         break;
     }
     // WindowManager.getInstance().showView(ViewType.Menu);
@@ -258,6 +260,26 @@ public class WindowManager
     CreatePollGUIView controller = loader.getController();
     CreatePollGUIViewModel viewModel = new CreatePollGUIViewModel(getModel());
     controller.setViewModel(viewModel);
+
+    return new Scene(root);
+  }
+  private Scene getAvailablePollsScene()
+  {
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/DisplayPoll/AvailablePolls.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+    AvailablePollsController controller = loader.getController();
+    AvailablePollsViewModel viewModel = new AvailablePollsViewModel(getModel());
+    controller.init(viewModel);
 
     return new Scene(root);
   }

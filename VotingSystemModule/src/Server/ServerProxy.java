@@ -162,8 +162,16 @@ public class ServerProxy
           Type groupSetType = new TypeToken<Set<UserGroup>>() {}.getType();
           Set<UserGroup> groups = messageObject.getParam("groups", groupSetType);
 
-          model.grantPollAccessToUsers(pollId, users);
-          model.grantPollAccessToGroups(pollId, groups);
+          if (users!=null)
+          {
+            model.grantPollAccessToUsers(pollId, users);
+          }
+          if(groups!=null)
+          {
+            model.grantPollAccessToGroups(pollId, groups);
+          }
+
+
           break;
         case MessageType.LookupUser:
           profile = messageObject.getParam("profile", Profile.class);
@@ -181,9 +189,8 @@ public class ServerProxy
           UserGroup group = model.getDb().getGroupByUsername(groupName);
 
           if (group == null) {
-            // Create a dummy UserGroup to signal "not found"
             group = new UserGroup(groupName);
-            group.setId(-1); // signal "not found"
+            group.setId(-1);
           }
 
           // Send back the full group (or the dummy with id -1)

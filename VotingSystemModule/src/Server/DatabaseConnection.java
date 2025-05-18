@@ -709,23 +709,87 @@ public class DatabaseConnection implements DatabaseConnector
   }
   @Override
   public List<Poll> getAllAvailablePolls() {
-    final String SQL = "SELECT id, title, is_private, is_closed FROM Poll WHERE is_closed = FALSE";
+    final String POLLS_SQL = """
+    SELECT 
+        p.id, 
+        p.title, 
+        p.is_private, 
+        p.is_closed, 
+        po.user_id AS created_by_id
+    FROM 
+        Poll p
+    JOIN 
+        PollOwnership po ON p.id = po.poll_id
+    WHERE 
+        p.is_closed = FALSE
+    """;
+
+    final String USERS_SQL = """
+    SELECT pac.poll_id, u.id, u.username
+    FROM PollAccessControl pac
+    JOIN Users u ON pac.user_id = u.id
+    WHERE pac.user_id IS NOT NULL
+    """;
+
+    final String GROUPS_SQL = """
+    SELECT pac.poll_id, g.id, g.name
+    FROM PollAccessControl pac
+    JOIN UserGroup g ON pac.group_id = g.id
+    WHERE pac.group_id IS NOT NULL
+    """;
 
     List<Poll> polls = new ArrayList<>();
+    Map<Integer, Poll> pollMap = new HashMap<>();
 
-    try (Connection conn = openConnection();
-        PreparedStatement stmt = conn.prepareStatement(SQL);
-        ResultSet rs = stmt.executeQuery()) {
+    try (Connection conn = openConnection()) {
+      // Load polls
+      try (PreparedStatement stmt = conn.prepareStatement(POLLS_SQL);
+          ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          Poll poll = new Poll();
+          poll.setId(rs.getInt("id"));
+          poll.setTitle(rs.getString("title"));
+          poll.setPrivate(rs.getBoolean("is_private"));
+          poll.setClosed(rs.getBoolean("is_closed"));
+          poll.setCreatedById(rs.getInt("created_by_id"));
+          poll.setQuestions(new Question[0]); // Placeholder
+          polls.add(poll);
+          pollMap.put(poll.getId(), poll);
+        }
+      }
 
-      while (rs.next()) {
-        Poll poll = new Poll();
-        poll.setId(rs.getInt("id"));
-        poll.setTitle(rs.getString("title"));
-        poll.setPrivate(rs.getBoolean("is_private"));
-        poll.setClosed(rs.getBoolean("is_closed"));
-        poll.setQuestions(new Question[0]); // we skip loading questions for list
+      // Load allowed users
+      try (PreparedStatement userStmt = conn.prepareStatement(USERS_SQL);
+          ResultSet userRs = userStmt.executeQuery()) {
+        while (userRs.next()) {
+          int pollId = userRs.getInt("poll_id");
+          int userId = userRs.getInt("id");
+          String username = userRs.getString("username");
 
-        polls.add(poll);
+          Poll poll = pollMap.get(pollId);
+          if (poll != null) {
+            Profile user = new Profile(username);
+            user.setId(userId);
+            poll.addAllowedUser(user);
+          }
+        }
+      }
+
+      // Load allowed groups
+      try (PreparedStatement groupStmt = conn.prepareStatement(GROUPS_SQL);
+          ResultSet groupRs = groupStmt.executeQuery()) {
+        while (groupRs.next()) {
+          int pollId = groupRs.getInt("poll_id");
+          int groupId = groupRs.getInt("id");
+          String groupName = groupRs.getString("name");
+
+          Poll poll = pollMap.get(pollId);
+          if (poll != null) {
+            UserGroup group = new UserGroup(groupName);
+            group.setId(groupId);
+            poll.addAllowedGroup(group);
+          }
+        }
       }
 
     } catch (SQLException e) {
@@ -734,6 +798,8 @@ public class DatabaseConnection implements DatabaseConnector
 
     return polls;
   }
+
+
 
   @Override
   public List<UserGroup> getGroupsCreatedByUser(int userId) {

@@ -16,11 +16,14 @@ public class Poll implements Serializable
   private boolean isClosed;
 
   private boolean isPrivate;
-
+  private int createdById;
   private List<Profile> allowedUsers;
   private List<UserGroup> allowedGroups;
 
-  public Poll(){}
+  public Poll(){
+    allowedGroups=new ArrayList<>();
+    allowedUsers=new ArrayList<>();
+  }
   public Poll(String title, String description, int id, Question[] questions,
       boolean isClosed)
   {
@@ -173,6 +176,16 @@ public class Poll implements Serializable
       }
     }
     return false;
+  }
+
+  public void setCreatedById(int createdById)
+  {
+    this.createdById = createdById;
+  }
+
+  public int getCreatedById()
+  {
+    return createdById;
   }
 }
 

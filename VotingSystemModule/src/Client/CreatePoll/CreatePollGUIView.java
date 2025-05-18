@@ -176,7 +176,7 @@ public class CreatePollGUIView
     viewModel.setQuestions(questions);
     viewModel.createPoll();
 
-    showAlert("Wow", "Poll creation well faked");
+    showAlert("Success", "Poll has been created");
     clearForm();
   }
 

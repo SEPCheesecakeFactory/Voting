@@ -9,7 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClientConnection implements Runnable
 {
@@ -17,12 +19,15 @@ public class ClientConnection implements Runnable
   private final ObjectOutputStream outToServer;
   private final ObjectInputStream inFromServer;
   private final List<MessageListener> messageListeners;
+  private final Map<Integer,MessageListener> identifiedMessageListeners;
+  private int userId = 0;
 
   public ClientConnection(Socket socket) throws IOException
   {
     outToServer = new ObjectOutputStream(socket.getOutputStream());
     inFromServer = new ObjectInputStream(socket.getInputStream());
     messageListeners = new ArrayList<>();
+    identifiedMessageListeners = new HashMap<>();
   }
 
   @Override public void run()
@@ -35,9 +40,6 @@ public class ClientConnection implements Runnable
         message = (String) inFromServer.readObject();
         Logger.log("Message received: " + message);
         Message messageObject = JsonUtil.deserialize(message, Message.class);
-        if (messageObject.getType() == MessageType.SendProfileBack){
-
-        }
         sendMessageToListeners(messageObject);
       }
     }
@@ -61,5 +63,21 @@ public class ClientConnection implements Runnable
   public void registerMessageListener(MessageListener listener)
   {
     messageListeners.add(listener);
+  }
+
+  public void identifyClientConnection(int newUserId, MessageListener client){
+    setUserId(newUserId);
+    identifiedMessageListeners.put(userId, client);
+  }
+
+  public int getUserId(){
+    return userId;
+  }
+  public void setUserId(int newUserId){
+    this.userId = newUserId;
+  }
+
+  public int getIndex(){
+    return messageListeners.indexOf(this);
   }
 }

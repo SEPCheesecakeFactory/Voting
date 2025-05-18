@@ -56,6 +56,7 @@ public class Client implements MessageListener
   {
     try
     {
+      message.addParam("clientConnectionIndex", clientConnection.getIndex());
       clientConnection.send(JsonUtil.serialize(message));
       return true;
     }
@@ -73,7 +74,11 @@ public class Client implements MessageListener
     switch (message.getType())
     {
       case SendProfileBack ->
-          model.setProfile(message.getParam("UpdatedProfile", Profile.class));
+      {
+        Profile updatedProfile = message.getParam("UpdatedProfile", Profile.class);
+        model.setProfile(updatedProfile);
+        clientConnection.identifyClientConnection(updatedProfile.getId(), this);
+      }
 
       case SendAvailablePolls ->
       {

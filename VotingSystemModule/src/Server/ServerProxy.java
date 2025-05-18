@@ -35,7 +35,7 @@ public class ServerProxy
           return;
         }
 
-        model.closePoll(pollId);
+        //model.closePoll(pollId, clientConnectionIndex);
         Logger.log("Poll close request handled for ID: " + pollId + " by user " + userId);
       }
       //TODO: Send the Poll Results ot the client *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
@@ -60,18 +60,18 @@ public class ServerProxy
   public void process(String message)
   {
     Message messageObject = JsonUtil.deserialize(message, Message.class);
-
+    int clientConnectionIndex = messageObject.getParam("clientConnectionIndex", int.class);
     try {
       int pollId;
       Profile profile;
       switch (messageObject.getType()) {
         case MessageType.SendPollRequest:
           pollId = messageObject.getParam("pollId", int.class);
-          model.sendPoll(pollId);
+          model.sendPoll(pollId, clientConnectionIndex);
           break;
         case MessageType.DisplayPollRequest:
           pollId = messageObject.getParam("pollId", int.class);
-          model.sendPoll(pollId);
+          model.sendPoll(pollId, clientConnectionIndex);
           Logger.log("Poll display request handled for ID: " + pollId);
           break;
         case MessageType.GetAvailablePolls:
@@ -98,7 +98,7 @@ public class ServerProxy
 
           try
           {
-            model.closePoll(pollId);
+            model.closePoll(pollId, clientConnectionIndex);
           }
           catch (IOException e)
           {
@@ -111,21 +111,21 @@ public class ServerProxy
           pollId = messageObject.getParam("pollId", int.class);
           PollResult pollResult = model.retrievePollResult(pollId);
           Logger.log("Poll Results handled for: " +pollId);
-          model.sendPollResultsToUser(pollResult);
+          model.sendPollResultsToUser(pollResult, clientConnectionIndex);
           break;
 
         case MessageType.CreatePoll:
           Poll poll = messageObject.getParam("poll", Poll.class);
           profile = messageObject.getParam("profile",Profile.class);
-          model.storePoll(poll, profile);
+          model.storePoll(poll, profile, clientConnectionIndex);
           Logger.log("Poll successfully created for: " + poll.getId());
           break;
         case MessageType.SendLoginOrRegister:
           profile = messageObject.getParam("profile", Profile.class);
           int id=model.getDb().loginOrRegisterAProfile(profile);
-          Logger.log("Profile logged or registered with id: " +id);
+          Logger.log("Profile logged or registered with id: " + id);
           profile.setId(id);
-          model.sendUpdatedProfile(profile);
+          model.sendUpdatedProfile(profile, clientConnectionIndex);
           break;
         case MessageType.SendChangeUsername:
           profile = messageObject.getParam("username", Profile.class);
@@ -139,18 +139,18 @@ public class ServerProxy
           break;
         case MessageType.SendCreateVoteGroupRequest:
           UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
-          userId = messageObject.getParam("userId",int.class);
-          model.storeUserGroup(userGroup, userId);
+          clientConnectionIndex = messageObject.getParam("clientConnectionIndex",int.class);
+          model.storeUserGroup(userGroup, clientConnectionIndex);
           break;
         case MessageType.SendUserGroupsRequest:
-          userId = messageObject.getParam("userId",int.class);
-          List<UserGroup> userGroups=model.getGroupsCreatedByUser(userId);
+          clientConnectionIndex = messageObject.getParam("clientConnectionIndex",int.class);
+          List<UserGroup> userGroups=model.getGroupsCreatedByUser(clientConnectionIndex);
 
 
 
 
 
-          model.sendUserGroups(userGroups);
+          model.sendUserGroups(userGroups, clientConnectionIndex);
           break;
 
         case MessageType.SendPollAccess:
@@ -174,7 +174,7 @@ public class ServerProxy
             fullProfile.setId(-1); // signal "not found"
           }
 
-          model.sendLookupUserResults(fullProfile);
+          model.sendLookupUserResults(fullProfile, clientConnectionIndex);
           break;
         case MessageType.LookupGroup:
           String groupName = messageObject.getParam("groupName", String.class);
@@ -187,7 +187,7 @@ public class ServerProxy
           }
 
           // Send back the full group (or the dummy with id -1)
-          model.sendLookupGroupResults(group);
+          model.sendLookupGroupResults(group, clientConnectionIndex);
           break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());

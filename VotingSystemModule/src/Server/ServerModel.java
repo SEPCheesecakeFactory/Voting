@@ -35,11 +35,13 @@ public class ServerModel {
     db.storeVote(vote);
   }
 
-  public void closePoll(int pollId) throws SQLException, IOException {
+  public void closePoll(int pollId, int clientConnectionIndex) throws SQLException, IOException {
     db.closePollAndSaveResults(pollId);
     Message message = new Message(MessageType.ClosePoll);
     message.addParam("pollClosed", pollId);
-    connectionPool.broadcast(message);
+    message.addParam("clientConnectionIndex", clientConnectionIndex);
+    connectionPool.changeToMap(message, connection);
+    connectionPool.sendDirectMessage(message);
   }
 
   public PollResult retrievePollResult(int pollID) {
@@ -77,48 +79,56 @@ public class ServerModel {
     return true;
   }
 
-  public void sendPollResultsToUser(PollResult pollResult){
+  public void sendPollResultsToUser(PollResult pollResult, int clientConnectionIndex){
     try {
       Message message = new Message(MessageType.SendResultResults);
       message.addParam("pollResult", pollResult);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
       Logger.log("ServerModel: Results sent");
     } catch (IOException e) {
       Logger.log("Failed to send pollResult to user: " + e.getMessage());
     }
   }
-  public void sendLookupUserResults(Profile profile)
+  public void sendLookupUserResults(Profile profile, int clientConnectionIndex)
   {
     try
     {
       Message message = new Message(MessageType.SendLookupUserResult);
       message.addParam("profile", profile);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
     {
       Logger.log("Failed to send LookupUserResults to user: " + e.getMessage());    }
 
   }
-  public void sendUpdatedProfile(Profile profile){
+  public void sendUpdatedProfile(Profile profile, int clientConnectionIndex){
     try {
       Logger.log("ServerModel: Profile send");
       Message message = new Message(MessageType.SendProfileBack);
       message.addParam("UpdatedProfile", profile);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
     } catch (IOException e) {
       Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
     }
   }
 
-  public void storePoll(Poll poll, Profile profile)
+  public void storePoll(Poll poll, Profile profile, int clientConnectionIndex)
   {
     try
     {
       poll.setId(db.storePoll(poll, profile).getId());
       Message message = new Message(MessageType.SendCreatedPoll);
       message.addParam("poll", poll);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
     {
@@ -127,14 +137,16 @@ public class ServerModel {
 
   }
 
-  public void sendPoll(int id)
+  public void sendPoll(int id, int clientConnectionIndex)
   {
     try
     {
       Poll poll = db.retrievePoll(id);
       Message message = new Message(MessageType.SendPoll);
       message.addParam("poll",poll);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
     {
@@ -165,13 +177,15 @@ public class ServerModel {
     }
   }
 
-  public void sendLookupGroupResults(UserGroup group)
+  public void sendLookupGroupResults(UserGroup group, int clientConnectionIndex)
   {
     try
     {
       Message message = new Message(MessageType.SendLookupGroupResult);
       message.addParam("userGroup", group);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
     {
@@ -184,13 +198,15 @@ public class ServerModel {
     return groups;
   }
 
-  public void sendUserGroups(List<UserGroup> groups)
+  public void sendUserGroups(List<UserGroup> groups, int clientConnectionIndex)
   {
 
     try{
       Message message = new Message(MessageType.SendUserGroups);
       message.addParam("userGroups",groups);
-      connectionPool.broadcast(message);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
     {

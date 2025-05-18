@@ -112,7 +112,10 @@ public class AvailablePollsController {
   }
 
   private void addVoteButtonToTable() {
-    voteColumn.setCellFactory(getButtonCellFactory("Vote", viewModel::requestVote));
+    voteColumn.setCellFactory(getButtonCellFactory("Vote", poll -> {
+      viewModel.requestVote(poll);
+      Client.WindowManager.getInstance().showView(Client.ViewType.DisplayPoll);
+    }));
   }
 
   private void addResultsButtonToTable() {

@@ -97,9 +97,7 @@ public class Client implements MessageListener
         Poll poll = message.getParam("poll", Poll.class);
         model.setPoll(poll);
         System.out.println("Switching to DisplayPoll view...");
-        javafx.application.Platform.runLater(() -> {
-          WindowManager.getInstance().showView(ViewType.DisplayPoll);
-        });
+        model.setPoll(poll);
       }
 
       case SendLookupUserResult -> model.handleUserLookupResult(

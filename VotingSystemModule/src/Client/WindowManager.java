@@ -15,10 +15,7 @@ import Client.CreateVoteGroup.CreateVoteGroupView;
 import Client.CreateVoteGroup.CreateVoteGroupViewController;
 import Client.CreateVoteGroup.CreateVoteGroupViewModel;
 import Client.CreateVoteGroup.CreateVoteGroupViewModelGUI;
-import Client.DisplayPoll.AvailablePollsController;
-import Client.DisplayPoll.AvailablePollsViewModel;
-import Client.DisplayPoll.DisplayPollView;
-import Client.DisplayPoll.DisplayPollViewModel;
+import Client.DisplayPoll.*;
 import Client.GUITest.GUITestView;
 import Client.Login.LoginView;
 import Client.Login.LoginViewController;
@@ -286,7 +283,21 @@ public class WindowManager
 
   private Scene getDisplayPollScene()
   {
-    return getScene("/Client/DisplayPoll/Vote.fxml");
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/DisplayPoll/VoteScreen.fxml"));
+    Parent root = null;
+    try
+    {
+      root = loader.load();
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+    DisplayPollViewController controller = loader.getController();
+    DisplayPollViewModelGUI viewModelGUI = new DisplayPollViewModelGUI(getModel());
+    controller.init(viewModelGUI);
+    return new Scene(root);
+    //    return getScene("/Client/DisplayPoll/VoteScreen.fxml");
   }
 
   public void openJavaFXScene(String fxmlPath)

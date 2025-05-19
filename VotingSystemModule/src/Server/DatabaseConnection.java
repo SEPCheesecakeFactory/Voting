@@ -700,22 +700,22 @@ public class DatabaseConnection implements DatabaseConnector
       ResultSet rs = checkStmt.executeQuery();
 
       if (!rs.next()) {
-        Logger.log("Client: "+clientId+" is not the owner of the poll: "+pollId);
-
+        Logger.log("Client: " + clientId + " is not the owner of the poll: " + pollId);
+        throw new RuntimeException("User is not the poll owner.");
       }
 
       try (PreparedStatement insertStmt = connection.prepareStatement(insertSQL)) {
         insertStmt.setInt(1, pollId);
         insertStmt.setInt(2, userId);
         insertStmt.executeUpdate();
-
       }
 
     } catch (SQLException e) {
-     Logger.log("Failed to grant poll access to user: " + e.getMessage());
-
+      Logger.log("Failed to grant poll access to user: " + e.getMessage());
+      throw new RuntimeException("SQL error while granting access to user", e);
     }
   }
+
 
   @Override
   public void grantPollAccessToGroup(int pollId, String groupName, int clientId) {
@@ -731,7 +731,8 @@ public class DatabaseConnection implements DatabaseConnector
       ResultSet rs = checkStmt.executeQuery();
 
       if (!rs.next()) {
-        Logger.log("Client: "+clientId+" is not the owner of the poll: "+pollId);
+        Logger.log("Client: " + clientId + " is not the owner of the poll: " + pollId);
+        throw new RuntimeException("User is not the poll owner.");
       }
 
       try (PreparedStatement getStmt = connection.prepareStatement(getGroupIdSQL)) {
@@ -748,13 +749,16 @@ public class DatabaseConnection implements DatabaseConnector
           }
         } else {
           Logger.log("Group not found: " + groupName);
+          throw new RuntimeException("Group not found: " + groupName);
         }
       }
 
     } catch (SQLException e) {
-      System.err.println("Failed to grant poll access to group: " + e.getMessage());
+      Logger.log("Failed to grant poll access to group: " + e.getMessage());
+      throw new RuntimeException("SQL error while granting access to group", e);
     }
   }
+
 
 
   @Override

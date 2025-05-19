@@ -724,63 +724,87 @@ class DatabaseConnectionTest {
   }
 
   @Test
-  void grantPollAccessToUser_Z_zeroId_doesNothingOrFailsGracefully() throws Exception {
+  void grantPollAccessToUser_Z_zeroId_failsWithRuntime() throws Exception {
     when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
+    ResultSet rs = mock(ResultSet.class);
+    when(mockStmt.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(false); // simulate not owner
 
-    assertDoesNotThrow(() -> db.grantPollAccessToUser(0, 0));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(0, 0, 0));
   }
 
   @Test
   void grantPollAccessToUser_O_validInsert_executesOnce() throws Exception {
     PreparedStatement stmt = mock(PreparedStatement.class);
+    ResultSet rs = mock(ResultSet.class);
+
     when(mockConn.prepareStatement(anyString())).thenReturn(stmt);
+    when(stmt.executeQuery()).thenReturn(rs);
+    when(rs.next()).thenReturn(true); // simulate owner check success
 
-    db.grantPollAccessToUser(1, 99);
+    db.grantPollAccessToUser(1, 99, 42);
 
-    verify(stmt).executeUpdate();
+    verify(stmt, times(1)).executeUpdate();
   }
 
   @Test
   void grantPollAccessToUser_E_sqlFails_throwsRuntime() throws Exception {
     when(mockConn.prepareStatement(anyString())).thenThrow(new SQLException("fail"));
 
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(1, 1));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(1, 1, 1));
   }
 
   @Test
   void grantPollAccessToGroup_Z_nullName_throwsOrDoesNothing() {
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, null));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, null, 1));
   }
 
   @Test
   void grantPollAccessToGroup_O_validGroup_grantsAccess() throws Exception {
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
     PreparedStatement getStmt = mock(PreparedStatement.class);
     ResultSet rs = mock(ResultSet.class);
     PreparedStatement insertStmt = mock(PreparedStatement.class);
 
-    when(mockConn.prepareStatement(contains("SELECT id"))).thenReturn(getStmt);
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true); // simulate owner check passed
+
+    when(mockConn.prepareStatement(contains("SELECT id FROM UserGroup"))).thenReturn(getStmt);
     when(getStmt.executeQuery()).thenReturn(rs);
     when(rs.next()).thenReturn(true);
     when(rs.getInt("id")).thenReturn(123);
 
-    when(mockConn.prepareStatement(contains("INSERT INTO"))).thenReturn(insertStmt);
+    when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(insertStmt);
 
-    db.grantPollAccessToGroup(5, "teamX");
+    db.grantPollAccessToGroup(5, "teamX", 99);
 
     verify(insertStmt).executeUpdate();
   }
 
+
   @Test
   void grantPollAccessToGroup_B_groupNotFound_throwsRuntime() throws Exception {
+    // Mock ownership check
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
+
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true); // simulate ownership exists
+
+    // Mock group lookup that fails
     PreparedStatement getStmt = mock(PreparedStatement.class);
     ResultSet rs = mock(ResultSet.class);
 
-    when(mockConn.prepareStatement(contains("SELECT id"))).thenReturn(getStmt);
+    when(mockConn.prepareStatement(contains("SELECT id FROM UserGroup"))).thenReturn(getStmt);
     when(getStmt.executeQuery()).thenReturn(rs);
-    when(rs.next()).thenReturn(false);
+    when(rs.next()).thenReturn(false); // simulate group not found
 
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(7, "missingGroup"));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(7, "missingGroup", 5));
   }
+
 
   @Test
   void addUserToGroup_Z_zeroValues_stillExecutesInsert() throws Exception {
@@ -984,19 +1008,34 @@ class DatabaseConnectionTest {
 
   @Test
   void grantPollAccessToUser_Z_zeroIds_failsGracefullyOrThrows() throws Exception {
+    // Mock ownership check
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true); // simulate valid owner
+
+    // Mock insert access
     PreparedStatement stmt = mock(PreparedStatement.class);
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(stmt);
     doThrow(new SQLException("Invalid input")).when(stmt).executeUpdate();
 
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(0, 0));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(0, 0, 1));
   }
 
   @Test
   void grantPollAccessToUser_O_validInput_executesInsert() throws Exception {
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
     PreparedStatement stmt = mock(PreparedStatement.class);
+
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true); // ownership OK
+
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(stmt);
 
-    db.grantPollAccessToUser(101, 202);
+    db.grantPollAccessToUser(101, 202, 42);
 
     verify(stmt).setInt(1, 101);
     verify(stmt).setInt(2, 202);
@@ -1005,10 +1044,17 @@ class DatabaseConnectionTest {
 
   @Test
   void grantPollAccessToUser_B_boundaryIds_executesCorrectly() throws Exception {
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
     PreparedStatement stmt = mock(PreparedStatement.class);
+
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true);
+
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(stmt);
 
-    db.grantPollAccessToUser(Integer.MAX_VALUE, Integer.MAX_VALUE);
+    db.grantPollAccessToUser(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     verify(stmt).setInt(1, Integer.MAX_VALUE);
     verify(stmt).setInt(2, Integer.MAX_VALUE);
@@ -1017,34 +1063,49 @@ class DatabaseConnectionTest {
 
   @Test
   void grantPollAccessToUser_E_sqlError_throwsRuntimeException() throws Exception {
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
+
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true);
+
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl")))
         .thenThrow(new SQLException("DB failure"));
 
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(10, 20));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToUser(10, 20, 5));
   }
 
   @Test
   void grantPollAccessToGroup_Z_emptyGroupName_returnsOrThrows() {
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, ""));
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(0, "group"));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, "", 1));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(0, "group", 1));
   }
 
   @Test
   void grantPollAccessToGroup_O_groupFound_executesInsert() throws Exception {
     String groupName = "devs";
 
+    // Ownership
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true);
+
+    // Group fetch
     PreparedStatement getStmt = mock(PreparedStatement.class);
     ResultSet getRs = mock(ResultSet.class);
-    PreparedStatement insertStmt = mock(PreparedStatement.class);
-
-    when(mockConn.prepareStatement(contains("SELECT id FROM UserGroup"))).thenReturn(getStmt);
+    when(mockConn.prepareStatement(contains("FROM UserGroup"))).thenReturn(getStmt);
     when(getStmt.executeQuery()).thenReturn(getRs);
     when(getRs.next()).thenReturn(true);
     when(getRs.getInt("id")).thenReturn(42);
 
+    // Insert
+    PreparedStatement insertStmt = mock(PreparedStatement.class);
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(insertStmt);
 
-    db.grantPollAccessToGroup(99, groupName);
+    db.grantPollAccessToGroup(99, groupName, 1);
 
     verify(insertStmt).setInt(1, 99);
     verify(insertStmt).setInt(2, 42);
@@ -1055,51 +1116,69 @@ class DatabaseConnectionTest {
   void grantPollAccessToGroup_B_largePollId_stillWorks() throws Exception {
     String groupName = "qa";
 
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true);
+
     PreparedStatement getStmt = mock(PreparedStatement.class);
     ResultSet getRs = mock(ResultSet.class);
-    PreparedStatement insertStmt = mock(PreparedStatement.class);
-
-    when(mockConn.prepareStatement(contains("SELECT id FROM UserGroup"))).thenReturn(getStmt);
+    when(mockConn.prepareStatement(contains("FROM UserGroup"))).thenReturn(getStmt);
     when(getStmt.executeQuery()).thenReturn(getRs);
     when(getRs.next()).thenReturn(true);
     when(getRs.getInt("id")).thenReturn(123456789);
 
+    PreparedStatement insertStmt = mock(PreparedStatement.class);
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(insertStmt);
 
-    db.grantPollAccessToGroup(Integer.MAX_VALUE, groupName);
+    db.grantPollAccessToGroup(Integer.MAX_VALUE, groupName, 1);
 
     verify(insertStmt).setInt(1, Integer.MAX_VALUE);
     verify(insertStmt).setInt(2, 123456789);
     verify(insertStmt).executeUpdate();
   }
 
+
   @Test
   void grantPollAccessToGroup_E_groupNotFound_throws() throws Exception {
-    PreparedStatement getStmt = mock(PreparedStatement.class);
-    ResultSet getRs = mock(ResultSet.class);
+    // Mock poll ownership check
+    PreparedStatement ownStmt = mock(PreparedStatement.class);
+    ResultSet ownRs = mock(ResultSet.class);
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(ownStmt);
+    when(ownStmt.executeQuery()).thenReturn(ownRs);
+    when(ownRs.next()).thenReturn(true); // simulate owner
 
-    when(mockConn.prepareStatement(contains("SELECT id FROM UserGroup"))).thenReturn(getStmt);
-    when(getStmt.executeQuery()).thenReturn(getRs);
-    when(getRs.next()).thenReturn(false); // Simulate not found
+    // Mock group lookup (not found)
+    PreparedStatement groupStmt = mock(PreparedStatement.class);
+    ResultSet groupRs = mock(ResultSet.class);
+    when(mockConn.prepareStatement(contains("FROM UserGroup"))).thenReturn(groupStmt);
+    when(groupStmt.executeQuery()).thenReturn(groupRs);
+    when(groupRs.next()).thenReturn(false);  // group not found
 
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, "ghost"));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, "ghost", 1));
   }
 
   @Test
   void grantPollAccessToGroup_E_sqlInsertError_throws() throws Exception {
+    PreparedStatement checkStmt = mock(PreparedStatement.class);
+    ResultSet checkRs = mock(ResultSet.class);
+    when(mockConn.prepareStatement(contains("FROM PollOwnership"))).thenReturn(checkStmt);
+    when(checkStmt.executeQuery()).thenReturn(checkRs);
+    when(checkRs.next()).thenReturn(true);
+
     PreparedStatement getStmt = mock(PreparedStatement.class);
     ResultSet getRs = mock(ResultSet.class);
-    PreparedStatement insertStmt = mock(PreparedStatement.class);
-
-    when(mockConn.prepareStatement(contains("SELECT id FROM UserGroup"))).thenReturn(getStmt);
+    when(mockConn.prepareStatement(contains("FROM UserGroup"))).thenReturn(getStmt);
     when(getStmt.executeQuery()).thenReturn(getRs);
     when(getRs.next()).thenReturn(true);
     when(getRs.getInt("id")).thenReturn(42);
 
+    PreparedStatement insertStmt = mock(PreparedStatement.class);
     when(mockConn.prepareStatement(contains("INSERT INTO PollAccessControl"))).thenReturn(insertStmt);
     doThrow(new SQLException("Insert failed")).when(insertStmt).executeUpdate();
 
-    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, "devs"));
+    assertThrows(RuntimeException.class, () -> db.grantPollAccessToGroup(1, "devs", 1));
   }
 
   @Test

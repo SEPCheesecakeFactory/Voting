@@ -74,13 +74,19 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     boolean success = client.send(message);
   }
 
-  public void sendChangeUsername(String username)
-  {
-    Logger.log("Debugging - sendChangeUsername");
+  public void sendChangeUsername(String username) {
     currentProfile.changeUsername(username);
     var message = new Message(MessageType.SendChangeUsername);
     message.addParam("username", currentProfile);
-    boolean success = client.send(message);
+    client.send(message);
+  }
+
+  public void fireUsernameChanged() {
+    support.firePropertyChange("UsernameChanged", null, currentProfile.getUsername());
+  }
+
+  public void fireUsernameChangeFailed(String reason) {
+    support.firePropertyChange("UsernameChangeFailed", null, reason);
   }
 
   public void sendVote(int userId, int[] choices)
@@ -256,6 +262,4 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   {
     Logger.log("Debugging - propertyChange");
   }
-
-
 }

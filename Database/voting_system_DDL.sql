@@ -91,32 +91,86 @@ CREATE TABLE PollAccessControl (
 
 -- Insert users
 INSERT INTO Users (username) VALUES
-('alice'),
-('bob'),
-('charlie');
+                                 ('alice'),    -- id = 1
+                                 ('bob'),      -- id = 2
+                                 ('charlie'),  -- id = 3
+                                 ('diana'),    -- id = 4
+                                 ('eric');     -- id = 5
 
 -- Insert polls
-INSERT INTO Poll (title, is_private) VALUES
-('Favorite Programming Language', TRUE),
-('Company Satisfaction Survey', FALSE);
+INSERT INTO Poll (title, is_private, is_closed) VALUES
+                                                    ('Favorite Programming Language', TRUE, FALSE),   -- id = 1
+                                                    ('Company Satisfaction Survey', FALSE, FALSE),    -- id = 2
+                                                    ('Team Lunch Options', TRUE, FALSE);              -- id = 3
+
+-- Insert poll ownership
+INSERT INTO PollOwnership (user_id, poll_id) VALUES
+                                                 (1, 1),
+                                                 (2, 2),
+                                                 (3, 3);
 
 -- Insert questions
 INSERT INTO Question (title, description, poll_id) VALUES
-('Which programming language do you prefer?', 'Pick your most used language.', 1),
-('How satisfied are you with your work environment?', '1 = very dissatisfied, 5 = very satisfied', 2);
+                                                       ('Preferred Language?', 'Which programming language do you prefer the most?', 1),  -- id = 1
+                                                       ('Work Satisfaction?', 'Rate your satisfaction at work.', 2),                     -- id = 2
+                                                       ('Lunch Spot?', 'Where should we go for lunch on Friday?', 3);                    -- id = 3
 
--- Insert choice options for poll 1
+-- Insert choice options
+-- For poll 1
 INSERT INTO ChoiceOption (value, question_id) VALUES
-('Java', 1),
-('Python', 1),
-('C++', 1),
-('JavaScript', 1);
+                                                  ('Java', 1),
+                                                  ('Python', 1),
+                                                  ('C++', 1),
+                                                  ('JavaScript', 1);
 
--- Insert choice options for poll 2
+-- For poll 2
 INSERT INTO ChoiceOption (value, question_id) VALUES
-('1 - Very Dissatisfied', 2),
-('2 - Dissatisfied', 2),
-('3 - Neutral', 2),
-('4 - Satisfied', 2),
-('5 - Very Satisfied', 2);
+                                                  ('1 - Very Dissatisfied', 2),
+                                                  ('2 - Dissatisfied', 2),
+                                                  ('3 - Neutral', 2),
+                                                  ('4 - Satisfied', 2),
+                                                  ('5 - Very Satisfied', 2);
+
+-- For poll 3
+INSERT INTO ChoiceOption (value, question_id) VALUES
+                                                  ('Pizza Place', 3),
+                                                  ('Sushi Bar', 3),
+                                                  ('Burger Joint', 3);
+
+-- Insert some votes
+-- Alice votes Python, id=2
+-- Bob votes JavaScript, id=4
+-- Charlie votes Java, id=1
+INSERT INTO VotedChoice (vote_id, choice_option_id) VALUES
+                                                        (1, 2),
+                                                        (2, 4),
+                                                        (3, 1),
+                                                        (4, 7),  -- Diana votes 4 - Satisfied
+                                                        (5, 11);-- Eric votes Sushi Bar
+
+-- Create a user group
+INSERT INTO UserGroup (name, creator_id) VALUES
+                                             ('Dev Team', 1),       -- id = 1
+                                             ('HR Department', 2);  -- id = 2
+
+-- Add users to groups
+INSERT INTO UserGroupMembership (user_id, group_id) VALUES
+                                                        (1, 1), -- alice in Dev Team
+                                                        (3, 1), -- charlie in Dev Team
+                                                        (5, 1), -- eric in Dev Team
+
+                                                        (2, 2), -- bob in HR
+                                                        (4, 2); -- diana in HR
+
+-- Give access to private polls via groups
+-- Poll 1 (Favorite Programming Language) -> Dev Team
+-- Poll 3 (Team Lunch Options) -> HR Department
+INSERT INTO PollAccessControl (poll_id, group_id) VALUES
+                                                      (1, 1),
+                                                      (3, 2);
+
+-- Give individual access as well
+INSERT INTO PollAccessControl (poll_id, user_id) VALUES
+    (1, 2); -- Bob gets direct access to Poll 1
+
 

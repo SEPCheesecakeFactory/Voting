@@ -13,7 +13,7 @@ public class DatabaseConnection implements DatabaseConnector
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
-  private Connection openConnection() throws SQLException
+  protected Connection openConnection() throws SQLException
   {
     return DriverManager.getConnection(
         "jdbc:postgresql://localhost:5432/postgres?currentSchema=voting_system",
@@ -611,6 +611,11 @@ public class DatabaseConnection implements DatabaseConnector
 //  }
 
   @Override public Profile getProfileByUsername(String username) {
+
+    if (username == null || username.isEmpty()) {
+      return null;
+    }
+
   String sql = "SELECT id, username FROM Users WHERE username = ?";
 
   try (Connection connection = openConnection();
@@ -635,6 +640,11 @@ public class DatabaseConnection implements DatabaseConnector
 
   @Override
   public UserGroup getGroupByUsername(String groupName) {
+
+    if (groupName == null || groupName.isEmpty()) {
+      return null;
+    }
+
     String groupSql = "SELECT id, name FROM UserGroup WHERE name = ?";
     String membersSql = "SELECT u.id, u.username " +
         "FROM Users u " +
@@ -815,7 +825,7 @@ public class DatabaseConnection implements DatabaseConnector
 
 
 
-  private List<Profile> getAllowedUsersForPoll(Connection conn, int pollId) throws SQLException {
+  protected List<Profile> getAllowedUsersForPoll(Connection conn, int pollId) throws SQLException {
     String sql = """
     SELECT u.id, u.username
     FROM PollAccessControl pac
@@ -836,7 +846,7 @@ public class DatabaseConnection implements DatabaseConnector
     }
     return users;
   }
-  private List<UserGroup> getAllowedGroupsForPoll(Connection conn, int pollId) throws SQLException {
+  protected List<UserGroup> getAllowedGroupsForPoll(Connection conn, int pollId) throws SQLException {
     String sql = """
     SELECT g.id, g.name
     FROM PollAccessControl pac

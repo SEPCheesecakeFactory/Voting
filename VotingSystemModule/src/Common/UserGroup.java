@@ -53,4 +53,5 @@ public class UserGroup implements Serializable
   {
     return members.remove(profile);
   }
+
 }

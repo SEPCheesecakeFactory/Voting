@@ -342,26 +342,33 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  @Override public void changeUsername(Profile profile)
-  {
-    try (Connection conn = openConnection())
-    {
+  @Override
+  public void changeUsername(Profile profile) {
+    try (Connection conn = openConnection()) {
 
-      String insertQuery = "UPDATE users SET username = ? WHERE id = ?;";
-      PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
-      insertStmt.setString(1, profile.getUsername());
-      insertStmt.setInt(2, profile.getId());
-      Logger.log("Updating username to " + profile.getUsername() + " for ID "
-          + profile.getId());
-      insertStmt.executeUpdate();
+      // Step 1: Check if the username already exists
+      String checkQuery = "SELECT COUNT(*) FROM users WHERE username = ?;";
+      PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+      checkStmt.setString(1, profile.getUsername());
+      ResultSet resultSet = checkStmt.executeQuery();
 
-    }
+      if (resultSet.next() && resultSet.getInt(1) > 0) {
+        Logger.log("Username already used: " + profile.getUsername());
+        throw new SQLException("Username already used");
+      }
 
-    catch (SQLException e)
-    {
-      throw new RuntimeException(e);
+      // Step 2: Update username if it doesn't exist
+      String updateQuery = "UPDATE users SET username = ? WHERE id = ?;";
+      PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+      updateStmt.setString(1, profile.getUsername());
+      updateStmt.setInt(2, profile.getId());
+      Logger.log("Updating username to " + profile.getUsername() + " for ID " + profile.getId());
+      updateStmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage());
     }
   }
+
 
   public Connection getConnection() throws SQLException
   {
@@ -708,87 +715,61 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
   @Override
-  public List<Poll> getAllAvailablePolls() {
+  public List<Poll> getAllAvailablePolls(int clientId) {
     final String POLLS_SQL = """
-    SELECT 
-        p.id, 
-        p.title, 
-        p.is_private, 
-        p.is_closed, 
-        po.user_id AS created_by_id
-    FROM 
-        Poll p
-    JOIN 
-        PollOwnership po ON p.id = po.poll_id
-    WHERE 
-        p.is_closed = FALSE
-    """;
-
-    final String USERS_SQL = """
-    SELECT pac.poll_id, u.id, u.username
-    FROM PollAccessControl pac
-    JOIN Users u ON pac.user_id = u.id
-    WHERE pac.user_id IS NOT NULL
-    """;
-
-    final String GROUPS_SQL = """
-    SELECT pac.poll_id, g.id, g.name
-    FROM PollAccessControl pac
-    JOIN UserGroup g ON pac.group_id = g.id
-    WHERE pac.group_id IS NOT NULL
-    """;
+  SELECT 
+      p.id, 
+      p.title, 
+      p.is_private, 
+      p.is_closed, 
+      po.user_id AS created_by_id
+  FROM 
+      Poll p
+  JOIN 
+      PollOwnership po ON p.id = po.poll_id
+  WHERE 
+      (
+          p.is_private = FALSE
+          OR EXISTS (
+              SELECT 1 FROM PollAccessControl pac
+              WHERE pac.poll_id = p.id AND pac.user_id = ?
+          )
+          OR EXISTS (
+              SELECT 1
+              FROM PollAccessControl pac
+              JOIN UserGroupMembership ugm ON pac.group_id = ugm.group_id
+              WHERE pac.poll_id = p.id AND ugm.user_id = ?
+          )
+          OR po.user_id = ?
+      )
+  """;
 
     List<Poll> polls = new ArrayList<>();
-    Map<Integer, Poll> pollMap = new HashMap<>();
 
-    try (Connection conn = openConnection()) {
-      // Load polls
-      try (PreparedStatement stmt = conn.prepareStatement(POLLS_SQL);
-          ResultSet rs = stmt.executeQuery()) {
+    try (Connection conn = openConnection();
+        PreparedStatement stmt = conn.prepareStatement(POLLS_SQL)) {
+
+      stmt.setInt(1, clientId); // for direct user access
+      stmt.setInt(2, clientId); // for group access
+      stmt.setInt(3, clientId); // for ownership
+
+      try (ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
           Poll poll = new Poll();
-          poll.setId(rs.getInt("id"));
+          int pollId = rs.getInt("id");
+
+          poll.setId(pollId);
           poll.setTitle(rs.getString("title"));
           poll.setPrivate(rs.getBoolean("is_private"));
           poll.setClosed(rs.getBoolean("is_closed"));
           poll.setCreatedById(rs.getInt("created_by_id"));
-          poll.setQuestions(new Question[0]); // Placeholder
+          poll.setQuestions(new Question[0]); // Placeholder for questions
+
+          // Populate access control
+          poll.getAllowedUsers().addAll(getAllowedUsersForPoll(conn, pollId));
+          poll.getAllowedGroups().addAll(getAllowedGroupsForPoll(conn, pollId));
+
           polls.add(poll);
-          pollMap.put(poll.getId(), poll);
-        }
-      }
-
-      // Load allowed users
-      try (PreparedStatement userStmt = conn.prepareStatement(USERS_SQL);
-          ResultSet userRs = userStmt.executeQuery()) {
-        while (userRs.next()) {
-          int pollId = userRs.getInt("poll_id");
-          int userId = userRs.getInt("id");
-          String username = userRs.getString("username");
-
-          Poll poll = pollMap.get(pollId);
-          if (poll != null) {
-            Profile user = new Profile(username);
-            user.setId(userId);
-            poll.addAllowedUser(user);
-          }
-        }
-      }
-
-      // Load allowed groups
-      try (PreparedStatement groupStmt = conn.prepareStatement(GROUPS_SQL);
-          ResultSet groupRs = groupStmt.executeQuery()) {
-        while (groupRs.next()) {
-          int pollId = groupRs.getInt("poll_id");
-          int groupId = groupRs.getInt("id");
-          String groupName = groupRs.getString("name");
-
-          Poll poll = pollMap.get(pollId);
-          if (poll != null) {
-            UserGroup group = new UserGroup(groupName);
-            group.setId(groupId);
-            poll.addAllowedGroup(group);
-          }
         }
       }
 
@@ -797,6 +778,51 @@ public class DatabaseConnection implements DatabaseConnector
     }
 
     return polls;
+  }
+
+
+
+  private List<Profile> getAllowedUsersForPoll(Connection conn, int pollId) throws SQLException {
+    String sql = """
+    SELECT u.id, u.username
+    FROM PollAccessControl pac
+    JOIN Users u ON pac.user_id = u.id
+    WHERE pac.poll_id = ? AND pac.user_id IS NOT NULL
+  """;
+
+    List<Profile> users = new ArrayList<>();
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setInt(1, pollId);
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          Profile user = new Profile(rs.getString("username"));
+          user.setId(rs.getInt("id"));
+          users.add(user);
+        }
+      }
+    }
+    return users;
+  }
+  private List<UserGroup> getAllowedGroupsForPoll(Connection conn, int pollId) throws SQLException {
+    String sql = """
+    SELECT g.id, g.name
+    FROM PollAccessControl pac
+    JOIN UserGroup g ON pac.group_id = g.id
+    WHERE pac.poll_id = ? AND pac.group_id IS NOT NULL
+  """;
+
+    List<UserGroup> groups = new ArrayList<>();
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setInt(1, pollId);
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          UserGroup group = new UserGroup(rs.getString("name"));
+          group.setId(rs.getInt("id"));
+          groups.add(group);
+        }
+      }
+    }
+    return groups;
   }
 
 

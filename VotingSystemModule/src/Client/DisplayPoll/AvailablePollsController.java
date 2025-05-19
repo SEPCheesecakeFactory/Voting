@@ -3,6 +3,7 @@ package Client.DisplayPoll;
 import Common.Poll;
 import Common.Profile;
 import Common.UserGroup;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -26,6 +27,7 @@ public class AvailablePollsController {
   @FXML private TableColumn<Poll, Void> resultsColumn;
   @FXML private TableColumn<Poll, String> privacyColumn;
   @FXML private TableColumn<Poll, String> openColumn;
+  @FXML private TableColumn<Poll, Void> accessColumn; // NEW COLUMN
   @FXML private TextField searchField;
 
   private AvailablePollsViewModel viewModel;
@@ -38,72 +40,32 @@ public class AvailablePollsController {
     viewModel.addPropertyChangeListener(evt -> {
       if ("UserValidated".equals(evt.getPropertyName()) || "GroupValidated".equals(evt.getPropertyName())) {
         AvailablePollsViewModel.ValidationResult result = (AvailablePollsViewModel.ValidationResult) evt.getNewValue();
-        javafx.application.Platform.runLater(() -> handleValidationResult(result));
-      }
-      else if ("PollAccessUpdated".equals(evt.getPropertyName())) {
-        // Handle poll access updates
-        javafx.application.Platform.runLater(this::refreshPollsData);
+        Platform.runLater(() -> handleValidationResult(result));
+      } else if ("PollAccessUpdated".equals(evt.getPropertyName())) {
+        Platform.runLater(this::refreshPollsData);
       }
     });
   }
 
   private void refreshPollsData() {
-    // Request fresh poll data from the server
     viewModel.refreshAvailablePolls();
-
-    // Refresh the table view
     pollTable.refresh();
   }
 
   private void initialize() {
     titleColumn.setCellValueFactory(data -> Bindings.createStringBinding(() -> data.getValue().getTitle()));
 
-    privacyColumn.setCellFactory(column -> new TableCell<>() {
-      private final Button addUsersButton = new Button("Poll Access");
-      private final Label label = new Label();
-      private final HBox box = new HBox(5, label, addUsersButton);
-
-      {
-        addUsersButton.setOnAction(event -> {
-          Poll poll = getTableView().getItems().get(getIndex());
-          openAddUsersChoiceDialog(poll);
-        });
-      }
-
-      @Override
-      protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-
-        if (empty || getIndex() >= getTableView().getItems().size()) {
-          setGraphic(null);
-          return;
-        }
-
-        Poll poll = getTableView().getItems().get(getIndex());
-        boolean isPrivate = poll.isPrivate();
-        boolean isOwner = poll.getCreatedById() == viewModel.getLoggedInUserId();
-
-        label.setText(isPrivate ? "Private" : "Public");
-
-        if (isPrivate && isOwner) {
-          setGraphic(box);
-        } else {
-          setGraphic(label);
-        }
-      }
-    });
-
-    openColumn.setCellValueFactory(data ->
-        Bindings.createStringBinding(() -> data.getValue().isClosed() ? "Closed" : "Open"));
+    privacyColumn.setCellValueFactory(data -> Bindings.createStringBinding(() -> data.getValue().isPrivate() ? "Private" : "Public"));
+    openColumn.setCellValueFactory(data -> Bindings.createStringBinding(() -> data.getValue().isClosed() ? "Closed" : "Open"));
 
     addVoteButtonToTable();
     addResultsButtonToTable();
+    addAccessEditButtonToTable(); // NEW
 
     FilteredList<Poll> filteredData = new FilteredList<>(viewModel.getAvailablePolls(), p -> true);
     viewModel.searchTextProperty().addListener((obs, oldVal, newVal) ->
         filteredData.setPredicate(poll -> poll.getTitle().toLowerCase().contains(newVal.toLowerCase()))
     );
-
     searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
 
     SortedList<Poll> sortedData = new SortedList<>(filteredData);
@@ -139,6 +101,38 @@ public class AvailablePollsController {
         setGraphic(empty ? null : btn);
       }
     };
+  }
+
+  private void addAccessEditButtonToTable() {
+    accessColumn.setCellFactory(column -> new TableCell<>() {
+      private final Button editAccessButton = new Button("Edit Access");
+
+      {
+        editAccessButton.setOnAction(event -> {
+          Poll poll = getTableView().getItems().get(getIndex());
+          openAddUsersChoiceDialog(poll);
+        });
+      }
+
+      @Override
+      protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || getIndex() >= getTableView().getItems().size()) {
+          setGraphic(null);
+          return;
+        }
+
+        Poll poll = getTableView().getItems().get(getIndex());
+        boolean isOwner = poll.getCreatedById() == viewModel.getLoggedInUserId();
+
+        if (poll.isPrivate() && isOwner) {
+          setGraphic(editAccessButton);
+        } else {
+          setGraphic(null);
+        }
+      }
+    });
   }
 
   private void openGroupPopup(Poll poll, String mode) {
@@ -184,27 +178,20 @@ public class AvailablePollsController {
       return row;
     };
 
-    // Allow adding new empty rows
     Runnable addRow = () -> container.getChildren().add(createEditableRow.call(""));
 
-    // Add existing users/groups
-    if ("single".equals(mode)&&!poll.getAllowedUsers().isEmpty()) {
+    if ("single".equals(mode) && !poll.getAllowedUsers().isEmpty()) {
       for (Profile user : poll.getAllowedUsers()) {
         container.getChildren().add(createEditableRow.call(user.getUsername()));
       }
-    }
-    else if("group".equals(mode)&&!poll.getAllowedGroups().isEmpty())
-    {
+    } else if ("group".equals(mode) && !poll.getAllowedGroups().isEmpty()) {
       for (UserGroup group : poll.getAllowedGroups()) {
         container.getChildren().add(createEditableRow.call(group.getGroupName()));
       }
-    }
-    else{
+    } else {
       addRow.run();
       addRow.run();
     }
-
-
 
     Button addButton = new Button("Add " + (mode.equals("single") ? "User" : "Group"));
     addButton.setOnAction(e -> addRow.run());
@@ -243,7 +230,6 @@ public class AvailablePollsController {
           viewModel.saveAccessToGroups(poll);
         }
 
-        // Explicitly refresh the UI after saving
         refreshPollsData();
       }
 
@@ -259,18 +245,6 @@ public class AvailablePollsController {
     popupStage.showAndWait();
   }
 
-
-
-
-
-  private void showAlert(String title, String message) {
-    Alert alert = new Alert(Alert.AlertType.WARNING);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
-
   private void openAddUsersChoiceDialog(Poll poll) {
     List<String> choices = List.of("Single Users", "Groups");
 
@@ -280,15 +254,13 @@ public class AvailablePollsController {
     dialog.setContentText("Select an option:");
 
     Optional<String> result = dialog.showAndWait();
-    if (result.isPresent()) {
-      String choice = result.get();
-
+    result.ifPresent(choice -> {
       if ("Single Users".equals(choice)) {
         openGroupPopup(poll, "single");
       } else if ("Groups".equals(choice)) {
         openGroupPopup(poll, "group");
       }
-    }
+    });
   }
 
   private void handleValidationResult(AvailablePollsViewModel.ValidationResult result) {
@@ -305,5 +277,13 @@ public class AvailablePollsController {
     } else {
       showAlert("Validation Failed", "Validation failed for: " + result.getName());
     }
+  }
+
+  private void showAlert(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.WARNING);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 }

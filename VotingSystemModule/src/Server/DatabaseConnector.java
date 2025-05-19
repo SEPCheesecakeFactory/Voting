@@ -27,6 +27,6 @@ public interface DatabaseConnector
   UserGroup getGroupByUsername(String username);
   void grantPollAccessToUser(int pollId, int userId);
   void grantPollAccessToGroup(int pollId, String groupName);
-  List<Poll> getAllAvailablePolls();
+  List<Poll> getAllAvailablePolls(int userId);
   List<UserGroup> getGroupsCreatedByUser(int userId);
 }

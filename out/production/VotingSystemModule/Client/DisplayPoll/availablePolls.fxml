@@ -9,13 +9,14 @@
     <children>
         <fx:include source="../Menu/NavBar.fxml" />
         <TextField fx:id="searchField" promptText="Search Polls..." />
-        <TableView fx:id="pollTable" prefHeight="363.0" prefWidth="600.0">
+        <TableView fx:id="pollTable" prefHeight="363.0" prefWidth="700.0">
             <columns>
                 <TableColumn fx:id="titleColumn" prefWidth="156.0" text="Title" />
                 <TableColumn fx:id="voteColumn" prefWidth="112.0" text="Vote on the poll" />
                 <TableColumn fx:id="resultsColumn" prefWidth="119.0" text="View the Results" />
-                <TableColumn fx:id="privacyColumn" prefWidth="147.0" text="Privacy" />
+                <TableColumn fx:id="privacyColumn" prefWidth="90.0" text="Privacy" />
                 <TableColumn fx:id="openColumn" prefWidth="65.0" text="Status" />
+                <TableColumn fx:id="accessColumn" prefWidth="120.0" text="Poll Access" />
             </columns>
         </TableView>
     </children>

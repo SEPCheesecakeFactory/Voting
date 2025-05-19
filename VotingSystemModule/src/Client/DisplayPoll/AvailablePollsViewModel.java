@@ -33,6 +33,7 @@ public class AvailablePollsViewModel {
     model.addPropertyChangeListener("AvailablePolls", evt -> {
       List<Poll> polls = (List<Poll>) evt.getNewValue();
       Platform.runLater(() -> availablePolls.setAll(polls));
+      polls.forEach(p -> System.out.println("Poll: " + p.getTitle() + ", private=" + p.isPrivate() + ", owner=" + p.getCreatedById()));
     });
 
     model.addPropertyChangeListener("LookupUserResults", this::handleUserLookupEvent);
@@ -102,6 +103,7 @@ public class AvailablePollsViewModel {
   public void refreshAvailablePolls()
   {
     model.requestAvailablePolls();
+
   }
 
   public static class ValidationResult {

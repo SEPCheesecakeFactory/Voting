@@ -60,9 +60,12 @@ public class ClientConnection implements Runnable
     outToServer.writeObject(message);
   }
 
-  public void registerMessageListener(MessageListener listener)
-  {
+  /**
+   * Registers a listener and returns its index.
+   */
+  public int registerMessageListener(MessageListener listener) {
     messageListeners.add(listener);
+    return messageListeners.size() - 1;
   }
 
   public void identifyClientConnection(int newUserId, MessageListener client){

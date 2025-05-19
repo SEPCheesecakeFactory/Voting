@@ -17,6 +17,7 @@ public class Client implements MessageListener
   private Model model;
   private String host;
   private int port;
+  private int myListenerIndex;
 
   public Client()
   {
@@ -37,7 +38,7 @@ public class Client implements MessageListener
     {
       Socket socket = new Socket(host, port);
       clientConnection = new ClientConnection(socket);
-      clientConnection.registerMessageListener(this);
+      myListenerIndex = clientConnection.registerMessageListener(this);
       WindowManager.getInstance().setModel(new Model(this));
       this.model = WindowManager.getInstance().getModel();
       var thread = new Thread(clientConnection);
@@ -56,7 +57,7 @@ public class Client implements MessageListener
   {
     try
     {
-      message.addParam("clientConnectionIndex", clientConnection.getIndex());
+      message.addParam("clientConnectionIndex", myListenerIndex);
       clientConnection.send(JsonUtil.serialize(message));
       return true;
     }

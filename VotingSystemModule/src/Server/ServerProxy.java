@@ -89,7 +89,7 @@ public class ServerProxy
         case MessageType.ClosePoll:
           pollId = messageObject.getParam("pollId", int.class);
 
-          userId = messageObject.getParam("userId", int.class); // assumes you store profile in ServerModel
+          userId = messageObject.getParam("userId", int.class);
 
           if (!model.getDb().isOwner(userId, pollId)) {
             Logger.log("Unauthorized close attempt by user " + userId + " on poll " + pollId);

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DatabaseConnectionProxy implements DatabaseConnector
 {
-  private DatabaseConnection databaseConnection;
+  protected DatabaseConnection databaseConnection;
   public DatabaseConnectionProxy() throws SQLException
   {
     databaseConnection = new DatabaseConnection();

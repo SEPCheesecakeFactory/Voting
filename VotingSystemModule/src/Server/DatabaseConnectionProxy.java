@@ -116,8 +116,8 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   }
 
   @Override
-  public List<Poll> getAllAvailablePolls() {
-    return databaseConnection.getAllAvailablePolls();
+  public List<Poll> getAllAvailablePolls(int userId) {
+    return databaseConnection.getAllAvailablePolls(userId);
   }
 
   @Override public List<UserGroup> getGroupsCreatedByUser(int userId)

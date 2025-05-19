@@ -113,6 +113,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   public void requestAvailablePolls() {
     Logger.log("Debugging - requestAvailablePolls");
     Message message = new Message(MessageType.GetAvailablePolls);
+    message.addParam("userId",getProfile().getId());
     client.send(message);
   }
 

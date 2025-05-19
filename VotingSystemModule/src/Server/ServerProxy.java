@@ -75,7 +75,8 @@ public class ServerProxy
           Logger.log("Poll display request handled for ID: " + pollId);
           break;
         case MessageType.GetAvailablePolls:
-          List<Poll> availablePolls = model.getDb().getAllAvailablePolls();  // 🔧 You'll write this method next
+          int userId=messageObject.getParam("userId",int.class);
+          List<Poll> availablePolls = model.getDb().getAllAvailablePolls(userId);
           Message sendMsg = new Message(MessageType.SendAvailablePolls);
           sendMsg.addParam("polls", availablePolls);
           model.sendMessageToUser(JsonUtil.serialize(sendMsg));
@@ -88,7 +89,7 @@ public class ServerProxy
         case MessageType.ClosePoll:
           pollId = messageObject.getParam("pollId", int.class);
 
-          int userId = messageObject.getParam("userId", int.class); // assumes you store profile in ServerModel
+          userId = messageObject.getParam("userId", int.class); // assumes you store profile in ServerModel
 
           if (!model.getDb().isOwner(userId, pollId)) {
             Logger.log("Unauthorized close attempt by user " + userId + " on poll " + pollId);

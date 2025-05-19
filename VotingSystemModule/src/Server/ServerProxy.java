@@ -128,15 +128,21 @@ public class ServerProxy
           model.sendUpdatedProfile(profile, clientConnectionIndex);
           break;
         case MessageType.SendChangeUsername:
-          profile = messageObject.getParam("username", Profile.class);
-          model.getDb().changeUsername(profile);
-          Logger.log("Username changed for the profile with id: " +profile.getId());
-          // model.sendMessageToUser("Username changed");
-          Message response = new Message(MessageType.SendChangeUsername);
-          response.addParam("status", "Username successfully changed");
-          model.sendMessageToUser(JsonUtil.serialize(response));
+          try {
+            profile = messageObject.getParam("username", Profile.class);
+            model.getDb().changeUsername(profile);
+            Logger.log("Username successfully changed for ID: " + profile.getId());
 
+            Message response = new Message(MessageType.SendChangeUsername);
+            response.addParam("status", "Username successfully changed");
+            model.sendMessageToUser(JsonUtil.serialize(response));
+          } catch (Exception e) {
+            Message response = new Message(MessageType.SendChangeUsername);
+            response.addParam("status", "Username already used");
+            model.sendMessageToUser(JsonUtil.serialize(response));
+          }
           break;
+
         case MessageType.SendCreateVoteGroupRequest:
           UserGroup userGroup = messageObject.getParam("voteGroup", UserGroup.class);
           clientConnectionIndex = messageObject.getParam("clientConnectionIndex",int.class);

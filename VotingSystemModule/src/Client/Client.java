@@ -91,11 +91,17 @@ public class Client implements MessageListener
       case SendResultResults ->
           model.getResult(message.getParam("pollResult", PollResult.class));
 
-      case SendChangeUsername ->
-      {
+      case SendChangeUsername -> {
         String status = message.getParam("status", String.class);
         Platform.runLater(() -> model.setMessage(status));
+
+        if ("Username successfully changed".equals(status)) {
+          model.fireUsernameChanged();
+        } else {
+          model.fireUsernameChangeFailed(status);
+        }
       }
+
 
       case SendPoll ->
       {

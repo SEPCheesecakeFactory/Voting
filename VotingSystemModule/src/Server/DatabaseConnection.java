@@ -342,26 +342,33 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
-  @Override public void changeUsername(Profile profile)
-  {
-    try (Connection conn = openConnection())
-    {
+  @Override
+  public void changeUsername(Profile profile) {
+    try (Connection conn = openConnection()) {
 
-      String insertQuery = "UPDATE users SET username = ? WHERE id = ?;";
-      PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
-      insertStmt.setString(1, profile.getUsername());
-      insertStmt.setInt(2, profile.getId());
-      Logger.log("Updating username to " + profile.getUsername() + " for ID "
-          + profile.getId());
-      insertStmt.executeUpdate();
+      // Step 1: Check if the username already exists
+      String checkQuery = "SELECT COUNT(*) FROM users WHERE username = ?;";
+      PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+      checkStmt.setString(1, profile.getUsername());
+      ResultSet resultSet = checkStmt.executeQuery();
 
-    }
+      if (resultSet.next() && resultSet.getInt(1) > 0) {
+        Logger.log("Username already used: " + profile.getUsername());
+        throw new SQLException("Username already used");
+      }
 
-    catch (SQLException e)
-    {
-      throw new RuntimeException(e);
+      // Step 2: Update username if it doesn't exist
+      String updateQuery = "UPDATE users SET username = ? WHERE id = ?;";
+      PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+      updateStmt.setString(1, profile.getUsername());
+      updateStmt.setInt(2, profile.getId());
+      Logger.log("Updating username to " + profile.getUsername() + " for ID " + profile.getId());
+      updateStmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage());
     }
   }
+
 
   public Connection getConnection() throws SQLException
   {

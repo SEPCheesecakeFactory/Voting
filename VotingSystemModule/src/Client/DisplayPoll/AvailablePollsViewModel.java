@@ -1,6 +1,7 @@
 package Client.DisplayPoll;
 
 import Client.Model;
+import Client.PropertyChangeSubject;
 import Common.Poll;
 import Common.Profile;
 import Common.UserGroup;
@@ -17,7 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AvailablePollsViewModel {
+public class AvailablePollsViewModel implements PropertyChangeSubject
+{
 
   private final Model model;
   private final ObservableList<Poll> availablePolls = FXCollections.observableArrayList();
@@ -32,8 +34,10 @@ public class AvailablePollsViewModel {
 
     model.addPropertyChangeListener("AvailablePolls", evt -> {
       List<Poll> polls = (List<Poll>) evt.getNewValue();
-      Platform.runLater(() -> availablePolls.setAll(polls));
-      polls.forEach(p -> System.out.println("Poll: " + p.getTitle() + ", private=" + p.isPrivate() + ", owner=" + p.getCreatedById()));
+      Platform.runLater(() -> {
+        availablePolls.setAll(polls);
+        support.firePropertyChange(evt);
+      });
     });
 
     model.addPropertyChangeListener("LookupUserResults", this::handleUserLookupEvent);
@@ -92,12 +96,25 @@ public class AvailablePollsViewModel {
     support.firePropertyChange("GroupValidated", null, new ValidationResult(group.getGroupName(), success));
   }
 
+  @Override
   public void addPropertyChangeListener(PropertyChangeListener listener) {
     support.addPropertyChangeListener(listener);
   }
 
+  @Override public void addPropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
+    support.addPropertyChangeListener(name, listener);
+  }
+
   public void removePropertyChangeListener(PropertyChangeListener listener) {
     support.removePropertyChangeListener(listener);
+  }
+
+  @Override public void removePropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
+    support.removePropertyChangeListener(name, listener);
   }
 
   public void refreshAvailablePolls()

@@ -678,42 +678,75 @@ public class DatabaseConnection implements DatabaseConnector
 
 
   @Override
-  public void grantPollAccessToUser(int pollId, int userId) {
-    String sql = "INSERT INTO PollAccessControl (poll_id, user_id, group_id) VALUES (?, ?, NULL) ON CONFLICT DO NOTHING";
+  public void grantPollAccessToUser(int pollId, int userId, int clientId) {
+    String checkOwnershipSQL = "SELECT 1 FROM PollOwnership WHERE poll_id = ? AND user_id = ?";
+    String insertSQL = "INSERT INTO PollAccessControl (poll_id, user_id, group_id) VALUES (?, ?, NULL) ON CONFLICT DO NOTHING";
+
     try (Connection connection = openConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setInt(1, pollId);
-      stmt.setInt(2, userId);
-      stmt.executeUpdate();
+        PreparedStatement checkStmt = connection.prepareStatement(checkOwnershipSQL)) {
+
+      checkStmt.setInt(1, pollId);
+      checkStmt.setInt(2, clientId);
+      ResultSet rs = checkStmt.executeQuery();
+
+      if (!rs.next()) {
+        Logger.log("Client: "+clientId+" is not the owner of the poll: "+pollId);
+
+      }
+
+      try (PreparedStatement insertStmt = connection.prepareStatement(insertSQL)) {
+        insertStmt.setInt(1, pollId);
+        insertStmt.setInt(2, userId);
+        insertStmt.executeUpdate();
+
+      }
+
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to grant poll access to user", e);
+     Logger.log("Failed to grant poll access to user: " + e.getMessage());
+
     }
   }
 
   @Override
-  public void grantPollAccessToGroup(int pollId, String groupName) {
+  public void grantPollAccessToGroup(int pollId, String groupName, int clientId) {
+    String checkOwnershipSQL = "SELECT 1 FROM PollOwnership WHERE poll_id = ? AND user_id = ?";
     String getGroupIdSQL = "SELECT id FROM UserGroup WHERE name = ?";
     String insertSQL = "INSERT INTO PollAccessControl (poll_id, user_id, group_id) VALUES (?, NULL, ?) ON CONFLICT DO NOTHING";
 
     try (Connection connection = openConnection();
-        PreparedStatement getStmt = connection.prepareStatement(getGroupIdSQL)) {
-      getStmt.setString(1, groupName);
-      ResultSet rs = getStmt.executeQuery();
-      if (rs.next()) {
-        int groupId = rs.getInt("id");
+        PreparedStatement checkStmt = connection.prepareStatement(checkOwnershipSQL)) {
 
-        try (PreparedStatement insertStmt = connection.prepareStatement(insertSQL)) {
-          insertStmt.setInt(1, pollId);
-          insertStmt.setInt(2, groupId);
-          insertStmt.executeUpdate();
-        }
-      } else {
-        throw new RuntimeException("Group not found: " + groupName);
+      checkStmt.setInt(1, pollId);
+      checkStmt.setInt(2, clientId);
+      ResultSet rs = checkStmt.executeQuery();
+
+      if (!rs.next()) {
+        Logger.log("Client: "+clientId+" is not the owner of the poll: "+pollId);
       }
+
+      try (PreparedStatement getStmt = connection.prepareStatement(getGroupIdSQL)) {
+        getStmt.setString(1, groupName);
+        ResultSet groupRs = getStmt.executeQuery();
+
+        if (groupRs.next()) {
+          int groupId = groupRs.getInt("id");
+
+          try (PreparedStatement insertStmt = connection.prepareStatement(insertSQL)) {
+            insertStmt.setInt(1, pollId);
+            insertStmt.setInt(2, groupId);
+            insertStmt.executeUpdate();
+          }
+        } else {
+          Logger.log("Group not found: " + groupName);
+        }
+      }
+
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to grant poll access to group", e);
+      System.err.println("Failed to grant poll access to group: " + e.getMessage());
     }
   }
+
+
   @Override
   public List<Poll> getAllAvailablePolls(int clientId) {
     final String POLLS_SQL = """

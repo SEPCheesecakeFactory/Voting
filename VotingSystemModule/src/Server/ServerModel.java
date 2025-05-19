@@ -164,16 +164,16 @@ public class ServerModel {
       db.addUserToGroup(profile.getId(), groupId);
     }
   }
-  public void grantPollAccessToUsers(int pollId, Set<Profile> users)
+  public void grantPollAccessToUsers(int pollId, Set<Profile> users, int userId)
   {
     for (Profile user : users) {
-      db.grantPollAccessToUser(pollId, user.getId());
+      db.grantPollAccessToUser(pollId, user.getId(), userId);
     }
   }
-  public void grantPollAccessToGroups(int pollId, Set<UserGroup> groups)
+  public void grantPollAccessToGroups(int pollId, Set<UserGroup> groups, int userId)
   {
     for (UserGroup group : groups) {
-      db.grantPollAccessToGroup(pollId, group.getGroupName());
+      db.grantPollAccessToGroup(pollId, group.getGroupName(), userId);
     }
   }
 

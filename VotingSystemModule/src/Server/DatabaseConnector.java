@@ -25,8 +25,8 @@ public interface DatabaseConnector
 //  void addGroupToPoll(int groupId, int pollId); grantPollAccess methods does the same in a better way
   Profile getProfileByUsername(String username);
   UserGroup getGroupByUsername(String username);
-  void grantPollAccessToUser(int pollId, int userId);
-  void grantPollAccessToGroup(int pollId, String groupName);
+  void grantPollAccessToUser(int pollId, int userId, int clientId);
+  void grantPollAccessToGroup(int pollId, String groupName, int clientId);
   List<Poll> getAllAvailablePolls(int userId);
   List<UserGroup> getGroupsCreatedByUser(int userId);
 }

@@ -146,12 +146,12 @@ public class MockDatabaseConnection implements DatabaseConnector {
     return null;
   }
 
-  @Override public void grantPollAccessToUser(int pollId, int userId)
+  @Override public void grantPollAccessToUser(int pollId, int userId, int clientId)
   {
 
   }
 
-    @Override public void grantPollAccessToGroup(int pollId, String groupName)
+    @Override public void grantPollAccessToGroup(int pollId, String groupName, int clientId)
     {
 
     }

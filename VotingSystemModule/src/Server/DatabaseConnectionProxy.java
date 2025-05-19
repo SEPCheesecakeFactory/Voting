@@ -105,14 +105,14 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     return databaseConnection.getGroupByUsername(username);
   }
 
-  @Override public void grantPollAccessToUser(int pollId, int userId)
+  @Override public void grantPollAccessToUser(int pollId, int userId, int clientId)
   {
-    databaseConnection.grantPollAccessToUser(pollId, userId);
+    databaseConnection.grantPollAccessToUser(pollId, userId, clientId);
   }
 
-  @Override public void grantPollAccessToGroup(int pollId, String groupName)
+  @Override public void grantPollAccessToGroup(int pollId, String groupName, int clientId)
   {
-    databaseConnection.grantPollAccessToGroup(pollId, groupName);
+    databaseConnection.grantPollAccessToGroup(pollId, groupName, clientId);
   }
 
   @Override

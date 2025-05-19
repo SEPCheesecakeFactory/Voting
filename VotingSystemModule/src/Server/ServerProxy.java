@@ -168,14 +168,15 @@ public class ServerProxy
 
           Type groupSetType = new TypeToken<Set<UserGroup>>() {}.getType();
           Set<UserGroup> groups = messageObject.getParam("groups", groupSetType);
+          userId=messageObject.getParam("userId",int.class);
 
           if (users!=null)
           {
-            model.grantPollAccessToUsers(pollId, users);
+            model.grantPollAccessToUsers(pollId, users, userId);
           }
           if(groups!=null)
           {
-            model.grantPollAccessToGroups(pollId, groups);
+            model.grantPollAccessToGroups(pollId, groups, userId);
           }
 
 

@@ -200,6 +200,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     message.addParam("pollId",pollId);
     message.addParam("users",users);
     message.addParam("groups",groups);
+    message.addParam("userId",getProfile().getId());
     boolean success = client.send(message);
   }
 

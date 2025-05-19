@@ -17,9 +17,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
-public class AvailablePollsController {
+public class AvailablePollsController implements PropertyChangeListener
+{
 
   @FXML private TableView<Poll> pollTable;
   @FXML private TableColumn<Poll, String> titleColumn;
@@ -35,6 +38,7 @@ public class AvailablePollsController {
 
   public void init(AvailablePollsViewModel viewModel) {
     this.viewModel = viewModel;
+    this.viewModel.addPropertyChangeListener(this);
     initialize();
 
     viewModel.addPropertyChangeListener(evt -> {
@@ -50,6 +54,10 @@ public class AvailablePollsController {
   private void refreshPollsData() {
     viewModel.refreshAvailablePolls();
     pollTable.refresh();
+
+    boolean userHasCreatedPolls = viewModel.getAvailablePolls().stream()
+        .anyMatch(poll -> poll.getCreatedById() == viewModel.getLoggedInUserId());
+    accessColumn.setVisible(userHasCreatedPolls);
   }
 
   private void initialize() {
@@ -71,6 +79,15 @@ public class AvailablePollsController {
     SortedList<Poll> sortedData = new SortedList<>(filteredData);
     sortedData.comparatorProperty().bind(pollTable.comparatorProperty());
     pollTable.setItems(sortedData);
+
+  }
+
+  private void setAccessColumnVisibility()
+  {
+    boolean userHasCreatedPolls = viewModel.getAvailablePolls().stream()
+        .anyMatch(poll -> poll.getCreatedById() == viewModel.getLoggedInUserId());
+
+    accessColumn.setVisible(userHasCreatedPolls);
   }
 
   private void addVoteButtonToTable() {
@@ -285,5 +302,13 @@ public class AvailablePollsController {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
+  }
+
+  @Override public void propertyChange(PropertyChangeEvent evt)
+  {
+    if(evt.getPropertyName().equals("AvailablePolls"))
+    {
+      setAccessColumnVisibility();
+    }
   }
 }

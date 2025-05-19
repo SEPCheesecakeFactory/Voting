@@ -717,49 +717,58 @@ public class DatabaseConnection implements DatabaseConnector
   @Override
   public List<Poll> getAllAvailablePolls(int clientId) {
     final String POLLS_SQL = """
-    SELECT 
-        p.id, 
-        p.title, 
-        p.is_private, 
-        p.is_closed, 
-        po.user_id AS created_by_id
-    FROM 
-        Poll p
-    JOIN 
-        PollOwnership po ON p.id = po.poll_id
-    WHERE 
-        
-        (
-            p.is_private = FALSE
-            OR EXISTS (
-                SELECT 1 FROM PollAccessControl pac
-                WHERE pac.poll_id = p.id AND pac.user_id = ?
-            )
-            OR EXISTS (
-                SELECT 1
-                FROM PollAccessControl pac
-                JOIN UserGroupMembership ugm ON pac.group_id = ugm.group_id
-                WHERE pac.poll_id = p.id AND ugm.user_id = ?
-            )
-        )
+  SELECT 
+      p.id, 
+      p.title, 
+      p.is_private, 
+      p.is_closed, 
+      po.user_id AS created_by_id
+  FROM 
+      Poll p
+  JOIN 
+      PollOwnership po ON p.id = po.poll_id
+  WHERE 
+      (
+          p.is_private = FALSE
+          OR EXISTS (
+              SELECT 1 FROM PollAccessControl pac
+              WHERE pac.poll_id = p.id AND pac.user_id = ?
+          )
+          OR EXISTS (
+              SELECT 1
+              FROM PollAccessControl pac
+              JOIN UserGroupMembership ugm ON pac.group_id = ugm.group_id
+              WHERE pac.poll_id = p.id AND ugm.user_id = ?
+          )
+          OR po.user_id = ?
+      )
   """;
 
     List<Poll> polls = new ArrayList<>();
 
     try (Connection conn = openConnection();
         PreparedStatement stmt = conn.prepareStatement(POLLS_SQL)) {
-      stmt.setInt(1, clientId);
-      stmt.setInt(2, clientId);
+
+      stmt.setInt(1, clientId); // for direct user access
+      stmt.setInt(2, clientId); // for group access
+      stmt.setInt(3, clientId); // for ownership
 
       try (ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
           Poll poll = new Poll();
-          poll.setId(rs.getInt("id"));
+          int pollId = rs.getInt("id");
+
+          poll.setId(pollId);
           poll.setTitle(rs.getString("title"));
           poll.setPrivate(rs.getBoolean("is_private"));
           poll.setClosed(rs.getBoolean("is_closed"));
           poll.setCreatedById(rs.getInt("created_by_id"));
-          poll.setQuestions(new Question[0]); // Placeholder
+          poll.setQuestions(new Question[0]); // Placeholder for questions
+
+          // Populate access control
+          poll.getAllowedUsers().addAll(getAllowedUsersForPoll(conn, pollId));
+          poll.getAllowedGroups().addAll(getAllowedGroupsForPoll(conn, pollId));
+
           polls.add(poll);
         }
       }
@@ -771,6 +780,50 @@ public class DatabaseConnection implements DatabaseConnector
     return polls;
   }
 
+
+
+  private List<Profile> getAllowedUsersForPoll(Connection conn, int pollId) throws SQLException {
+    String sql = """
+    SELECT u.id, u.username
+    FROM PollAccessControl pac
+    JOIN Users u ON pac.user_id = u.id
+    WHERE pac.poll_id = ? AND pac.user_id IS NOT NULL
+  """;
+
+    List<Profile> users = new ArrayList<>();
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setInt(1, pollId);
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          Profile user = new Profile(rs.getString("username"));
+          user.setId(rs.getInt("id"));
+          users.add(user);
+        }
+      }
+    }
+    return users;
+  }
+  private List<UserGroup> getAllowedGroupsForPoll(Connection conn, int pollId) throws SQLException {
+    String sql = """
+    SELECT g.id, g.name
+    FROM PollAccessControl pac
+    JOIN UserGroup g ON pac.group_id = g.id
+    WHERE pac.poll_id = ? AND pac.group_id IS NOT NULL
+  """;
+
+    List<UserGroup> groups = new ArrayList<>();
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setInt(1, pollId);
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          UserGroup group = new UserGroup(rs.getString("name"));
+          group.setId(rs.getInt("id"));
+          groups.add(group);
+        }
+      }
+    }
+    return groups;
+  }
 
 
 

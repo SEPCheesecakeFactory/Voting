@@ -7,9 +7,8 @@
     <children>
         <Button fx:id="homeNavButton" text="Home"/>
         <Button fx:id="createPollNavButton" text="Create Poll"/>
-        <Button fx:id="myPollsNavButton" text="My Polls"/>
         <Button fx:id="myUserGroupsNavButton" text="My User Groups"/>
-        <Button fx:id="availablePollsNavButton" text="Available Polls"/>
+        <Button fx:id="availablePollsNavButton" text="Polls"/>
         <Button fx:id="userSettingsNavButton" text="User Settings"/>
         <Button fx:id="pollResultsNavButton" text="Poll Results"/>
     </children>

@@ -33,11 +33,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.DialogPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class WindowManager
 {
@@ -45,6 +47,10 @@ public class WindowManager
   private Model model;
   private Stage primaryStage;
   private Scene mainScene;
+
+  private static final String GENERAL_CSS =
+      Objects.requireNonNull(WindowManager.class.getResource("/general.css"))
+          .toExternalForm();
 
   private WindowManager()
   {
@@ -159,6 +165,13 @@ public class WindowManager
       alert.setTitle("Error");
       alert.setHeaderText("An error has occurred");
       alert.setContentText(errorText);
+
+      DialogPane pane = alert.getDialogPane();
+      if (!pane.getStylesheets().contains(GENERAL_CSS)) {
+        pane.getStylesheets().add(GENERAL_CSS);
+      }
+      // pane.getStyleClass().add("error-dialog");
+
       alert.showAndWait();
     });
   }

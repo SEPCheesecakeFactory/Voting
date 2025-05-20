@@ -14,19 +14,15 @@ public class ServerConnection implements Runnable
 {
   private final ObjectInputStream inFromClient;
   private final ObjectOutputStream outToClient;
-  private final ServerProxy serverProxy;
-  private final DatabaseConnector dbp;
+  private final ServerModelService serverModelService;
 
-  public ServerConnection(Socket connectionSocket,
-      ConnectionPool connectionPool, DatabaseConnector dbp) throws IOException, SQLException
+  public ServerConnection(Socket connectionSocket, ServerModelService serverModelService) throws IOException, SQLException
   {
     inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
     outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
+    this.serverModelService = serverModelService;
+    serverModelService.setConnection(this);
 
-    this.dbp = new DatabaseConnectionProxy();
-    ServerModel model = new ServerModel(dbp, connectionPool);
-    model.setConnection(this);
-    this.serverProxy = new ServerProxy(model);
   }
 
   @Override public void run()
@@ -39,7 +35,7 @@ public class ServerConnection implements Runnable
         Object incoming = inFromClient.readObject();
         String message = (String) incoming;
         Logger.log("Received a message: " + message);
-        serverProxy.process(message);
+        serverModelService.process(message);
       }
     }
     catch (IOException | ClassNotFoundException e)

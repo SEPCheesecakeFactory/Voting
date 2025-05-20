@@ -9,9 +9,9 @@ import java.util.List;
 public class DatabaseConnectionProxy implements DatabaseConnector
 {
   protected DatabaseConnection databaseConnection;
-  public DatabaseConnectionProxy() throws SQLException
+  public DatabaseConnectionProxy(DatabaseConnection databaseConnection) throws SQLException
   {
-    databaseConnection = new DatabaseConnection();
+    this.databaseConnection = databaseConnection;
   }
 
   @Override public void storeVote(Vote vote)

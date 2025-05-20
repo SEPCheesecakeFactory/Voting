@@ -16,13 +16,20 @@ public class Server
     {
       ServerSocket welcomeSocket = new ServerSocket(2910);
       ConnectionPool connectionPool = new ConnectionPool();
+      DatabaseConnection databaseConnection = new DatabaseConnection();
+      DatabaseConnectionProxy databaseConnectionProxy = new DatabaseConnectionProxy(databaseConnection);
+
+      DatabaseConnector databaseConnector = databaseConnectionProxy;
+
+      ServerModel modelService = new ServerModel(databaseConnector, connectionPool);
+      ServerProxy serverProxy = new ServerProxy(modelService);
+
+      ServerModelService serverModelService = serverProxy;
 
       while (true)
       {
         Socket socket = welcomeSocket.accept();
-        DatabaseConnectionProxy databaseConnectionProxy = new DatabaseConnectionProxy();
-//        MockDatabaseConnection databaseConnectionProxy = new MockDatabaseConnection();
-        ServerConnection serverConnection = new ServerConnection(socket, connectionPool, databaseConnectionProxy);
+        ServerConnection serverConnection = new ServerConnection(socket, serverModelService);
         connectionPool.add(serverConnection);
         Logger.log("Client connected");
         new Thread(serverConnection).start();

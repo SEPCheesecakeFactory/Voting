@@ -22,23 +22,23 @@ public class ServerModel implements ServerModelService {
     this.connectionPool = connectionPool;
   }
 
-  public void setCurrentProfile(Profile profile) {
+  public synchronized void setCurrentProfile(Profile profile) {
     this.currentProfile = profile;
   }
 
-  public Profile getCurrentProfile() {
+  public synchronized Profile getCurrentProfile() {
     return currentProfile;
   }
 
-  public DatabaseConnector getDb() {
+  public synchronized DatabaseConnector getDb() {
     return db;
   }
 
-  public void storeVote(Vote vote) {
+  public synchronized void storeVote(Vote vote) {
     db.storeVote(vote);
   }
 
-  public void closePoll(int pollId, int clientConnectionIndex) {
+  public synchronized void closePoll(int pollId, int clientConnectionIndex) {
     db.closePollAndSaveResults(pollId);
     Message message = new Message(MessageType.ClosePoll);
     message.addParam("pollClosed", pollId);
@@ -54,16 +54,16 @@ public class ServerModel implements ServerModelService {
     }
   }
 
-  public PollResult retrievePollResult(int pollID) {
+  public synchronized PollResult retrievePollResult(int pollID) {
     return db.retrievePollResults(pollID);
   }
 
   // Optionally inject connection to send direct messages to the client
-  public void setConnection(ServerConnection connection) {
+  public synchronized void setConnection(ServerConnection connection) {
     this.connection = connection;
   }
 
-  public void sendMessageToUser(String message) {
+  public synchronized void sendMessageToUser(String message) {
     try {
       if (connection != null) {
           connection.send(message);
@@ -75,7 +75,7 @@ public class ServerModel implements ServerModelService {
     }
   }
 
-  public boolean checkPollAccess(int pollId) {
+  public synchronized boolean checkPollAccess(int pollId) {
     if (currentProfile == null) {
       sendMessageToUser("Not logged in.");
       return false;
@@ -96,7 +96,7 @@ public class ServerModel implements ServerModelService {
     return true;
   }
 
-  public void sendPollResultsToUser(PollResult pollResult, int clientConnectionIndex){
+  public synchronized void sendPollResultsToUser(PollResult pollResult, int clientConnectionIndex){
     try {
       Message message = new Message(MessageType.SendResultResults);
       message.addParam("pollResult", pollResult);
@@ -108,7 +108,7 @@ public class ServerModel implements ServerModelService {
       Logger.log("Failed to send pollResult to user: " + e.getMessage());
     }
   }
-  public void sendLookupUserResults(Profile profile, int clientConnectionIndex)
+  public synchronized void sendLookupUserResults(Profile profile, int clientConnectionIndex)
   {
     try
     {
@@ -123,7 +123,7 @@ public class ServerModel implements ServerModelService {
       Logger.log("Failed to send LookupUserResults to user: " + e.getMessage());    }
 
   }
-  public void sendUpdatedProfile(Profile profile, int clientConnectionIndex){
+  public synchronized void sendUpdatedProfile(Profile profile, int clientConnectionIndex){
     try {
       Logger.log("ServerModel: Profile send");
       Message message = new Message(MessageType.SendProfileBack);
@@ -136,7 +136,7 @@ public class ServerModel implements ServerModelService {
     }
   }
 
-  public void storePoll(Poll poll, Profile profile, int clientConnectionIndex)
+  public synchronized void storePoll(Poll poll, Profile profile, int clientConnectionIndex)
   {
     try
     {
@@ -154,7 +154,7 @@ public class ServerModel implements ServerModelService {
 
   }
 
-  public void sendPoll(int id, int clientConnectionIndex)
+  public synchronized void sendPoll(int id, int clientConnectionIndex)
   {
     try
     {
@@ -171,7 +171,7 @@ public class ServerModel implements ServerModelService {
     }
   }
 
-  public void storeUserGroup(UserGroup userGroup, int creatorId) {
+  public synchronized void storeUserGroup(UserGroup userGroup, int creatorId) {
 
     int groupId = db.createUserGroup(userGroup.getGroupName(), creatorId);
     userGroup.setId(groupId);
@@ -181,20 +181,20 @@ public class ServerModel implements ServerModelService {
       db.addUserToGroup(profile.getId(), groupId);
     }
   }
-  public void grantPollAccessToUsers(int pollId, Set<Profile> users, int userId)
+  public synchronized void grantPollAccessToUsers(int pollId, Set<Profile> users, int userId)
   {
     for (Profile user : users) {
       db.grantPollAccessToUser(pollId, user.getId(), userId);
     }
   }
-  public void grantPollAccessToGroups(int pollId, Set<UserGroup> groups, int userId)
+  public synchronized void grantPollAccessToGroups(int pollId, Set<UserGroup> groups, int userId)
   {
     for (UserGroup group : groups) {
       db.grantPollAccessToGroup(pollId, group.getGroupName(), userId);
     }
   }
 
-  public void sendLookupGroupResults(UserGroup group, int clientConnectionIndex)
+  public synchronized void sendLookupGroupResults(UserGroup group, int clientConnectionIndex)
   {
     try
     {
@@ -209,13 +209,13 @@ public class ServerModel implements ServerModelService {
       Logger.log("Failed to send sendLookupGroupResults to user: " + e.getMessage());    }
   }
 
-  public List<UserGroup> getGroupsCreatedByUser(int userId)
+  public synchronized List<UserGroup> getGroupsCreatedByUser(int userId)
   {
     List<UserGroup> groups = db.getGroupsCreatedByUser(userId);
     return groups;
   }
 
-  public void sendUserGroups(List<UserGroup> groups, int clientConnectionIndex)
+  public synchronized void sendUserGroups(List<UserGroup> groups, int clientConnectionIndex)
   {
 
     try{
@@ -230,7 +230,7 @@ public class ServerModel implements ServerModelService {
       Logger.log("Failed to send sendUserGroups to user: " + e.getMessage());
     }
   }
-  public void handle(Object incoming) {
+  public synchronized void handle(Object incoming) {
     try {
       if (incoming instanceof Vote vote) {
         storeVote(vote);
@@ -267,7 +267,7 @@ public class ServerModel implements ServerModelService {
   }
 
 
-  public void process(String message)
+  public synchronized void process(String message)
   {
     Message messageObject = JsonUtil.deserialize(message, Message.class);
     int clientConnectionIndex = messageObject.getParam("clientConnectionIndex", int.class);

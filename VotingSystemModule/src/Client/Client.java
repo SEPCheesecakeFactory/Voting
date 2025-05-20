@@ -55,6 +55,11 @@ public class Client implements MessageListener
 
   public boolean send(Message message)
   {
+    if(clientConnection == null)
+    {
+      Logger.log("ClientConnection is null!");
+      return false;
+    }
     try
     {
       message.addParam("clientConnectionIndex", myListenerIndex);

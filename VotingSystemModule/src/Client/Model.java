@@ -72,13 +72,15 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     var message = new Message(MessageType.SendLoginOrRegister);
     message.addParam("profile", profile);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Could not login or register!");
   }
 
   public void sendChangeUsername(String username) {
     currentProfile.changeUsername(username);
     var message = new Message(MessageType.SendChangeUsername);
     message.addParam("username", currentProfile);
-    client.send(message);
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Could not change the username!");
   }
 
   public void fireUsernameChanged() {
@@ -96,6 +98,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     Vote vote = new Vote(userId, choices);
     message.addParam("vote", vote);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Could not send the vote!");
   }
 
   public void sendPollCloseRequest(int pollId)
@@ -104,6 +107,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     var message = new Message(MessageType.ClosePoll);
     message.addParam("pollId", pollId);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Could not close the poll!");
   }
 
   public void sendDisplayPollRequest(int pollId) {
@@ -113,14 +117,22 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     boolean success = client.send(message);
     if (!success) {
       Logger.log("Failed to send DisplayPollRequest for poll ID: " + pollId);
+      if(!success) WindowManager.getInstance().showErrorPopup("Can't display the poll currently!");
     }
   }
 
   public void requestAvailablePolls() {
     Logger.log("Debugging - requestAvailablePolls");
     Message message = new Message(MessageType.GetAvailablePolls);
-    message.addParam("userId",getProfile().getId());
-    client.send(message);
+    boolean success;
+    if(getProfile() != null)
+    {
+      message.addParam("userId",getProfile().getId());
+      success = client.send(message);
+    }
+    else
+      success = false;
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for available polls failed!");
   }
 
   public void handleAvailablePolls(List<Poll> polls) {
@@ -147,6 +159,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     var message = new Message(MessageType.SendResultRequest);
     message.addParam("pollId", pollId);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for the poll results failed!");
   }
 
   @Override public void sendVoteGroup(UserGroup userGroup)
@@ -156,6 +169,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     message.addParam("voteGroup", userGroup);
     message.addParam("userId", getProfile().getId());
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Sending a vote group failed!");
   }
 
   @Override public void requestUserLookup(String username) {
@@ -164,6 +178,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     Profile temp = new Profile(username);
     message.addParam("profile", temp);
     boolean success=client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for user lookup failed!");
   }
 
   @Override public void handleUserLookupResult(Profile profile)
@@ -176,8 +191,15 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
   {
     Logger.log("Debugging - requestUserGroups");
     Message message = new Message(MessageType.SendUserGroupsRequest);
-    message.addParam("userId",getProfile().getId());
-    boolean success = client.send(message);
+    boolean success;
+    if(getProfile() != null)
+    {
+      message.addParam("userId",getProfile().getId());
+      success = client.send(message);
+    }
+    else
+      success = false;
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for user groups failed!");
   }
 
   @Override public void receiveUserGroups(List<UserGroup> groups)
@@ -202,6 +224,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     message.addParam("groups",groups);
     message.addParam("userId",getProfile().getId());
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Sending poll access failed!");
   }
 
   @Override public void requestGroupLookup(String groupName)
@@ -210,6 +233,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     var message = new Message(MessageType.LookupGroup);
     message.addParam("groupName", groupName);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for group lookup failed!");
   }
 
 
@@ -221,6 +245,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     message.addParam("poll", poll);
     message.addParam("profile",currentProfile);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Creating a poll failed!");
   }
   @Override public void sendPollRequest(int pollID)
   {
@@ -228,6 +253,7 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     var message = new Message(MessageType.SendPollRequest);
     message.addParam("pollId",pollID);
     boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for poll failed!");
   }
 
 

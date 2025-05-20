@@ -29,6 +29,7 @@ public class Server
       while (true)
       {
         Socket socket = welcomeSocket.accept();
+        System.out.println(socket);
         ServerConnection serverConnection = new ServerConnection(socket, serverModelService);
         connectionPool.add(serverConnection);
         Logger.log("Client connected");
@@ -37,7 +38,7 @@ public class Server
     }
     catch (IOException e)
     {
-      throw new RuntimeException(e);
+      System.out.println(e.getMessage());
     }
     catch (SQLException e)
     {

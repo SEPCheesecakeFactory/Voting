@@ -36,7 +36,7 @@ public class ServerConnection implements Runnable
         Object incoming = inFromClient.readObject();
         String message = (String) incoming;
         Logger.log("Received a message: " + message);
-        serverModelService.process(message);
+        serverModelService.process(message, this);
       }
     }
     catch (IOException | ClassNotFoundException e)

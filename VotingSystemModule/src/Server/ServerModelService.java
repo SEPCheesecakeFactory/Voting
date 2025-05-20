@@ -2,7 +2,6 @@ package Server;
 
 import Common.*;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ public interface ServerModelService
   void closePoll(int pollId, int clientConnectionIndex);
   PollResult retrievePollResult(int pollID);
   void setConnection(ServerConnection connection);
-  void sendMessageToUser(String message);
+  void sendMessageToUser(Message message);
   boolean checkPollAccess(int pollId);
   void sendPollResultsToUser(PollResult pollResult, int clientConnectionIndex);
   void sendLookupUserResults(Profile profile, int clientConnectionIndex);
@@ -29,6 +28,7 @@ public interface ServerModelService
   List<UserGroup> getGroupsCreatedByUser(int userId);
   void sendUserGroups(List<UserGroup> groups, int clientConnectionIndex);
   void handle(Object incoming);
-  void process(String message);
+  void process(String message, ServerConnection serverConnection);
+  void sendAvailablePolls(Message message, int clientConnectionIndex);
 
 }

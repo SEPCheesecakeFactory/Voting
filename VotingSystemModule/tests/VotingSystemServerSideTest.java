@@ -3,8 +3,6 @@ import Server.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VotingSystemServerSideTest {
@@ -29,7 +27,7 @@ public class VotingSystemServerSideTest {
     msg.addParam("vote", vote);
     String json = Utils.JsonUtil.serialize(msg);
 
-    serverProxy.process(json);
+    serverProxy.process(json, this);
 
 
     Vote result = mockDb.votes.get(1);
@@ -46,7 +44,7 @@ public class VotingSystemServerSideTest {
     msg.addParam("profile", profile);
     String json = Utils.JsonUtil.serialize(msg);
 
-    serverProxy.process(json);
+    serverProxy.process(json, this);
 
     // Check if profile is now stored
     assertTrue(mockDb.profileExists("newUser"));
@@ -71,7 +69,7 @@ public class VotingSystemServerSideTest {
     msg.addParam("profile", profile);
     String json = Utils.JsonUtil.serialize(msg);
 
-    serverProxy.process(json);
+    serverProxy.process(json, this);
 
 
 
@@ -81,7 +79,7 @@ public class VotingSystemServerSideTest {
     msg.addParam("profile", profile);
      json = Utils.JsonUtil.serialize(msg);
 
-    serverProxy.process(json);
+    serverProxy.process(json, this);
 
 
 
@@ -91,7 +89,7 @@ public class VotingSystemServerSideTest {
     msg.addParam("profile", profile);
     json = Utils.JsonUtil.serialize(msg);
 
-    serverProxy.process(json);
+    serverProxy.process(json, this);
 
     // Check if profile is there
     assertTrue(mockDb.profileExists("newUser2"));
@@ -116,7 +114,7 @@ public class VotingSystemServerSideTest {
     Message msg = new Message(MessageType.SendLoginOrRegister);
     msg.addParam("profile", profile);
     String json = Utils.JsonUtil.serialize(msg);
-    serverProxy.process(json);
+    serverProxy.process(json, this);
     Message broadcast = MockConnectionPool.getBroadcastedMessages().getLast();
     profile = broadcast.getParam("UpdatedProfile", Profile.class);
 
@@ -126,7 +124,7 @@ public class VotingSystemServerSideTest {
     msg = new Message(MessageType.SendChangeUsername);
     msg.addParam("username", profile);
     json = Utils.JsonUtil.serialize(msg);
-    serverProxy.process(json);
+    serverProxy.process(json, this);
 
     // Check that the username has been updated in the mock DB
     Profile updatedProfile = mockDb.profiles.get(profile.getId());
@@ -147,7 +145,7 @@ public class VotingSystemServerSideTest {
     Message msg = new Message(MessageType.SendLoginOrRegister);
     msg.addParam("profile", profile);
     String json = Utils.JsonUtil.serialize(msg);
-    serverProxy.process(json);
+    serverProxy.process(json, this);
     Message broadcast = MockConnectionPool.getBroadcastedMessages().getLast();
     profile = broadcast.getParam("UpdatedProfile", Profile.class);
 
@@ -155,7 +153,7 @@ public class VotingSystemServerSideTest {
     msg = new Message(MessageType.SendLoginOrRegister);
     msg.addParam("profile", profile);
     json = Utils.JsonUtil.serialize(msg);
-    serverProxy.process(json);
+    serverProxy.process(json, this);
     broadcast = MockConnectionPool.getBroadcastedMessages().getLast();
     profile = broadcast.getParam("UpdatedProfile", Profile.class);
 
@@ -167,7 +165,7 @@ public class VotingSystemServerSideTest {
     json = Utils.JsonUtil.serialize(msg);
     String finalJson1 = json;
     assertThrows(RuntimeException.class, ()->serverProxy.process(
-        finalJson1));
+        finalJson1, this));
   }
   @Test
   public void testProcessClosePoll_AuthorisedAttempt() {

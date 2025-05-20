@@ -63,28 +63,38 @@ public class ServerModel implements ServerModelService {
     this.connection = connection;
   }
 
-  public synchronized void sendMessageToUser(String message) {
+  public synchronized void sendMessageToUser(Message message) {
     try {
-      if (connection != null) {
-          connection.send(message);
-      } else {
-        Logger.log("Cannot send message to user: no connection attached.");
-      }
+      connectionPool.sendDirectMessage(message);
     } catch (IOException e) {
       Logger.log("Failed to send message to user: " + e.getMessage());
     }
   }
+  @Override public synchronized void sendAvailablePolls(Message message,
+      int clientConnectionIndex)
+  {
+    message.addParam("clientConnectionIndex", clientConnectionIndex);
+    try
+    {
+      connectionPool.sendDirectMessage(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log(e.getMessage());
+    }
+  }
+
 
   public synchronized boolean checkPollAccess(int pollId) {
     if (currentProfile == null) {
-      sendMessageToUser("Not logged in.");
+//      sendMessageToUser("Not logged in.");
       return false;
     }
 
     try
     {
       if (!db.userHasAccessToPoll(currentProfile.getId(), pollId)) {
-        sendMessageToUser("You do not have access to this poll.");
+//        sendMessageToUser("You do not have access to this poll.");
         return false;
       }
     }
@@ -130,6 +140,18 @@ public class ServerModel implements ServerModelService {
       message.addParam("UpdatedProfile", profile);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
       connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
+    } catch (IOException e) {
+      Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
+    }
+  }
+  public synchronized void sendUpdatedProfile(Profile profile, ServerConnection serverConnection){
+    try {
+      Logger.log("ServerModel: Profile send");
+      Message message = new Message(MessageType.SendProfileBack);
+      message.addParam("UpdatedProfile", profile);
+      message.addParam("clientConnectionIndex", profile.getId());
+      connectionPool.changeToMap(message, serverConnection);
       connectionPool.sendDirectMessage(message);
     } catch (IOException e) {
       Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
@@ -243,7 +265,7 @@ public class ServerModel implements ServerModelService {
 
         if (!getDb().isOwner(userId, pollId)) {
           Logger.log("Unauthorized close attempt by user " + userId + " on poll " + pollId);
-          sendMessageToUser("You are not authorized to close this poll.");
+//          sendMessageToUser("You are not authorized to close this poll.");
           return;
         }
 
@@ -267,10 +289,19 @@ public class ServerModel implements ServerModelService {
   }
 
 
-  public synchronized void process(String message)
+  public synchronized void process(String message,
+      ServerConnection serverConnection)
   {
     Message messageObject = JsonUtil.deserialize(message, Message.class);
-    int clientConnectionIndex = messageObject.getParam("clientConnectionIndex", int.class);
+    int clientConnectionIndex=-1;
+    try{
+      clientConnectionIndex = messageObject.getParam("clientConnectionIndex", int.class);
+    }
+    catch (Exception e)
+    {
+      Logger.log("No clientConnectionIndex received");
+    }
+
     try {
       int pollId;
       Profile profile;
@@ -289,7 +320,7 @@ public class ServerModel implements ServerModelService {
           List<Poll> availablePolls = getDb().getAllAvailablePolls(userId);
           Message sendMsg = new Message(MessageType.SendAvailablePolls);
           sendMsg.addParam("polls", availablePolls);
-          sendMessageToUser(JsonUtil.serialize(sendMsg));
+          sendAvailablePolls(sendMsg, clientConnectionIndex);
           Logger.log("Sent available polls to client.");
           break;
         case MessageType.SendVote:
@@ -303,7 +334,7 @@ public class ServerModel implements ServerModelService {
 
           if (!getDb().isOwner(userId, pollId)) {
             Logger.log("Unauthorized close attempt by user " + userId + " on poll " + pollId);
-            sendMessageToUser("You are not authorized to close this poll.");
+//            sendMessageToUser("You are not authorized to close this poll.");
             return;
           }
 
@@ -329,7 +360,13 @@ public class ServerModel implements ServerModelService {
           int id=getDb().loginOrRegisterAProfile(profile);
           Logger.log("Profile logged or registered with id: " + id);
           profile.setId(id);
-          sendUpdatedProfile(profile, clientConnectionIndex);
+          //important
+          Message mes = new Message(MessageType.MapConnectionFirstSetup);
+          mes.addParam("clientConnectionIndex", id);
+
+          //
+
+          sendUpdatedProfile(profile, serverConnection);
           break;
         case MessageType.SendChangeUsername:
           try {
@@ -339,11 +376,13 @@ public class ServerModel implements ServerModelService {
 
             Message response = new Message(MessageType.SendChangeUsername);
             response.addParam("status", "Username successfully changed");
-            sendMessageToUser(JsonUtil.serialize(response));
+
+            sendMessageToUser(response);
           } catch (Exception e) {
             Message response = new Message(MessageType.SendChangeUsername);
             response.addParam("status", "Username already used");
-            sendMessageToUser(JsonUtil.serialize(response));
+            response.addParam("clientConnectionIndex", clientConnectionIndex);
+            sendMessageToUser(response);
           }
           break;
 
@@ -411,4 +450,6 @@ public class ServerModel implements ServerModelService {
       throw new RuntimeException(e);
     }
   }
+
+
 }

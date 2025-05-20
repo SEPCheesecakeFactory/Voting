@@ -21,7 +21,7 @@ public class ConnectionPool
     this.identifiedConnections = new ConcurrentHashMap<Integer, ServerConnection>();
   }
 
-  public void add(ServerConnection serverConnection)
+  public synchronized void add(ServerConnection serverConnection)
   {
     connections.add(serverConnection);
   }

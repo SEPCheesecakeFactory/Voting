@@ -48,7 +48,7 @@ public class ServerProxy implements ServerModelService
     realService.setConnection(connection);
   }
 
-  @Override public void sendMessageToUser(String message)
+  @Override public void sendMessageToUser(Message message)
   {
     realService.sendMessageToUser(message);
   }
@@ -126,10 +126,16 @@ public class ServerProxy implements ServerModelService
     realService.handle(incoming);
   }
 
-  @Override public void process(String message)
+  @Override public void process(String message,
+      ServerConnection serverConnection)
   {
-    realService.process(message);
+    realService.process(message, serverConnection);
   }
 
+  @Override public void sendAvailablePolls(Message message,
+      int clientConnectionIndex)
+  {
+    realService.sendAvailablePolls(message, clientConnectionIndex);
+  }
 
 }

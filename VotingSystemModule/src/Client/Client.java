@@ -38,7 +38,10 @@ public class Client implements MessageListener
     {
       Socket socket = new Socket(host, port);
       clientConnection = new ClientConnection(socket);
+      System.out.println(socket.getLocalPort());
       myListenerIndex = clientConnection.registerMessageListener(this);
+//      myListenerIndex=
+
       WindowManager.getInstance().setModel(new Model(this));
       this.model = WindowManager.getInstance().getModel();
       var thread = new Thread(clientConnection);
@@ -62,7 +65,11 @@ public class Client implements MessageListener
     }
     try
     {
-      message.addParam("clientConnectionIndex", myListenerIndex);
+      if (model.getProfile()!=null)
+      {
+        message.addParam("clientConnectionIndex", model.getProfile().getId());
+      }
+
       clientConnection.send(JsonUtil.serialize(message));
       return true;
     }
@@ -81,6 +88,7 @@ public class Client implements MessageListener
     {
       case SendProfileBack ->
       {
+        System.out.println("?");
         Profile updatedProfile = message.getParam("UpdatedProfile", Profile.class);
         model.setProfile(updatedProfile);
         clientConnection.identifyClientConnection(updatedProfile.getId(), this);

@@ -2,6 +2,7 @@ package Client.DisplayPoll;
 
 import Client.Model;
 import Client.PropertyChangeSubject;
+import Client.WindowManager;
 import Common.Poll;
 import Utils.Logger;
 
@@ -29,7 +30,7 @@ public class DisplayPollViewModel  implements PropertyChangeListener,
     Poll currentPoll = model.getPoll();
 
     if (currentPoll != null && currentPoll.isClosed())
-      Logger.log("Cannot vote: Poll is closed.");
+      WindowManager.getInstance().showErrorPopup("Cannot vote: Poll is closed.");
 
     model.sendVote(userId, choices);
   }

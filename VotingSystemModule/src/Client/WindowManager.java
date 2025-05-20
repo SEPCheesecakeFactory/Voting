@@ -44,6 +44,7 @@ public class WindowManager
   private volatile static WindowManager instance;
   private Model model;
   private Stage primaryStage;
+  private Scene mainScene;
 
   private WindowManager()
   {
@@ -345,13 +346,26 @@ public class WindowManager
     return scene;
   }
 
-  private void showScene(Scene scene)
+  private void showScene(Scene sceneWithNewRoot) // NOTE: this was done to keep the rest compatible, could have been replaced with directly taking the root as a parameter
   {
+    String css = getClass().getResource("/general.css").toExternalForm();
+    if (!sceneWithNewRoot.getStylesheets().contains(css))
+      sceneWithNewRoot.getStylesheets().add(css);
+
     Platform.runLater(() -> {
-      getPrimaryStage().setTitle("Voting System");
-      // getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
-      getPrimaryStage().setScene(scene);
-      getPrimaryStage().show();
+      if (mainScene == null) {
+        mainScene = sceneWithNewRoot;
+        primaryStage.setTitle("Voting System");
+        primaryStage.setScene(mainScene);
+        primaryStage.show();
+      } else {
+        Parent newRoot = sceneWithNewRoot.getRoot();
+        if (newRoot.getScene() != null && newRoot.getScene() != mainScene)
+          newRoot.getScene().setRoot(new javafx.scene.Group());
+
+        mainScene.setRoot(newRoot);
+        mainScene.setFill(sceneWithNewRoot.getFill());
+      }
     });
   }
 

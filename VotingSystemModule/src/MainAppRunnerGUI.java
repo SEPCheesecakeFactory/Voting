@@ -14,6 +14,7 @@ public class MainAppRunnerGUI extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
+    primaryStage.setMaximized(true);
     WindowManager.getInstance().setPrimaryStage(primaryStage);
     WindowManager.getInstance().showView(ViewType.Login);
   }

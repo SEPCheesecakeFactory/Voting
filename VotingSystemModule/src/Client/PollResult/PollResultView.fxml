@@ -11,11 +11,12 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="Client.PollResult.PollResultViewController"
-            prefWidth="600.0" prefHeight="400.0">
+            fx:controller="Client.PollResult.PollResultViewController">
     <children>
         <!-- NavBar include -->
-        <fx:include source="../Menu/NavBar.fxml"/>
+        <fx:include source="../Menu/NavBar.fxml"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" />
 
         <!-- Top controls -->
         <HBox spacing="10.0"

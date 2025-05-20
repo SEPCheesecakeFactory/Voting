@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0"
+<BorderPane fx:id="root"
             xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
    <!-- Top: Navigation Bar -->
    <top>
@@ -18,7 +18,7 @@
 
    <!-- Center: Welcome Label Horizontally & Vertically Centered -->
    <center>
-      <VBox alignment="CENTER" prefWidth="600.0" prefHeight="300.0">
+      <VBox alignment="CENTER">
          <children>
             <Label fx:id="welcomeLabel"
                    text="Welcome!"

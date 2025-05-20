@@ -6,7 +6,6 @@
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="Client.Login.LoginViewController"
-            prefWidth="600" prefHeight="400"
             style="-fx-background-color: #eeeeee;">
 
     <VBox spacing="20" alignment="CENTER" layoutX="150" layoutY="100" prefWidth="300" prefHeight="250">

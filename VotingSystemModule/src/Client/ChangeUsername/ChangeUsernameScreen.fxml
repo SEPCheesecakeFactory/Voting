@@ -7,11 +7,13 @@
 
 <AnchorPane fx:controller="Client.ChangeUsername.ChangeUsernameController"
             xmlns:fx="http://javafx.com/fxml"
-            prefWidth="600" prefHeight="400"
             style="-fx-background-color: #f4f4f4;">
 
     <!-- Top Navigation Bar -->
-    <fx:include source="../Menu/NavBar.fxml"/>
+
+    <fx:include source="../Menu/NavBar.fxml"
+                AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0" />
 
     <!-- Centered Form Layout -->
     <VBox alignment="TOP_CENTER" spacing="20"

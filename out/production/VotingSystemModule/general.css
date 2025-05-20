@@ -1,0 +1,133 @@
+@font-face {
+    font-family: "Nunito";
+    src: url("Nunito-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Nunito Light";
+    src: url("Nunito-Light.ttf");
+}
+
+* {
+    -fx-font-family: "Nunito Light";
+
+}
+
+.root {
+  -fx-background-color: #FFF;
+}
+
+.split-pane .split-pane-divider {
+    -fx-background-color: #FFF;
+    -fx-pref-width: 5px;
+    -fx-border-color: #BBB;
+    -fx-border-width: 1px;
+}
+
+.button {
+    -fx-border-color: #BBB;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-color: #FFF;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.16), 10, 0, 0, 4);
+    -fx-background-insets: 0, 1;
+    -fx-font-size: 1.2em;
+    -fx-wrap-text: true;
+    -fx-pref-width: 400px;
+    -fx-min-width: 100px;
+    -fx-cursor: hand;
+    -fx-text-alignment: center;
+}
+
+.button:hover {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #888;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 12, 0, 0, 6);
+}
+
+.button:pressed {
+    -fx-background-color: #e6e6e6;
+    -fx-border-color: #666;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+}
+
+.label {
+  -fx-font-size: 1.4em;
+  -fx-wrap-text: true;
+  -fx-min-width: 4em;
+}
+.text-field {
+  -fx-font-size: 1.4em;
+  -fx-min-width: 4em;
+  -fx-pref-width: 8em;
+}
+
+.text-field:hover {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 12, 0, 0, 6);
+}
+
+.list-view {
+    -fx-padding: 0.2em;
+    -fx-font-size: 1.2em;
+    -fx-pref-height: 1000px;
+    -fx-text-alignment: center;
+}
+
+.list-view:focused {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 10, 0, 0, 4);
+    -fx-border-color: transparent;
+}
+
+.list-cell {
+    -fx-padding: 0.3em 0 0.3em 0.6em;
+    -fx-background-color: #fff;
+    -fx-text-fill: #444;
+    -fx-border-color: transparent;
+    -fx-text-alignment: center;
+}
+
+.list-cell:hover {
+    -fx-background-color: #ddd;
+    -fx-text-fill: #000;
+}
+
+.list-cell:selected {
+    -fx-background-color: #555;
+    -fx-text-fill: #fff;
+    -fx-border-color: black;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-background-color: #FFF;
+    -fx-pref-width: 20px;
+    -fx-pref-height: 20px;
+    -fx-border-color: #BBB;
+    -fx-border-width: 1px;
+    -fx-border-radius: 15;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: white;
+    -fx-border-color: #BBB;
+    -fx-border-width: 1px;
+    -fx-border-radius: 15;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-border-color: #888;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+}

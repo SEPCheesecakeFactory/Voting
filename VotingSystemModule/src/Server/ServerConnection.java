@@ -16,13 +16,14 @@ public class ServerConnection implements Runnable
   private final ObjectOutputStream outToClient;
   private final ServerModelService serverModelService;
 
-  public ServerConnection(Socket connectionSocket, ServerModelService serverModelService) throws IOException, SQLException
-  {
-    inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
+  public ServerConnection(Socket connectionSocket, ServerModelService serverModelService) throws IOException {
     outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
+    outToClient.flush();
+
+    inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
+
     this.serverModelService = serverModelService;
     serverModelService.setConnection(this);
-
   }
 
   @Override public void run()

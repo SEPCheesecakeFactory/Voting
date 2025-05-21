@@ -3,13 +3,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" prefHeight="31.0" fx:controller="Client.Menu.NavBarController">
+<HBox prefHeight="31.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Menu.NavBarController">
     <children>
-        <Button fx:id="homeNavButton" text="Home"/>
-        <Button fx:id="createPollNavButton" text="Create Poll"/>
-        <Button fx:id="myUserGroupsNavButton" text="My User Groups"/>
-        <Button fx:id="availablePollsNavButton" text="Polls"/>
-        <Button fx:id="userSettingsNavButton" text="User Settings"/>
-        <Button fx:id="pollResultsNavButton" text="Poll Results"/>
+        <Button fx:id="homeNavButton" text="Home" />
+        <Button fx:id="createPollNavButton" text="Create Poll" />
+        <Button fx:id="myUserGroupsNavButton" text="My User Groups" />
+        <Button fx:id="availablePollsNavButton" text="Polls" />
+        <Button fx:id="userSettingsNavButton" text="User Settings" />
     </children>
 </HBox>

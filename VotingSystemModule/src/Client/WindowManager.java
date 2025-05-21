@@ -34,6 +34,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -73,6 +74,8 @@ public class WindowManager
   public void setPrimaryStage(Stage primaryStage)
   {
     this.primaryStage = primaryStage;
+    Image icon = new Image(getClass().getResourceAsStream("/icons/vote_icon2.png"));
+    primaryStage.getIcons().add(icon);
   }
 
   // TODO: removing the old one could be implemented

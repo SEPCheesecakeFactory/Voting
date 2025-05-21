@@ -376,6 +376,7 @@ public class ServerModel implements ServerModelService {
 
             Message response = new Message(MessageType.SendChangeUsername);
             response.addParam("status", "Username successfully changed");
+            response.addParam("clientConnectionIndex", clientConnectionIndex);
 
             sendMessageToUser(response);
           } catch (Exception e) {

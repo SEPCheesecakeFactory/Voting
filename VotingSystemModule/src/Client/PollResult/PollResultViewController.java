@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class PollResultViewController implements PropertyChangeListener {
 
-  @FXML private TextField pollIdField;
-  @FXML private Button loadButton;
   @FXML private Label messageText;
   @FXML private VBox questionsContainer;
 
@@ -37,26 +35,7 @@ public class PollResultViewController implements PropertyChangeListener {
     this.viewModel.addPropertyChangeListener(this);
   }
 
-  /** Invoked when the user clicks “Load Results” */
-  @FXML
-  private void onLoadClicked() {
-    String text = pollIdField.getText().trim();
-    if (text.isEmpty()) {
-      messageText.setText("Poll ID cannot be empty.");
-      return;
-    }
-    int pollId;
-    try {
-      pollId = Integer.parseInt(text);
-    } catch (NumberFormatException e) {
-      messageText.setText("Poll ID must be a number.");
-      return;
-    }
 
-    messageText.setText("Loading...");
-    questionsContainer.getChildren().clear();
-    viewModel.requestPollResult(pollId);
-  }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {

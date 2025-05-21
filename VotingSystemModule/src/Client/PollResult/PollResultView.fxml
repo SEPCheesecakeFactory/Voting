@@ -1,49 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="Client.PollResult.PollResultViewController">
+<AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.PollResult.PollResultViewController">
     <children>
         <!-- NavBar include -->
-        <fx:include source="../Menu/NavBar.fxml"
-                    AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0" />
+        <fx:include source="../Menu/NavBar.fxml" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
 
         <!-- Top controls -->
-        <HBox spacing="10.0"
-              AnchorPane.topAnchor="50.0"
-              AnchorPane.leftAnchor="10.0"
-              AnchorPane.rightAnchor="10.0">
+        <HBox spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
             <padding>
-                <Insets top="5" right="5" bottom="5" left="5"/>
+                <Insets bottom="5" left="5" right="5" top="5" />
             </padding>
             <children>
-                <TextField fx:id="pollIdField" promptText="Enter Poll ID" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="loadButton" text="Load Results" onAction="#onLoadClicked"/>
-                <Label fx:id="messageText"/>
+                <Label fx:id="messageText" />
             </children>
         </HBox>
 
         <!-- Results area -->
-        <ScrollPane fitToWidth="true"
-                    hbarPolicy="NEVER"
-                    AnchorPane.topAnchor="100.0"
-                    AnchorPane.bottomAnchor="0.0"
-                    AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0">
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
             <content>
                 <VBox fx:id="questionsContainer" spacing="10.0">
                     <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
+                        <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
                 </VBox>
             </content>

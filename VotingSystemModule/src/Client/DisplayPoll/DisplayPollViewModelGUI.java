@@ -42,14 +42,14 @@ public class DisplayPollViewModelGUI implements PropertyChangeListener,
   {
     return getModel().getProfile().getId();
   }
-  public void sendVote(int userId, int[] choices)
+  public boolean sendVote(int userId, int[] choices)
   {
     Poll currentPoll = model.getPoll();
 
     if (currentPoll != null && currentPoll.isClosed())
       Logger.log("Cannot vote: Poll is closed.");
 
-    model.sendVote(userId, choices);
+    return model.sendVote(userId, choices);
   }
 
 

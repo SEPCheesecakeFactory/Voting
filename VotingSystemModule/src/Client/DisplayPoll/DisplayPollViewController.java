@@ -1,5 +1,7 @@
 package Client.DisplayPoll;
 
+import Client.ViewType;
+import Client.WindowManager;
 import Common.ChoiceOption;
 import Common.Poll;
 import Utils.Logger;
@@ -13,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DisplayPollViewController {
+public class DisplayPollViewController
+{
 
   @FXML private Label titleLabel;
   @FXML private Label descriptionLabel;
@@ -30,7 +33,8 @@ public class DisplayPollViewController {
 
   private ToggleGroup toggleGroup;
 
-  public void init(DisplayPollViewModelGUI viewModel) {
+  public void init(DisplayPollViewModelGUI viewModel)
+  {
     this.viewModel = viewModel;
 
     toggleGroup = new ToggleGroup();
@@ -40,12 +44,14 @@ public class DisplayPollViewController {
     descriptionLabel.textProperty().bind(viewModel.descriptionProperty());
 
     // When choices change, update UI
-    viewModel.choicesProperty().addListener((obs, oldVal, newVal) -> updateChoices());
+    viewModel.choicesProperty()
+        .addListener((obs, oldVal, newVal) -> updateChoices());
 
     // Display current question index and total
-    navigationLabel.textProperty().bind(Bindings.createStringBinding(() ->
-            String.format("Q %d/%d", viewModel.getCurrentIndex() + 1, viewModel.getTotalQuestions()),
-        viewModel.currentIndexProperty(), viewModel.totalQuestionsProperty()));
+    navigationLabel.textProperty().bind(Bindings.createStringBinding(
+        () -> String.format("Q %d/%d", viewModel.getCurrentIndex() + 1,
+            viewModel.getTotalQuestions()), viewModel.currentIndexProperty(),
+        viewModel.totalQuestionsProperty()));
 
     // Navigation button actions
     navArrowLeftButton.setOnAction(e -> {
@@ -65,14 +71,16 @@ public class DisplayPollViewController {
     });
   }
 
-  private void updateChoices() {
+  private void updateChoices()
+  {
     questionChoicesContainer.getChildren().clear();
 
     // Create a new ToggleGroup each time to avoid state issues
     toggleGroup = new ToggleGroup();
 
     int index = 0;
-    for (ChoiceOption option : viewModel.getChoices()) {
+    for (ChoiceOption option : viewModel.getChoices())
+    {
       RadioButton radioButton = new RadioButton(option.getValue());
       radioButton.setToggleGroup(toggleGroup);
       radioButton.setUserData(index);
@@ -83,26 +91,35 @@ public class DisplayPollViewController {
     restoreSelectedOption();
   }
 
-
-  private void saveSelectedOption() {
-    if (toggleGroup == null) return;
+  private void saveSelectedOption()
+  {
+    if (toggleGroup == null)
+      return;
 
     Toggle selectedToggle = toggleGroup.getSelectedToggle();
-    if (selectedToggle != null) {
+    if (selectedToggle != null)
+    {
       int selectedIndex = (int) selectedToggle.getUserData();
       selectedOptions.put(viewModel.getCurrentIndex(), selectedIndex);
-    } else {
+    }
+    else
+    {
       selectedOptions.remove(viewModel.getCurrentIndex());
     }
   }
 
-  private void restoreSelectedOption() {
-    if (toggleGroup == null) return;
+  private void restoreSelectedOption()
+  {
+    if (toggleGroup == null)
+      return;
 
     Integer selectedIndex = selectedOptions.get(viewModel.getCurrentIndex());
-    if (selectedIndex != null) {
-      for (Toggle toggle : toggleGroup.getToggles()) {
-        if ((int) toggle.getUserData() == selectedIndex) {
+    if (selectedIndex != null)
+    {
+      for (Toggle toggle : toggleGroup.getToggles())
+      {
+        if ((int) toggle.getUserData() == selectedIndex)
+        {
           toggleGroup.selectToggle(toggle);
           return;
         }
@@ -111,14 +128,18 @@ public class DisplayPollViewController {
     toggleGroup.selectToggle(null);
   }
 
-  private void sendVote() {
+  private void sendVote()
+  {
     int totalQuestions = viewModel.getTotalQuestions();
     int[] selectedChoiceIds = new int[totalQuestions];
 
-    for (int questionIndex = 0; questionIndex < totalQuestions; questionIndex++) {
+    for (int questionIndex = 0; questionIndex < totalQuestions; questionIndex++)
+    {
       Integer selectedChoiceIndex = selectedOptions.get(questionIndex);
-      if (selectedChoiceIndex == null) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, "Please answer all questions before submitting.");
+      if (selectedChoiceIndex == null)
+      {
+        Alert alert = new Alert(Alert.AlertType.WARNING,
+            "Please answer all questions before submitting.");
         alert.showAndWait();
         return;
       }
@@ -128,19 +149,26 @@ public class DisplayPollViewController {
           viewModel.getCurrentPoll()
               .getQuestions()[questionIndex].getChoiceOptions()));
 
-      if (selectedChoiceIndex < 0 || selectedChoiceIndex >= choicesForQuestion.size()) {
-        Logger.log("Invalid selected index for question " + questionIndex + ": " + selectedChoiceIndex);
+      if (selectedChoiceIndex < 0
+          || selectedChoiceIndex >= choicesForQuestion.size())
+      {
+        Logger.log("Invalid selected index for question " + questionIndex + ": "
+            + selectedChoiceIndex);
         return;
       }
 
-      selectedChoiceIds[questionIndex] = choicesForQuestion.get(selectedChoiceIndex).getId();
+      selectedChoiceIds[questionIndex] = choicesForQuestion.get(
+          selectedChoiceIndex).getId();
     }
 
     int userId = viewModel.getUserId();
-    viewModel.sendVote(userId, selectedChoiceIds);
+    var success = viewModel.sendVote(userId, selectedChoiceIds);
+    if (!success)
+      WindowManager.getInstance().showErrorPopup("Could not send the vote!");
+    else
+    {
+      WindowManager.getInstance().showInfoPopup("Vote sent successfully!");
+      WindowManager.getInstance().showView(ViewType.AvailablePolls);
+    }
   }
-
-
-
-
 }

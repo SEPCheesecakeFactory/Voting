@@ -91,14 +91,14 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     support.firePropertyChange("UsernameChangeFailed", null, reason);
   }
 
-  public void sendVote(int userId, int[] choices)
+  public boolean sendVote(int userId, int[] choices)
   {
     Logger.log("Debugging - sendVote");
     var message = new Message(MessageType.SendVote);
     Vote vote = new Vote(userId, choices);
     message.addParam("vote", vote);
     boolean success = client.send(message);
-    if(!success) WindowManager.getInstance().showErrorPopup("Could not send the vote!");
+    return success;
   }
 
   public void sendPollCloseRequest(int pollId)

@@ -159,20 +159,29 @@ public class WindowManager
 
   public void showErrorPopup(String errorText)
   {
+    showPopup(Alert.AlertType.ERROR, errorText, "Error", "Error");
+  }
+
+  public void showInfoPopup(String infoText)
+  {
+    showPopup(Alert.AlertType.INFORMATION, infoText, "Information", "Information");
+  }
+
+  public void showPopup(Alert.AlertType alertType, String text, String headerText, String title)
+  {
     // Ensuring JavaFX Thread
     Platform.runLater(() -> {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText("An error has occurred");
-      alert.setContentText(errorText);
+      Alert popup = new Alert(alertType);
+      popup.setTitle(title);
+      popup.setHeaderText(headerText);
+      popup.setContentText(text);
 
-      DialogPane pane = alert.getDialogPane();
+      DialogPane pane = popup.getDialogPane();
       if (!pane.getStylesheets().contains(GENERAL_CSS)) {
         pane.getStylesheets().add(GENERAL_CSS);
       }
-      // pane.getStyleClass().add("error-dialog");
 
-      alert.showAndWait();
+      popup.showAndWait();
     });
   }
 

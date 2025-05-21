@@ -20,6 +20,11 @@ public class MainAppRunnerGUI extends Application {
   }
 
   public static void main(String[] args) {
+    // Example for connecting somewhere else:
+    // 2.tcp.eu.ngrok.io
+    // 13532
+    // Client client = new Client("2.tcp.eu.ngrok.io", 13532);
+
     Client client = new Client("localhost", 2910);
     client.run();
     launch(args);

@@ -8,7 +8,7 @@ import java.util.List;
 // TODO: Needs rethinking - should be split into several depending on usage? (poll, vote or get/post)
 public interface DatabaseConnector
 {
-  public void storeVote(Vote vote);
+  public boolean storeVote(Vote vote);
   public void editVote(Vote vote);
   public Poll retrievePoll(int id);
   public PollResult retrievePollResults(int id);

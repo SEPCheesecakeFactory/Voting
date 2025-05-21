@@ -14,10 +14,16 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     this.databaseConnection = databaseConnection;
   }
 
-  @Override public void storeVote(Vote vote)
+  @Override public boolean storeVote(Vote vote)
   {
-    databaseConnection.storeVote(vote);
-    Logger.log("Vote sent to the database. {"+vote+"}");
+    if(databaseConnection.storeVote(vote)){
+      Logger.log("Vote sent to the database. {"+vote+"}");
+    }
+    else
+    {
+      Logger.log("Vote was NOT sent to the database. {"+vote+"}");
+    }
+    return databaseConnection.storeVote(vote);
   }
 
   @Override public void editVote(Vote vote)

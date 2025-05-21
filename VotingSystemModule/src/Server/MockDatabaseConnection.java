@@ -14,8 +14,9 @@ public class MockDatabaseConnection implements DatabaseConnector {
     private int nextProfileId = 1;
 
     @Override
-    public void storeVote(Vote vote) {
+    public boolean storeVote(Vote vote) {
         votes.put(vote.getUserId(), vote);
+        return true;
     }
 
     @Override

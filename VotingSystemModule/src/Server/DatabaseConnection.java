@@ -22,57 +22,84 @@ public class DatabaseConnection implements DatabaseConnector
   }
 
   @Override
-  public void storeVote(Vote vote)
-  {
-    try (Connection connection = openConnection())
-    {
+  public boolean storeVote(Vote vote) {
+    try (Connection connection = openConnection()) {
 
+      connection.setAutoCommit(false);  // Start transaction
 
-      // 1. Get poll_id using the first choice_option_id
-      PreparedStatement getPollIdStmt = connection.prepareStatement(
+      // 1. Get poll_id
+      int pollId;
+      try (PreparedStatement getPollIdStmt = connection.prepareStatement(
           "SELECT q.poll_id " +
               "FROM ChoiceOption co " +
               "JOIN Question q ON co.question_id = q.id " +
-              "WHERE co.id = ?");
-      getPollIdStmt.setInt(1, vote.getChoices()[0]);  // assume all choices are from the same poll
-      ResultSet pollIdResult = getPollIdStmt.executeQuery();
-
-      int pollId;
-      if (pollIdResult.next())
-      {
-        pollId = pollIdResult.getInt(1);
-      }
-      else
-      {
-        throw new RuntimeException("No poll found for the provided choice option.");
+              "WHERE co.id = ?")) {
+        getPollIdStmt.setInt(1, vote.getChoices()[0]);
+        try (ResultSet pollIdResult = getPollIdStmt.executeQuery()) {
+          if (!pollIdResult.next()) {
+            Logger.log("No poll found for the provided choice option.");
+            return false;
+          }
+          pollId = pollIdResult.getInt(1);
+        }
       }
 
       // 2. Check if poll is closed
-      PreparedStatement checkPollClosedStmt = connection.prepareStatement(
-          "SELECT is_closed FROM Poll WHERE id = ?");
-      checkPollClosedStmt.setInt(1, pollId);
-      ResultSet isClosedResult = checkPollClosedStmt.executeQuery();
-
-      if (isClosedResult.next() && isClosedResult.getBoolean("is_closed"))
-      {
-        throw new RuntimeException("Poll is closed. Cannot store vote.");
+      try (PreparedStatement checkPollClosedStmt = connection.prepareStatement(
+          "SELECT is_closed FROM Poll WHERE id = ?")) {
+        checkPollClosedStmt.setInt(1, pollId);
+        try (ResultSet isClosedResult = checkPollClosedStmt.executeQuery()) {
+          if (isClosedResult.next() && isClosedResult.getBoolean("is_closed")) {
+            Logger.log("Poll is closed. Cannot store vote.");
+            return false;
+          }
+        }
       }
 
-      // 3. Insert selected choices into VotedChoice
-      for (int choiceOptionID : vote.getChoices())
-      {
-        PreparedStatement insertVoteStatement = connection.prepareStatement(
-            "INSERT INTO VotedChoice (vote_id, choice_option_id) VALUES (?, ?)");
-        insertVoteStatement.setInt(1, vote.getUserId());
-        insertVoteStatement.setInt(2, choiceOptionID);
-        insertVoteStatement.executeUpdate();
+      // 3. Check if vote exists
+      boolean existingVote;
+      try (PreparedStatement checkVoteExistStmt = connection.prepareStatement("Select votedchoice.vote_id "
+          + "FROM votedchoice, choiceoption " + "WHERE vote_id = ? "
+          + "and votedchoice.choice_option_id=choiceoption.id "
+          + "and choiceoption.question_id in "
+          + "(Select question.id from question where question.poll_id = ?);")) {
+        checkVoteExistStmt.setInt(1, vote.getUserId());
+        checkVoteExistStmt.setInt(2, pollId);
+        try (ResultSet rs = checkVoteExistStmt.executeQuery()) {
+          existingVote = rs.next();
+        }
       }
-    }
-    catch (SQLException e)
-    {
-      throw new RuntimeException(e);
+
+      // 4. Remove previous vote
+      if (existingVote) {
+        try (PreparedStatement removeStmt = connection.prepareStatement("Delete from votedchoice where vote_id = ? and choice_option_id in "
+            + "                                            (Select choiceoption.id from choiceoption where question_id in "
+            + "(Select question.id from question where question.poll_id = ? ));")) {
+          removeStmt.setInt(1, vote.getUserId());
+          removeStmt.setInt(2, pollId);
+          removeStmt.executeUpdate();
+        }
+      }
+
+      // 5. Insert new choices
+      try (PreparedStatement insertStmt = connection.prepareStatement(
+          "INSERT INTO VotedChoice (vote_id, choice_option_id) VALUES (?, ?)")) {
+        for (int choiceId : vote.getChoices()) {
+          insertStmt.setInt(1, vote.getUserId());
+          insertStmt.setInt(2, choiceId);
+          insertStmt.executeUpdate();
+        }
+      }
+
+      connection.commit();
+      return true;
+
+    } catch (SQLException e) {
+      Logger.log("Failed to store vote: " + e.getMessage());
+      return false;
     }
   }
+
 
 
   @Override public void editVote(Vote vote)

@@ -15,7 +15,7 @@ public class ServerModel implements ServerModelService {
   private final DatabaseConnector db;
   private final ConnectionPool connectionPool;
   private Profile currentProfile; // Track logged-in user
-  private ServerConnection connection; // For sending direct messages
+//  private ServerConnection connection; // For sending direct messages
 
   public ServerModel(DatabaseConnector db, ConnectionPool connectionPool) {
     this.db = db;
@@ -43,7 +43,7 @@ public class ServerModel implements ServerModelService {
     Message message = new Message(MessageType.ClosePoll);
     message.addParam("pollClosed", pollId);
     message.addParam("clientConnectionIndex", clientConnectionIndex);
-    connectionPool.changeToMap(message, connection);
+//    connectionPool.changeToMap(message, connection);
     try
     {
       connectionPool.sendDirectMessage(message);
@@ -60,7 +60,7 @@ public class ServerModel implements ServerModelService {
 
   // Optionally inject connection to send direct messages to the client
   public synchronized void setConnection(ServerConnection connection) {
-    this.connection = connection;
+//    this.connection = connection;
   }
 
   public synchronized void sendMessageToUser(Message message) {
@@ -111,7 +111,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendResultResults);
       message.addParam("pollResult", pollResult);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
       Logger.log("ServerModel: Results sent");
     } catch (IOException e) {
@@ -125,7 +125,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendLookupUserResult);
       message.addParam("profile", profile);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
@@ -139,7 +139,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendProfileBack);
       message.addParam("UpdatedProfile", profile);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     } catch (IOException e) {
       Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
@@ -166,7 +166,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendCreatedPoll);
       message.addParam("poll", poll);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
@@ -184,7 +184,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendPoll);
       message.addParam("poll",poll);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
@@ -223,7 +223,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendLookupGroupResult);
       message.addParam("userGroup", group);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
@@ -244,7 +244,7 @@ public class ServerModel implements ServerModelService {
       Message message = new Message(MessageType.SendUserGroups);
       message.addParam("userGroups",groups);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
-      connectionPool.changeToMap(message, connection);
+//      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)

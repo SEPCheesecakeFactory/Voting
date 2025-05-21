@@ -16,12 +16,14 @@ class ServerProxyTest {
   private ServerModel mockModel;
   private ServerProxy proxy;
   private DatabaseConnector mockDb;
+  private ServerConnection mockConnection;
 
   @BeforeEach
   void setup() {
     mockModel = mock(ServerModel.class);
     proxy = new ServerProxy(mockModel);
     mockDb = mock(DatabaseConnector.class);
+    mockConnection = mock(ServerConnection.class);
     when(mockModel.getDb()).thenReturn(mockDb);
   }
 
@@ -44,7 +46,10 @@ class ServerProxyTest {
 
     proxy.handle("close_poll:123");
 
-    verify(mockModel).sendMessageToUser("You are not authorized to close this poll.");
+    verify(mockModel).sendMessageToUser(argThat(message ->
+        message.getType() == MessageType.Response &&  // Adjust based on your actual message type
+            "You are not authorized to close this poll.".equals(message.getParam("text", String.class))
+    ));
   }
 
   @Test
@@ -63,7 +68,7 @@ class ServerProxyTest {
     msg.addParam("pollId", 42);
     msg.addParam("clientConnectionIndex", 1);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).sendPoll(42, 1);
   }
@@ -76,7 +81,7 @@ class ServerProxyTest {
     msg.addParam("vote", vote);
     msg.addParam("clientConnectionIndex", 0);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).storeVote(argThat(v ->
         v.getUserId() == 5 && Arrays.equals(v.getChoices(), new int[]{3})
@@ -94,7 +99,7 @@ class ServerProxyTest {
 
     when(mockDb.isOwner(5, 99)).thenReturn(true);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).closePoll(99, 2);
   }
@@ -108,7 +113,7 @@ class ServerProxyTest {
 
     when(mockDb.getProfileByUsername("ghost")).thenReturn(null);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).sendLookupUserResults(argThat(p -> p.getUsername().equals("ghost") && p.getId() == -1), eq(0));
   }
@@ -121,7 +126,7 @@ class ServerProxyTest {
 
     when(mockDb.getGroupByUsername("nonexistent")).thenReturn(null);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).sendLookupGroupResults(argThat(g -> g.getGroupName().equals("nonexistent") && g.getId() == -1), eq(3));
   }
@@ -135,7 +140,7 @@ class ServerProxyTest {
 
     when(mockDb.loginOrRegisterAProfile(any(Profile.class))).thenReturn(123);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).sendUpdatedProfile(argThat(p ->
         p.getUsername().equals("newUser") && p.getId() == 123), eq(4));
@@ -151,9 +156,9 @@ class ServerProxyTest {
     msg.addParam("userId", 10);
     msg.addParam("clientConnectionIndex", 1);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
-    verify(mockModel).sendMessageToUser(anyString());
+    verify(mockModel).sendMessageToUser(any(Message.class));
   }
 
   @Test
@@ -165,10 +170,13 @@ class ServerProxyTest {
     msg.addParam("username", p);
     msg.addParam("clientConnectionIndex", 0);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg), mockConnection);
 
     verify(mockDb).changeUsername(p);
-    verify(mockModel).sendMessageToUser(contains("Username successfully changed"));
+    verify(mockModel).sendMessageToUser(argThat(m ->
+        m.getType() == MessageType.Response &&
+            ((String) m.getParam("text", String.class)).contains("Username successfully changed")
+    ));
   }
 
   @Test
@@ -183,7 +191,7 @@ class ServerProxyTest {
     msg.addParam("groups", Set.of(g1));
     msg.addParam("clientConnectionIndex", 0);
 
-    proxy.process(JsonUtil.serialize(msg), this);
+    proxy.process(JsonUtil.serialize(msg),  mockConnection);
 
     verify(mockModel).grantPollAccessToUsers(eq(55),
         argThat(users -> users.stream().anyMatch(u -> u.getUsername().equals("u1") && u.getId() == 1)),

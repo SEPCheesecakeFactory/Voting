@@ -25,7 +25,7 @@ class DatabaseConnectionProxyTest {
   @BeforeEach
   void setup() throws SQLException {
     MockitoAnnotations.openMocks(this);
-    proxy = new DatabaseConnectionProxy() {
+    proxy = new DatabaseConnectionProxy(mockDb) {
       {
         this.databaseConnection = mockDb;
       }

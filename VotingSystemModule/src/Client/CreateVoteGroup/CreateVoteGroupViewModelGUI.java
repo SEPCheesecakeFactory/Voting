@@ -41,9 +41,7 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   }
 
   public void sendGroupToServer() {
-    if (currentGroup != null) {
       model.sendVoteGroup(currentGroup);
-    }
   }
 
   public void requestUserLookup(String username) {
@@ -130,5 +128,10 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   public void setNameContainer(String nameContainer)
   {
     this.nameContainer = nameContainer;
+  }
+
+  public void sendEditedGroupToServer()
+  {
+    model.sendEditedVoteGroup(getCurrentGroup());
   }
 }

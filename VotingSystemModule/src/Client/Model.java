@@ -180,6 +180,16 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     if(!success) WindowManager.getInstance().showErrorPopup("Sending a vote group failed!");
   }
 
+  @Override public void sendEditedVoteGroup(UserGroup userGroup)
+  {
+    Logger.log("Debugging - sendEditedVoteGroup");
+    var message = new Message(MessageType.SendEditVoteGroupRequest);
+    message.addParam("voteGroup", userGroup);
+    message.addParam("userId", getProfile().getId());
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Sending a vote group failed!");
+  }
+
   @Override public void requestUserLookup(String username) {
     Logger.log("Debugging - requestUserLookup");
     Message message = new Message(MessageType.LookupUser);

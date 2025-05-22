@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface CreateVoteGroupService {
   void sendVoteGroup(UserGroup userGroup);
+  void sendEditedVoteGroup(UserGroup userGroup);
   void requestUserLookup(String username);
   void handleUserLookupResult(Profile profile);
   void requestUserGroups();

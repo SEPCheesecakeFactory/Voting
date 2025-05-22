@@ -77,13 +77,13 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     {
       viewModel.createGroup(groupToEdit.getGroupName());
       groupData.add(groupToEdit);
-      showPopupStage(groupToEdit);
+      showPopupStage(groupToEdit, true);
     }
 
 
   }
 
-  private void showPopupStage(GroupEntry groupToEdit)
+  private void showPopupStage(GroupEntry groupToEdit, boolean ifEdit)
   {
     Stage popupStage = new Stage();
     popupStage.setTitle("Configure Group: " + groupToEdit.getGroupName());
@@ -198,7 +198,15 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       }
 
       finalGroupToEdit.setMembers(memberNames);
-      viewModel.sendGroupToServer();
+      if(ifEdit)
+      {
+        viewModel.sendEditedGroupToServer();
+      }
+      else
+      {
+        viewModel.sendGroupToServer();
+      }
+
       groupTable.refresh();
       popupStage.close();
     });
@@ -346,7 +354,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
             viewModel.createGroup(groupName);
             GroupEntry groupToEdit = new GroupEntry(groupName);
             groupData.add(groupToEdit);
-            showPopupStage(groupToEdit);
+            showPopupStage(groupToEdit, false);
           }
         });
 

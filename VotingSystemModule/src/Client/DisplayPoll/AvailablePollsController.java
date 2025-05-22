@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.beans.PropertyChangeEvent;
@@ -406,6 +407,9 @@ public class AvailablePollsController implements PropertyChangeListener
     root.getChildren().addAll(listLabel, container, buttons);
 
     Scene scene = new Scene(root, 500, 500);
+    scene.getStylesheets().add(
+        Objects.requireNonNull(WindowManager.class.getResource("/general.css")).toExternalForm()
+    );
     popupStage.setScene(scene);
     popupStage.initModality(Modality.APPLICATION_MODAL);
     popupStage.showAndWait();
@@ -416,6 +420,9 @@ public class AvailablePollsController implements PropertyChangeListener
     List<String> choices = List.of("Single Users", "Groups");
 
     ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+    dialog.getDialogPane().getStylesheets().add(
+        Objects.requireNonNull(WindowManager.class.getResource("/general.css")).toExternalForm()
+    );
     dialog.setTitle("Add Users or Groups");
     dialog.setHeaderText("Choose what to add");
     dialog.setContentText("Select an option:");
@@ -460,11 +467,7 @@ public class AvailablePollsController implements PropertyChangeListener
 
   private void showAlert(String title, String message)
   {
-    Alert alert = new Alert(Alert.AlertType.WARNING);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
+    WindowManager.getInstance().showPopup(Alert.AlertType.WARNING,message,title,title);
   }
 
   @Override public void propertyChange(PropertyChangeEvent evt)

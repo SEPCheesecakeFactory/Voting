@@ -57,6 +57,9 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       dialog.setTitle("New Group");
       dialog.setHeaderText("Create a New Group");
       dialog.setContentText("Enter group name:");
+      dialog.getDialogPane().getStylesheets().add(
+          Objects.requireNonNull(WindowManager.class.getResource("/general.css")).toExternalForm()
+      );
 
       Optional<String> result = dialog.showAndWait();
       if (result.isEmpty() || result.get().trim().isEmpty())
@@ -202,6 +205,9 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
             buttonBar);
 
     Scene scene = new Scene(root, 450, 400);
+    scene.getStylesheets().add(
+        Objects.requireNonNull(WindowManager.class.getResource("/general.css")).toExternalForm()
+    );
     popupStage.setScene(scene);
     popupStage.initModality(Modality.APPLICATION_MODAL);
     popupStage.showAndWait();

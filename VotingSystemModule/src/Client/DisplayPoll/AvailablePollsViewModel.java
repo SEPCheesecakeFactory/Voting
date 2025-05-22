@@ -2,6 +2,7 @@ package Client.DisplayPoll;
 
 import Client.Model;
 import Client.PropertyChangeSubject;
+import Client.WindowManager;
 import Common.Poll;
 import Common.Profile;
 import Common.UserGroup;
@@ -60,6 +61,13 @@ public class AvailablePollsViewModel implements PropertyChangeSubject
 
   public void requestResults(Poll poll) {
     model.sendResultRequest(poll.getId());
+  }
+
+  public void closePoll(Poll poll) {
+    boolean success = model.sendPollCloseRequest(poll.getId());
+    if(!success) WindowManager.getInstance().showErrorPopup("Could not close the poll!");
+    else
+      WindowManager.getInstance().showInfoPopup("Poll closed!");
   }
 
   public int getLoggedInUserId() {

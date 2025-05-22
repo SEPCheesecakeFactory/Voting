@@ -101,13 +101,21 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     return success;
   }
 
-  public void sendPollCloseRequest(int pollId)
+  public boolean sendPollCloseRequest(int pollId)
   {
     Logger.log("Debugging - sendPollCloseRequest");
     var message = new Message(MessageType.ClosePoll);
     message.addParam("pollId", pollId);
-    boolean success = client.send(message);
-    if(!success) WindowManager.getInstance().showErrorPopup("Could not close the poll!");
+    boolean success;
+    if(getProfile() != null)
+    {
+      message.addParam("userId", getProfile().getId());
+      success = client.send(message);
+    }
+    else
+      success = false;
+
+    return success;
   }
 
   public void sendDisplayPollRequest(int pollId) {

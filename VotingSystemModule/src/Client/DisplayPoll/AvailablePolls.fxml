@@ -5,19 +5,29 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.DisplayPoll.AvailablePollsController">
+<VBox xmlns="http://javafx.com/javafx/22"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Client.DisplayPoll.AvailablePollsController">
     <children>
-        <fx:include source="../Menu/NavBar.fxml" />
-        <TextField fx:id="searchField" promptText="Search Polls..." />
-        <TableView fx:id="pollTable" prefHeight="363.0" prefWidth="700.0">
+        <fx:include source="../Menu/NavBar.fxml"/>
+        <TextField fx:id="searchField" promptText="Search Polls..."/>
+        <TableView fx:id="pollTable"
+                   VBox.vgrow="ALWAYS"
+                   prefHeight="0.0">
             <columns>
-                <TableColumn fx:id="titleColumn" prefWidth="156.0" text="Title" />
-                <TableColumn fx:id="voteColumn" minWidth="200.0" prefWidth="112.0" text="Vote on the poll" />
-                <TableColumn fx:id="resultsColumn" minWidth="200.0" prefWidth="119.0" text="View the Results" />
-                <TableColumn fx:id="privacyColumn" prefWidth="90.0" text="Privacy" />
-                <TableColumn fx:id="openColumn" prefWidth="65.0" text="Status" />
-                <TableColumn fx:id="accessColumn" prefWidth="120.0" text="Poll Access" />
-            <TableColumn fx:id="closeColumn" prefWidth="120.0" text="Close Poll" />
+                <TableColumn fx:id="titleColumn" prefWidth="156.0"
+                             text="Title"/>
+                <TableColumn fx:id="voteColumn" minWidth="200.0"
+                             prefWidth="112.0" text="Vote on the poll"/>
+                <TableColumn fx:id="resultsColumn" minWidth="200.0"
+                             prefWidth="119.0" text="View the Results"/>
+                <TableColumn fx:id="privacyColumn" prefWidth="90.0"
+                             text="Privacy"/>
+                <TableColumn fx:id="openColumn" prefWidth="65.0" text="Status"/>
+                <TableColumn fx:id="accessColumn" prefWidth="120.0"
+                             text="Poll Access"/>
+                <TableColumn fx:id="closeColumn" prefWidth="120.0"
+                             text="Close Poll"/>
             </columns>
         </TableView>
     </children>

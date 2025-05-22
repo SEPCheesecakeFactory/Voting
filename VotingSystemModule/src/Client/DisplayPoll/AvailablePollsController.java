@@ -1,5 +1,6 @@
 package Client.DisplayPoll;
 
+import Client.WindowManager;
 import Common.Poll;
 import Common.Profile;
 import Common.UserGroup;
@@ -167,9 +168,14 @@ public class AvailablePollsController implements PropertyChangeListener
 
       {
         closeBtn.setOnAction(evt -> {
-          Poll p = getTableView().getItems().get(getIndex());
-          viewModel.closePoll(p);
-          refresh();
+          WindowManager.getInstance().showConfirmationPopup("Do you really want to close this poll?","Close Poll","Close Poll",(confirmed)->{
+            if(confirmed)
+            {
+              Poll p = getTableView().getItems().get(getIndex());
+              viewModel.closePoll(p);
+              refresh();
+            }
+          });
         });
       }
 

@@ -16,7 +16,7 @@
             <!-- Centered Question Title and Description -->
             <VBox alignment="CENTER" spacing="5.0">
                <Label fx:id="titleLabel" text="Title: " style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-               <Label fx:id="descriptionLabel" text="Description: " wrapText="true" maxWidth="500.0" />
+               <Label fx:id="descriptionLabel" text="Description: " wrapText="true" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
             </VBox>
 
             <!-- Question choices -->

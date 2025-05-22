@@ -410,7 +410,7 @@ public class WindowManager
       if (mainScene == null)
       {
         mainScene = sceneWithNewRoot;
-        primaryStage.setTitle("Voting System");
+        primaryStage.setTitle("Electio");
         primaryStage.setScene(mainScene);
         primaryStage.show();
       }

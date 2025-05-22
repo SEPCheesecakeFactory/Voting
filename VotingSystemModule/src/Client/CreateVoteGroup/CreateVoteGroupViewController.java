@@ -62,8 +62,10 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       );
 
       Optional<String> result = dialog.showAndWait();
-      if (result.isEmpty() || result.get().trim().isEmpty())
-      {
+      if (result.isEmpty()) {
+        showAlert("Cancelled", "Group creation has been cancelled.");
+        return;
+      } else if (result.get().trim().isEmpty()) {
         showAlert("Invalid Name", "Group name cannot be empty.");
         return;
       }

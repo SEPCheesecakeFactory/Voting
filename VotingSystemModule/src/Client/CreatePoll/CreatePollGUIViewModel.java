@@ -1,5 +1,7 @@
 package Client.CreatePoll;
 
+import Client.ViewType;
+import Client.WindowManager;
 import Common.Poll;
 
 import java.util.List;
@@ -74,7 +76,7 @@ public class CreatePollGUIViewModel
     Poll poll = new Poll(pollTitle, pollDescription, 0, qArray, false);
     poll.setPrivate(isPrivate);
     service.createPoll(poll);
-
+    WindowManager.getInstance().showView(ViewType.AvailablePolls);
   }
 
 }

@@ -62,6 +62,7 @@ public class ClientConnection implements Runnable
 
   public synchronized void send(String message) throws IOException
   {
+    Logger.log("Sending: " + JsonUtil.serialize(message));
     outToServer.writeObject(message);
     outToServer.flush();
   }

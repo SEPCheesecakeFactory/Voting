@@ -17,5 +17,21 @@ public enum MessageType
   SendCreatedPoll,
   LookupUser,
   SendLookupUserResult,
-  SendVoteGroup, SendPoll, SendCreateVoteGroupRequest, SendPollAccess, LookupGroup, SendLookupGroupResult, DisplayPollRequest, SendAvailablePolls, GetAvailablePolls, SendUserGroupsRequest, SendUserGroups, MapConnectionFirstSetup, RemoveGroup, SendEditVoteGroupRequest, Test
+  SendVoteGroup,
+  SendPoll,
+  SendCreateVoteGroupRequest,
+  SendPollAccess,
+  LookupGroup,
+  SendLookupGroupResult,
+  DisplayPollRequest,
+  SendAvailablePolls,
+  GetAvailablePolls,
+  SendUserGroupsRequest,
+  SendUserGroups,
+  MapConnectionFirstSetup,
+  SendLogin,
+  SendRegister,
+  RemoveGroup,
+  SendEditVoteGroupRequest,
+  Test
 }

@@ -91,6 +91,7 @@ public class Client implements MessageListener
         System.out.println("?");
         Profile updatedProfile = message.getParam("UpdatedProfile", Profile.class);
         model.setProfile(updatedProfile);
+        model.fireRegisterSuccess(updatedProfile);
         clientConnection.identifyClientConnection(updatedProfile.getId(), this);
       }
 

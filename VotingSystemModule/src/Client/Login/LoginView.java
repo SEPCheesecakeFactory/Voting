@@ -18,7 +18,7 @@ public class LoginView {
     Scanner scanner = new Scanner(System.in);
     System.out.print("Login or register - enter your username: ");
     String username = scanner.nextLine();
-    viewModel.loginOrRegister(username);
+    //viewModel.loginOrRegister(username);
   }
   public void propertyChange(PropertyChangeEvent evt)
   {

@@ -91,6 +91,7 @@ public class Client implements MessageListener
         System.out.println("?");
         Profile updatedProfile = message.getParam("UpdatedProfile", Profile.class);
         model.setProfile(updatedProfile);
+        model.fireRegisterSuccess(updatedProfile);
         clientConnection.identifyClientConnection(updatedProfile.getId(), this);
       }
 
@@ -128,7 +129,9 @@ public class Client implements MessageListener
       case SendLookupUserResult -> model.handleUserLookupResult(
           message.getParam("profile", Profile.class));
 
-      case SendLookupGroupResult -> model.handleUserGroupLookupResult(
+      case SendLookupGroupResult1 -> model.handleUserGroupLookupResult1(
+          message.getParam("userGroup", UserGroup.class));
+      case SendLookupGroupResult2 -> model.handleUserGroupLookupResult2(
           message.getParam("userGroup", UserGroup.class));
       case SendUserGroups ->
       {

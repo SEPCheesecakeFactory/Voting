@@ -49,13 +49,38 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     // return pollResult;
   }
 
-  @Override public int loginOrRegisterAProfile(Profile profile)
-  {
-    Logger.log("user "+profile.getUsername()+" logged or registered");
-    return databaseConnection.loginOrRegisterAProfile(profile);
+//  @Override public int loginOrRegisterAProfile(Profile profile)
+//  {
+//    Logger.log("user "+profile.getUsername()+" logged or registered");
+//    return databaseConnection.loginOrRegisterAProfile(profile);
+//
+//
+//  }
 
-
+  @Override
+  public int registerProfile(Profile profile) {
+    Logger.log("Attempting to register user: " + profile.getUsername());
+    int id = databaseConnection.registerProfile(profile);
+    if (id > 0) {
+      Logger.log("User registered successfully with id: " + id);
+    } else {
+      Logger.log("User registration failed for: " + profile.getUsername());
+    }
+    return id;
   }
+
+  @Override
+  public int loginProfile(Profile profile) {
+    Logger.log("Attempting login for user: " + profile.getUsername());
+    int id = databaseConnection.loginProfile(profile);
+    if (id > 0) {
+      Logger.log("User login successful with id: " + id);
+    } else {
+      Logger.log("User login failed for: " + profile.getUsername());
+    }
+    return id;
+  }
+
 
   @Override public void changeUsername(Profile profile)
   {
@@ -129,5 +154,10 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   @Override public List<UserGroup> getGroupsCreatedByUser(int userId)
   {
     return databaseConnection.getGroupsCreatedByUser(userId);
+  }
+
+  @Override public void removeGroup(String groupName)
+  {
+    databaseConnection.removeGroup(groupName);
   }
 }

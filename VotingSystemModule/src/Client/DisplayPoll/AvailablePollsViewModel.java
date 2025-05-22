@@ -2,6 +2,7 @@ package Client.DisplayPoll;
 
 import Client.Model;
 import Client.PropertyChangeSubject;
+import Client.WindowManager;
 import Common.Poll;
 import Common.Profile;
 import Common.UserGroup;
@@ -41,7 +42,7 @@ public class AvailablePollsViewModel implements PropertyChangeSubject
     });
 
     model.addPropertyChangeListener("LookupUserResults", this::handleUserLookupEvent);
-    model.addPropertyChangeListener("LookupGroupResults", this::handleGroupLookupEvent);
+    model.addPropertyChangeListener("LookupGroupResults1", this::handleGroupLookupEvent);
 
     model.requestAvailablePolls();
   }
@@ -62,6 +63,13 @@ public class AvailablePollsViewModel implements PropertyChangeSubject
     model.sendResultRequest(poll.getId());
   }
 
+  public void closePoll(Poll poll) {
+    boolean success = model.sendPollCloseRequest(poll.getId());
+    if(!success) WindowManager.getInstance().showErrorPopup("Could not close the poll!");
+    else
+      WindowManager.getInstance().showInfoPopup("Poll closed!");
+  }
+
   public int getLoggedInUserId() {
     return model.getProfile().getId();
   }
@@ -71,7 +79,7 @@ public class AvailablePollsViewModel implements PropertyChangeSubject
   }
 
   public void validateGroupName(String groupName) {
-    model.requestGroupLookup(groupName);
+    model.requestGroupLookup1(groupName);
   }
 
   private void handleUserLookupEvent(PropertyChangeEvent evt) {

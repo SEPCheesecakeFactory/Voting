@@ -131,3 +131,24 @@
 .scroll-bar .decrement-button {
     -fx-background-color: transparent;
 }
+
+.dialog-pane {
+  -fx-max-width: 400px;
+  -fx-max-height: 300px;
+}
+
+.dialog-pane .list-view {
+  -fx-pref-height: USE_COMPUTED_SIZE;
+  -fx-pref-width:  USE_COMPUTED_SIZE;
+  -fx-min-height: 0;
+  -fx-min-width:  0;
+}
+
+.dialog-pane .list-view {
+  -fx-max-height: 6em;
+}
+
+.dialog-pane,
+.dialog-pane * {
+  -fx-font-family: "Nunito Light";
+}

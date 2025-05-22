@@ -1,6 +1,8 @@
 package Client.CreateVoteGroup;
 
 import Client.Model;
+import Client.WindowManager;
+import Common.Poll;
 import Common.Profile;
 import Common.UserGroup;
 import javafx.application.Platform;
@@ -47,25 +49,41 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     addGroupButton.setOnAction(e -> openGroupPopup(null));
   }
 
-  private void openGroupPopup(GroupEntry groupToEdit) {
-    if (groupToEdit == null) {
+  private void openGroupPopup(GroupEntry groupToEdit)
+  {
+    if (groupToEdit == null)
+    {
       TextInputDialog dialog = new TextInputDialog();
       dialog.setTitle("New Group");
       dialog.setHeaderText("Create a New Group");
       dialog.setContentText("Enter group name:");
+      dialog.getDialogPane().getStylesheets().add(
+          Objects.requireNonNull(WindowManager.class.getResource("/general.css")).toExternalForm()
+      );
 
       Optional<String> result = dialog.showAndWait();
-      if (result.isEmpty() || result.get().trim().isEmpty()) {
+      if (result.isEmpty()) {
+        showAlert("Cancelled", "Group creation has been cancelled.");
+        return;
+      } else if (result.get().trim().isEmpty()) {
         showAlert("Invalid Name", "Group name cannot be empty.");
         return;
       }
+      viewModel.validateGroupName(result.get().trim());
+      viewModel.setNameContainer(result.get().trim());
 
-      String groupName = result.get().trim();
-      viewModel.createGroup(groupName);  // Call view model right away
-      groupToEdit = new GroupEntry(groupName);
-      groupData.add(groupToEdit); // Add to table immediately
+    }
+    else
+    {
+      viewModel.createGroup(groupToEdit.getGroupName());
+      showPopupStage(groupToEdit, true);
     }
 
+
+  }
+
+  private void showPopupStage(GroupEntry groupToEdit, boolean ifEdit)
+  {
     Stage popupStage = new Stage();
     popupStage.setTitle("Configure Group: " + groupToEdit.getGroupName());
 
@@ -93,13 +111,15 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
 
       Button removeButton = new Button("Remove");
       removeButton.setOnAction(ev -> {
+
         memberContainer.getChildren().remove(memberRow);
         memberRowMap.remove(memberField.getText().trim().toLowerCase());
       });
 
       validateButton.setOnAction(ev -> {
         String username = memberField.getText().trim();
-        if (username.isEmpty()) {
+        if (username.isEmpty())
+        {
           showAlert("Validation Error", "Username cannot be empty.");
           return;
         }
@@ -111,8 +131,10 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       memberContainer.getChildren().add(memberRow);
     };
 
-    if (groupToEdit.getMembers() != null) {
-      for (String member : groupToEdit.getMembers()) {
+    if (groupToEdit.getMembers() != null)
+    {
+      for (String member : groupToEdit.getMembers())
+      {
         HBox memberRow = new HBox(10);
         TextField memberField = new TextField(member);
         memberField.setEditable(false);
@@ -129,7 +151,9 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
         memberRow.getChildren().addAll(memberField, validLabel, removeButton);
         memberContainer.getChildren().add(memberRow);
       }
-    } else {
+    }
+    else
+    {
       addMemberRow.run();
       addMemberRow.run();
     }
@@ -142,51 +166,67 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     saveGroupButton.setOnAction(e -> {
       List<String> memberNames = new ArrayList<>();
 
-      for (var node : memberContainer.getChildren()) {
-        if (node instanceof HBox hbox && !hbox.getChildren().isEmpty()) {
-          boolean stillHasValidateButton = hbox.getChildren().stream()
-              .anyMatch(child -> child instanceof Button b && "Validate".equals(b.getText()));
+      for (var node : memberContainer.getChildren())
+      {
+        if (node instanceof HBox hbox && !hbox.getChildren().isEmpty())
+        {
+          boolean stillHasValidateButton = hbox.getChildren().stream().anyMatch(
+              child -> child instanceof Button b && "Validate".equals(
+                  b.getText()));
 
-          if (stillHasValidateButton) {
-            showAlert("Validation Error", "All members must be validated before saving.");
+          if (stillHasValidateButton)
+          {
+            showAlert("Validation Error",
+                "All members must be validated before saving.");
             return;
           }
 
           TextField tf = (TextField) hbox.getChildren().get(0);
           String name = tf.getText().trim();
-          if (!name.isEmpty()) {
+          if (!name.isEmpty())
+          {
             memberNames.add(name);
           }
         }
       }
 
-      if (memberNames.isEmpty()) {
+      if (memberNames.isEmpty())
+      {
         showAlert("Validation Error", "Add at least one validated member.");
         return;
       }
 
       finalGroupToEdit.setMembers(memberNames);
-      viewModel.sendGroupToServer();
+      if(ifEdit)
+      {
+        viewModel.sendEditedGroupToServer();
+      }
+      else
+      {
+        viewModel.sendGroupToServer();
+      }
+
       groupTable.refresh();
       popupStage.close();
     });
 
-
     HBox buttonBar = new HBox(10, addMemberButton, saveGroupButton);
-    root.getChildren().addAll(nameBox, new Label("Group Members:"), memberContainer, buttonBar);
+    root.getChildren()
+        .addAll(nameBox, new Label("Group Members:"), memberContainer,
+            buttonBar);
 
     Scene scene = new Scene(root, 450, 400);
+    scene.getStylesheets().add(
+        Objects.requireNonNull(WindowManager.class.getResource("/general.css")).toExternalForm()
+    );
     popupStage.setScene(scene);
     popupStage.initModality(Modality.APPLICATION_MODAL);
     popupStage.showAndWait();
+
   }
 
   private void showAlert(String title, String message) {
-    Alert alert = new Alert(Alert.AlertType.WARNING);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
+    WindowManager.getInstance().showPopup(Alert.AlertType.WARNING,message, title, title);
   }
 
   private void setupGroupTable() {
@@ -200,7 +240,8 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     nameColumn.setPrefWidth(250);
 
     TableColumn<GroupEntry, Void> configColumn = new TableColumn<>("Configuration");
-    configColumn.setCellFactory(col -> new TableCell<GroupEntry, Void>() {
+    configColumn.setCellFactory(col -> new TableCell<>()
+    {
       private final Button btn = new Button("Configure");
 
       {
@@ -210,8 +251,8 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
         });
       }
 
-      @Override
-      protected void updateItem(Void item, boolean empty) {
+      @Override protected void updateItem(Void item, boolean empty)
+      {
         super.updateItem(item, empty);
         setGraphic(empty ? null : btn);
       }
@@ -219,18 +260,27 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     configColumn.setPrefWidth(150);
 
     TableColumn<GroupEntry, Void> removeColumn = new TableColumn<>("Remove Group");
-    removeColumn.setCellFactory(col -> new TableCell<GroupEntry, Void>() {
+    removeColumn.setCellFactory(col -> new TableCell<>()
+    {
       private final Button removeButton = new Button("Remove");
 
       {
         removeButton.setOnAction(e -> {
-          GroupEntry entry = getTableView().getItems().get(getIndex());
-          groupData.remove(entry);
+          WindowManager.getInstance().showConfirmationPopup("Do you really want to remove this group?","Remove Group","Remove Group",(confirmed)->{
+            if(confirmed)
+            {
+              GroupEntry entry = getTableView().getItems().get(getIndex());
+              viewModel.requestRemoveUserGroup(entry.getGroupName());
+              groupData.remove(entry);
+              WindowManager.getInstance().showInfoPopup("Group removed!");
+            }
+          });
+
         });
       }
 
-      @Override
-      protected void updateItem(Void item, boolean empty) {
+      @Override protected void updateItem(Void item, boolean empty)
+      {
         super.updateItem(item, empty);
         setGraphic(empty ? null : removeButton);
       }
@@ -242,7 +292,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     groupTable.getColumns().add(removeColumn);
   }
 
-  // Called when Model returns a user lookup result
+
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
     switch (evt.getPropertyName()) {
@@ -291,6 +341,22 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
 
           groupTable.refresh();
         });
+      }
+      case "LookupGroupResults2" ->{
+        Platform.runLater(()->{
+          if(evt.getNewValue().equals(true))
+          {
+            showAlert("Invalid group name!","Group with this name already exist!");
+          }
+          else{
+            String groupName = viewModel.getNameContainer();
+            viewModel.createGroup(groupName);
+            GroupEntry groupToEdit = new GroupEntry(groupName);
+            groupData.add(groupToEdit);
+            showPopupStage(groupToEdit, false);
+          }
+        });
+
       }
     }
   }

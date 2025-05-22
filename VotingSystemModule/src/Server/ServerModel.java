@@ -216,14 +216,28 @@ public class ServerModel implements ServerModelService {
     }
   }
 
-  public synchronized void sendLookupGroupResults(UserGroup group, int clientConnectionIndex)
+  public synchronized void sendLookupGroupResults1(UserGroup group, int clientConnectionIndex)
   {
     try
     {
-      Message message = new Message(MessageType.SendLookupGroupResult);
+      Message message = new Message(MessageType.SendLookupGroupResult1);
       message.addParam("userGroup", group);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
 //      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to send sendLookupGroupResults to user: " + e.getMessage());    }
+  }
+  public synchronized void sendLookupGroupResults2(UserGroup group, int clientConnectionIndex)
+  {
+    try
+    {
+      Message message = new Message(MessageType.SendLookupGroupResult2);
+      message.addParam("userGroup", group);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      //      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
@@ -358,6 +372,12 @@ public class ServerModel implements ServerModelService {
           Logger.log("Poll Results handled for: " +pollId);
           sendPollResultsToUser(pollResult, clientConnectionIndex);
           break;
+        case MessageType.RemoveGroup:
+          userId = messageObject.getParam("userId", int.class);
+          String groupName = messageObject.getParam("groupName",String.class);
+          Logger.log("Remove Group handled for: " +groupName);
+          getDb().removeGroup(groupName);
+          break;
 
         case MessageType.CreatePoll:
           Poll poll = messageObject.getParam("poll", Poll.class);
@@ -365,19 +385,52 @@ public class ServerModel implements ServerModelService {
           storePoll(poll, profile, clientConnectionIndex);
           Logger.log("Poll successfully created for: " + poll.getId());
           break;
-        case MessageType.SendLoginOrRegister:
+//        case MessageType.SendLoginOrRegister:
+//          profile = messageObject.getParam("profile", Profile.class);
+//          int id=getDb().loginOrRegisterAProfile(profile);
+//          Logger.log("Profile logged or registered with id: " + id);
+//          profile.setId(id);
+//          //important
+//          Message mes = new Message(MessageType.MapConnectionFirstSetup);
+//          mes.addParam("clientConnectionIndex", id);
+//
+//          //
+//
+//          sendUpdatedProfile(profile, serverConnection);
+//          break;
+
+        case MessageType.SendLogin:
           profile = messageObject.getParam("profile", Profile.class);
-          int id=getDb().loginOrRegisterAProfile(profile);
-          Logger.log("Profile logged or registered with id: " + id);
-          profile.setId(id);
-          //important
-          Message mes = new Message(MessageType.MapConnectionFirstSetup);
-          mes.addParam("clientConnectionIndex", id);
-
-          //
-
-          sendUpdatedProfile(profile, serverConnection);
+          int loginId = getDb().loginProfile(profile);
+          if (loginId != -1) {
+            profile.setId(loginId);
+            sendUpdatedProfile(profile, serverConnection);
+            Logger.log("Profile logged in with id: " + loginId);
+          } else {
+            Message response = new Message(MessageType.SendLogin);
+            response.addParam("status", "Login failed: Invalid credentials");
+            response.addParam("clientConnectionIndex", clientConnectionIndex);
+            sendMessageToUser(response);
+            Logger.log("Login failed for username: " + profile.getUsername());
+          }
           break;
+
+        case MessageType.SendRegister:
+          profile = messageObject.getParam("profile", Profile.class);
+          int registerId = getDb().registerProfile(profile);
+          if (registerId != -1) {
+            profile.setId(registerId);
+            sendUpdatedProfile(profile, serverConnection);
+            Logger.log("Profile registered with id: " + registerId);
+          } else {
+            Message response = new Message(MessageType.SendRegister);
+            response.addParam("status", "Registration failed: Username may be taken");
+            response.addParam("clientConnectionIndex", clientConnectionIndex);
+            sendMessageToUser(response);
+            Logger.log("Registration failed for username: " + profile.getUsername());
+          }
+          break;
+
         case MessageType.SendChangeUsername:
           try {
             profile = messageObject.getParam("username", Profile.class);
@@ -440,8 +493,8 @@ public class ServerModel implements ServerModelService {
 
           sendLookupUserResults(fullProfile, clientConnectionIndex);
           break;
-        case MessageType.LookupGroup:
-          String groupName = messageObject.getParam("groupName", String.class);
+        case MessageType.LookupGroup1:
+          groupName = messageObject.getParam("groupName", String.class);
           UserGroup group = getDb().getGroupByUsername(groupName);
 
           if (group == null) {
@@ -450,7 +503,19 @@ public class ServerModel implements ServerModelService {
           }
 
           // Send back the full group (or the dummy with id -1)
-          sendLookupGroupResults(group, clientConnectionIndex);
+          sendLookupGroupResults1(group, clientConnectionIndex);
+          break;
+        case MessageType.LookupGroup2:
+          groupName = messageObject.getParam("groupName", String.class);
+          group = getDb().getGroupByUsername(groupName);
+
+          if (group == null) {
+            group = new UserGroup(groupName);
+            group.setId(-1);
+          }
+
+          // Send back the full group (or the dummy with id -1)
+          sendLookupGroupResults2(group, clientConnectionIndex);
           break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());

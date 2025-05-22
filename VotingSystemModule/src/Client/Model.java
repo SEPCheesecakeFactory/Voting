@@ -45,11 +45,42 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     support.firePropertyChange("NewMessage", null, message);
   }
 
-  public void setProfile(Profile profile)
-  {
+  public void setProfile(Profile profile) {
+    Profile oldProfile = this.currentProfile;
     this.currentProfile = profile;
-    support.firePropertyChange("ProfileSet", null, null);
+    support.firePropertyChange("ProfileSet", oldProfile, profile);
   }
+
+  /**
+   * Call this when login is successful.
+   */
+  public void fireLoginSuccess(Profile profile) {
+    setProfile(profile);
+    support.firePropertyChange("loginSuccess", null, profile);
+  }
+
+  /**
+   * Call this when registration is successful.
+   */
+  public void fireRegisterSuccess(Profile profile) {
+    setProfile(profile);
+    support.firePropertyChange("registerSuccess", null, profile);
+  }
+
+  /**
+   * Call this when login fails.
+   */
+  public void fireLoginFailure(String reason) {
+    support.firePropertyChange("loginFailure", null, reason);
+  }
+
+  /**
+   * Call this when registration fails.
+   */
+  public void fireRegisterFailure(String reason) {
+    support.firePropertyChange("registerFailure", null, reason);
+  }
+
 
   public Profile getProfile()
   {
@@ -66,14 +97,31 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     return client;
   }
 
-  public void sendLoginOrRegister(Profile profile)
-  {
-    Logger.log("Debugging - sendLoginOrRegister");
-    var message = new Message(MessageType.SendLoginOrRegister);
+//  public void sendLoginOrRegister(Profile profile)
+//  {
+//    Logger.log("Debugging - sendLoginOrRegister");
+//    var message = new Message(MessageType.SendLoginOrRegister);
+//    message.addParam("profile", profile);
+//    boolean success = client.send(message);
+//    if(!success) WindowManager.getInstance().showErrorPopup("Could not login or register!");
+//  }
+
+  public void sendLogin(Profile profile) {
+    Logger.log("Debugging - sendLogin");
+    var message = new Message(MessageType.SendLogin);
     message.addParam("profile", profile);
     boolean success = client.send(message);
-    if(!success) WindowManager.getInstance().showErrorPopup("Could not login or register!");
+    if(!success) WindowManager.getInstance().showErrorPopup("Login failed!");
   }
+
+  public void sendRegister(Profile profile) {
+    Logger.log("Debugging - sendRegister");
+    var message = new Message(MessageType.SendRegister);
+    message.addParam("profile", profile);
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Registration failed!");
+  }
+
 
   public void sendChangeUsername(String username) {
     currentProfile.changeUsername(username);
@@ -101,13 +149,21 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     return success;
   }
 
-  public void sendPollCloseRequest(int pollId)
+  public boolean sendPollCloseRequest(int pollId)
   {
     Logger.log("Debugging - sendPollCloseRequest");
     var message = new Message(MessageType.ClosePoll);
     message.addParam("pollId", pollId);
-    boolean success = client.send(message);
-    if(!success) WindowManager.getInstance().showErrorPopup("Could not close the poll!");
+    boolean success;
+    if(getProfile() != null)
+    {
+      message.addParam("userId", getProfile().getId());
+      success = client.send(message);
+    }
+    else
+      success = false;
+
+    return success;
   }
 
   public void sendDisplayPollRequest(int pollId) {
@@ -172,6 +228,16 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     if(!success) WindowManager.getInstance().showErrorPopup("Sending a vote group failed!");
   }
 
+  @Override public void sendEditedVoteGroup(UserGroup userGroup)
+  {
+    Logger.log("Debugging - sendEditedVoteGroup");
+    var message = new Message(MessageType.SendEditVoteGroupRequest);
+    message.addParam("voteGroup", userGroup);
+    message.addParam("userId", getProfile().getId());
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Sending a vote group failed!");
+  }
+
   @Override public void requestUserLookup(String username) {
     Logger.log("Debugging - requestUserLookup");
     Message message = new Message(MessageType.LookupUser);
@@ -208,10 +274,15 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     support.firePropertyChange("receiveUserGroups",null,groups);
   }
 
-  @Override public void handleUserGroupLookupResult(UserGroup userGroup)
+  @Override public void handleUserGroupLookupResult1(UserGroup userGroup)
   {
     Logger.log("Debugging - handleUserGroupLookupResult");
-    support.firePropertyChange("LookupGroupResults", null, userGroup);
+    support.firePropertyChange("LookupGroupResults1", null, userGroup);
+  }
+  @Override public void handleUserGroupLookupResult2(UserGroup userGroup)
+  {
+    Logger.log("Debugging - handleUserGroupLookupResult");
+    support.firePropertyChange("LookupGroupResults2", null, userGroup);
   }
 
   @Override public void sendPollAccess(int pollId, Set<Profile> users,
@@ -227,15 +298,33 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     if(!success) WindowManager.getInstance().showErrorPopup("Sending poll access failed!");
   }
 
-  @Override public void requestGroupLookup(String groupName)
+  @Override public void requestGroupLookup1(String groupName)
   {
     Logger.log("Debugging - requestGroupLookup");
-    var message = new Message(MessageType.LookupGroup);
+    var message = new Message(MessageType.LookupGroup1);
+    message.addParam("groupName", groupName);
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for group lookup failed!");
+  }
+  @Override public void requestGroupLookup2(String groupName)
+  {
+    Logger.log("Debugging - requestGroupLookup");
+    var message = new Message(MessageType.LookupGroup2);
     message.addParam("groupName", groupName);
     boolean success = client.send(message);
     if(!success) WindowManager.getInstance().showErrorPopup("Request for group lookup failed!");
   }
 
+  @Override public void requestRemoveGroup(String groupName)
+  {
+    Logger.log("Debugging - requestRemoveGroup");
+    var message = new Message(MessageType.RemoveGroup);
+    message.addParam("groupName",groupName);
+    message.addParam("userId",getProfile().getId());
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for removing the group failed!");
+
+  }
 
 
   @Override public void createPoll(Poll poll)

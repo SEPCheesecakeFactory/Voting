@@ -24,7 +24,8 @@ public interface ServerModelService
   void storeUserGroup(UserGroup userGroup, int creatorId);
   void grantPollAccessToUsers(int pollId, Set<Profile> users, int userId);
   void grantPollAccessToGroups(int pollId, Set<UserGroup> groups, int userId);
-  void sendLookupGroupResults(UserGroup group, int clientConnectionIndex);
+  void sendLookupGroupResults1(UserGroup group, int clientConnectionIndex);
+  void sendLookupGroupResults2(UserGroup group, int clientConnectionIndex);
   List<UserGroup> getGroupsCreatedByUser(int userId);
   void sendUserGroups(List<UserGroup> groups, int clientConnectionIndex);
   void handle(Object incoming);

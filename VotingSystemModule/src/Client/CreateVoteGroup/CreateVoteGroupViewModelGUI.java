@@ -4,6 +4,7 @@ import Client.Model;
 import Client.PropertyChangeSubject;
 import Common.Profile;
 import Common.UserGroup;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -16,6 +17,7 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   private PropertyChangeSupport support;
   private Model model;
   private UserGroup currentGroup;
+  private String nameContainer;
   public CreateVoteGroupViewModelGUI(Model model)
   {
     this.model=model;
@@ -39,9 +41,7 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   }
 
   public void sendGroupToServer() {
-    if (currentGroup != null) {
       model.sendVoteGroup(currentGroup);
-    }
   }
 
   public void requestUserLookup(String username) {
@@ -50,6 +50,9 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
   public void requestUserGroups()
   {
     model.requestUserGroups();
+  }
+  public void validateGroupName(String groupName) {
+    model.requestGroupLookup2(groupName);
   }
 
   // This method will be called by the Model when server sends the Profile back
@@ -65,6 +68,12 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
     support.firePropertyChange("LookupUserResults", null,profile);
   }
 
+  public void requestRemoveUserGroup(String groupName)
+  {
+    model.requestRemoveGroup(groupName);
+  }
+
+
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
     if(evt.getPropertyName().equals("LookupUserResults"))
@@ -75,9 +84,16 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
     {
       support.firePropertyChange(evt);
     }
+    if(evt.getPropertyName().equals("LookupGroupResults2"))
+    {
+      boolean ifExist;
+      UserGroup group = (UserGroup)  evt.getNewValue();
+      ifExist= group.getId() != -1;
+
+      support.firePropertyChange("LookupGroupResults2",null,ifExist);
+    }
 
   }
-
 
 
   @Override public void addPropertyChangeListener(
@@ -102,5 +118,20 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
       PropertyChangeListener listener)
   {
     support.removePropertyChangeListener(name, listener);
+  }
+
+  public String getNameContainer()
+  {
+    return nameContainer;
+  }
+
+  public void setNameContainer(String nameContainer)
+  {
+    this.nameContainer = nameContainer;
+  }
+
+  public void sendEditedGroupToServer()
+  {
+    model.sendEditedVoteGroup(getCurrentGroup());
   }
 }

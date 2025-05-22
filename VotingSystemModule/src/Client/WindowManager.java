@@ -33,6 +33,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -41,6 +42,8 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class WindowManager
 {
@@ -49,9 +52,8 @@ public class WindowManager
   private Stage primaryStage;
   private Scene mainScene;
 
-  private static final String GENERAL_CSS =
-      Objects.requireNonNull(WindowManager.class.getResource("/general.css"))
-          .toExternalForm();
+  private static final String GENERAL_CSS = Objects.requireNonNull(
+      WindowManager.class.getResource("/general.css")).toExternalForm();
 
   private WindowManager()
   {
@@ -74,7 +76,8 @@ public class WindowManager
   public void setPrimaryStage(Stage primaryStage)
   {
     this.primaryStage = primaryStage;
-    Image icon = new Image(getClass().getResourceAsStream("/icons/vote_icon2.png"));
+    Image icon = new Image(
+        getClass().getResourceAsStream("/icons/vote_icon2.png"));
     primaryStage.getIcons().add(icon);
   }
 
@@ -167,10 +170,12 @@ public class WindowManager
 
   public void showInfoPopup(String infoText)
   {
-    showPopup(Alert.AlertType.INFORMATION, infoText, "Information", "Information");
+    showPopup(Alert.AlertType.INFORMATION, infoText, "Information",
+        "Information");
   }
 
-  public void showPopup(Alert.AlertType alertType, String text, String headerText, String title)
+  public void showPopup(Alert.AlertType alertType, String text,
+      String headerText, String title)
   {
     // Ensuring JavaFX Thread
     Platform.runLater(() -> {
@@ -180,11 +185,31 @@ public class WindowManager
       popup.setContentText(text);
 
       DialogPane pane = popup.getDialogPane();
-      if (!pane.getStylesheets().contains(GENERAL_CSS)) {
+      if (!pane.getStylesheets().contains(GENERAL_CSS))
+      {
         pane.getStylesheets().add(GENERAL_CSS);
       }
 
       popup.showAndWait();
+    });
+  }
+
+  public void showConfirmationPopup(String text, String headerText,
+      String title, Consumer<Boolean> resultCallback)
+  {
+    Platform.runLater(() -> {
+      Alert popup = new Alert(Alert.AlertType.CONFIRMATION, text, ButtonType.OK,
+          ButtonType.CANCEL);
+      popup.setTitle(title);
+      popup.setHeaderText(headerText);
+      // apply CSS once
+      DialogPane pane = popup.getDialogPane();
+      if (!pane.getStylesheets().contains(GENERAL_CSS))
+      {
+        pane.getStylesheets().add(GENERAL_CSS);
+      }
+      Optional<ButtonType> res = popup.showAndWait();
+      resultCallback.accept(res.isPresent() && res.get() == ButtonType.OK);
     });
   }
 
@@ -286,6 +311,7 @@ public class WindowManager
 
     return new Scene(root);
   }
+
   private Scene getAvailablePollsScene()
   {
     FXMLLoader loader = new FXMLLoader(
@@ -309,7 +335,8 @@ public class WindowManager
 
   private Scene getDisplayPollScene()
   {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/DisplayPoll/VoteScreen.fxml"));
+    FXMLLoader loader = new FXMLLoader(
+        getClass().getResource("/Client/DisplayPoll/VoteScreen.fxml"));
     Parent root = null;
     try
     {
@@ -320,7 +347,8 @@ public class WindowManager
       return null;
     }
     DisplayPollViewController controller = loader.getController();
-    DisplayPollViewModelGUI viewModelGUI = new DisplayPollViewModelGUI(getModel());
+    DisplayPollViewModelGUI viewModelGUI = new DisplayPollViewModelGUI(
+        getModel());
     controller.init(viewModelGUI);
     return new Scene(root);
     //    return getScene("/Client/DisplayPoll/VoteScreen.fxml");
@@ -371,19 +399,23 @@ public class WindowManager
     return scene;
   }
 
-  private void showScene(Scene sceneWithNewRoot) // NOTE: this was done to keep the rest compatible, could have been replaced with directly taking the root as a parameter
+  private void showScene(
+      Scene sceneWithNewRoot) // NOTE: this was done to keep the rest compatible, could have been replaced with directly taking the root as a parameter
   {
     String css = getClass().getResource("/general.css").toExternalForm();
     if (!sceneWithNewRoot.getStylesheets().contains(css))
       sceneWithNewRoot.getStylesheets().add(css);
 
     Platform.runLater(() -> {
-      if (mainScene == null) {
+      if (mainScene == null)
+      {
         mainScene = sceneWithNewRoot;
-        primaryStage.setTitle("Voting System");
+        primaryStage.setTitle("Electio");
         primaryStage.setScene(mainScene);
         primaryStage.show();
-      } else {
+      }
+      else
+      {
         Parent newRoot = sceneWithNewRoot.getRoot();
         if (newRoot.getScene() != null && newRoot.getScene() != mainScene)
           newRoot.getScene().setRoot(new javafx.scene.Group());

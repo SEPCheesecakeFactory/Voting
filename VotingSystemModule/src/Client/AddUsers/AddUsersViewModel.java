@@ -34,7 +34,7 @@ public class AddUsersViewModel implements PropertyChangeListener {
 
   // Initiate group lookup
   public void addGroup(String groupName) {
-    model.requestGroupLookup(groupName);
+    model.requestGroupLookup1(groupName);
   }
 
   private void handleUserLookupResult(Profile profile) {

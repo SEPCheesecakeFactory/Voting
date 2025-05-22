@@ -8,8 +8,11 @@ import Utils.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,6 +158,7 @@ public class DisplayPollViewController
         Alert alert = new Alert(Alert.AlertType.WARNING,
             "Please answer all questions before submitting.");
         alert.showAndWait();
+        WindowManager.getInstance().showPopup(Alert.AlertType.WARNING,"Please answer all questions before submitting.","Warning","Warning");
         return;
       }
 

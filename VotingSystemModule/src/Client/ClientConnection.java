@@ -60,7 +60,7 @@ public class ClientConnection implements Runnable
     identifiedMessageListeners.get(clientConnectionIndex).receiveMessage(message);
   }
 
-  public void send(String message) throws IOException
+  public synchronized void send(String message) throws IOException
   {
     outToServer.writeObject(message);
     outToServer.flush();

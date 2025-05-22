@@ -1,3 +1,5 @@
+package ManualTesting;
+
 public class StringTest
 {
   // Testing - https://docs.oracle.com/javase/8/docs/technotes/guides/language/strings-switch.html

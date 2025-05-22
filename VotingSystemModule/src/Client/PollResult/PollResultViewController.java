@@ -6,13 +6,12 @@ import Common.PollResult;
 import Common.Question;
 import Client.WindowManager;
 import Client.ViewType;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -22,38 +21,64 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Map;
 
-public class PollResultViewController implements PropertyChangeListener {
+public class PollResultViewController implements PropertyChangeListener
+{
 
   @FXML private Label messageText;
   @FXML private VBox questionsContainer;
 
   private PollResultViewModel viewModel;
+  private Integer currentPollId;
 
-  /** Called by your application after FXMLLoader.load() */
-  public void init(PollResultViewModel viewModel) {
+  public void init(PollResultViewModel viewModel)
+  {
     this.viewModel = viewModel;
     this.viewModel.addPropertyChangeListener(this);
+
+    // bind R-key to refresh current poll
+    questionsContainer.sceneProperty()
+        .addListener((obs, oldScene, newScene) -> {
+          if (newScene != null)
+          {
+            newScene.addEventHandler(KeyEvent.KEY_PRESSED, evt -> {
+              if (evt.getCode() == KeyCode.R && currentPollId != null)
+              {
+                viewModel.requestPollResult(currentPollId);
+              }
+            });
+          }
+        });
   }
 
-
-
-  @Override
-  public void propertyChange(PropertyChangeEvent evt) {
-    if ("PollResult".equals(evt.getPropertyName())) {
+  @Override public void propertyChange(PropertyChangeEvent evt)
+  {
+    if ("PollResult".equals(evt.getPropertyName()))
+    {
       PollResult result = (PollResult) evt.getNewValue();
       Platform.runLater(() -> displayPollResult(result));
-    } else {
-      throw new InvalidParameterException("Unknown property: " + evt.getPropertyName());
+    }
+    else
+    {
+      throw new InvalidParameterException(
+          "Unknown property: " + evt.getPropertyName());
     }
   }
 
-  private void displayPollResult(PollResult result) {
+  private void displayPollResult(PollResult result)
+  {
     Poll poll = result.getPoll();
     Map<Integer, Integer> votes = result.getChoiceVoters();
 
+    // remember for refresh
+    this.currentPollId = poll.getId();
+
     messageText.setText("Results for “" + poll.getTitle() + "”");
 
-    for (Question question : poll.getQuestions()) {
+    // clear prior contents before re-rendering
+    questionsContainer.getChildren().clear();
+
+    for (Question question : poll.getQuestions())
+    {
       // Question title
       Label qLabel = new Label("Q: " + question.getTitle());
       qLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -61,11 +86,11 @@ public class PollResultViewController implements PropertyChangeListener {
 
       // total votes
       int totalVotes = Arrays.stream(question.getChoiceOptions())
-          .mapToInt(opt -> votes.getOrDefault(opt.getId(), 0))
-          .sum();
+          .mapToInt(opt -> votes.getOrDefault(opt.getId(), 0)).sum();
 
       // each choice row
-      for (ChoiceOption option : question.getChoiceOptions()) {
+      for (ChoiceOption option : question.getChoiceOptions())
+      {
         int count = votes.getOrDefault(option.getId(), 0);
         double fraction = totalVotes > 0 ? (double) count / totalVotes : 0.0;
 
@@ -73,7 +98,8 @@ public class PollResultViewController implements PropertyChangeListener {
         ProgressBar bar = new ProgressBar(fraction);
         bar.setPrefWidth(200);
 
-        String pctText = String.format("%.1f%% (%d votes)", fraction * 100, count);
+        String pctText = String.format("%.1f%% (%d votes)", fraction * 100,
+            count);
         Label pctLbl = new Label(pctText);
 
         HBox row = new HBox(10, choiceLbl, bar, pctLbl);

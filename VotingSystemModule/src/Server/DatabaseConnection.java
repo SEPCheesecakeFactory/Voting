@@ -206,7 +206,7 @@ public class DatabaseConnection implements DatabaseConnector
   @Override public Poll retrievePoll(int id)
   {
     final String SQL_POLL =
-        "SELECT title, is_private, is_closed FROM Poll WHERE id = ?";
+        "SELECT title, description, is_private, is_closed FROM Poll WHERE id = ?";
     final String SQL_QUESTIONS =
         "SELECT id, title, description FROM Question WHERE poll_id = ?";
     final String SQL_OPTIONS =
@@ -227,6 +227,7 @@ public class DatabaseConnection implements DatabaseConnector
             poll = new Poll();
             poll.setId(id);
             poll.setTitle(rsPoll.getString("title"));
+            poll.setDescription(rsPoll.getString("description"));
             poll.setPrivate(rsPoll.getBoolean("is_private"));
             poll.setClosed(rsPoll.getBoolean("is_closed"));
             poll.setQuestions(new Question[0]); // Will fill later
@@ -438,7 +439,7 @@ public class DatabaseConnection implements DatabaseConnector
 
   @Override public Poll storePoll(Poll poll, Profile profile)
   {
-    final String SQL_INSERT_POLL = "INSERT INTO Poll(title, is_closed, is_private) VALUES (?,?,?)";
+    final String SQL_INSERT_POLL = "INSERT INTO Poll(title, description, is_closed, is_private) VALUES (?,?,?,?)";
     final String SQL_INSERT_Q = "INSERT INTO Question(title, description, poll_id) VALUES (?,?,?)";
     final String SQL_INSERT_OPT = "INSERT INTO ChoiceOption(value, question_id) VALUES (?,?)";
     final String SQL_INSERT_OWNERSHIP = "INSERT INTO PollOwnership(user_id, poll_id) VALUES (?,?)";
@@ -454,8 +455,9 @@ public class DatabaseConnection implements DatabaseConnector
           Statement.RETURN_GENERATED_KEYS))
       {
         ps.setString(1, poll.getTitle());
-        ps.setBoolean(2, poll.isClosed());
-        ps.setBoolean(3, poll.isPrivate());
+        ps.setString(2, poll.getDescription());
+        ps.setBoolean(3, poll.isClosed());
+        ps.setBoolean(4, poll.isPrivate());
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();

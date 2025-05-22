@@ -40,8 +40,8 @@ public class DisplayPollViewController
     toggleGroup = new ToggleGroup();
 
     // Bind UI elements to viewModel properties
-    titleLabel.textProperty().bind(viewModel.titleProperty());
-    descriptionLabel.textProperty().bind(viewModel.descriptionProperty());
+    titleLabel.textProperty().bind(viewModel.pollTitleProperty());
+    descriptionLabel.textProperty().bind(viewModel.pollDescriptionProperty());
 
     // When choices change, update UI
     viewModel.choicesProperty()
@@ -75,7 +75,21 @@ public class DisplayPollViewController
   {
     questionChoicesContainer.getChildren().clear();
 
-    // Create a new ToggleGroup each time to avoid state issues
+
+    Label questionTitleLabel = new Label(viewModel.questionTitleProperty().get());
+    questionTitleLabel.setStyle("-fx-font-size: 16px;");
+    questionTitleLabel.setWrapText(true);
+    questionTitleLabel.setMaxWidth(500);
+
+
+    Label questionDescLabel = new Label(viewModel.questionDescriptionProperty().get());
+    questionDescLabel.setStyle("-fx-font-size: 14px; -fx-font-style: italic;");
+    questionDescLabel.setWrapText(true);
+    questionDescLabel.setMaxWidth(500);
+
+    questionChoicesContainer.getChildren().addAll(questionTitleLabel, questionDescLabel);
+
+    // Create a new ToggleGroup for fresh choices
     toggleGroup = new ToggleGroup();
 
     int index = 0;

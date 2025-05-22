@@ -73,10 +73,14 @@ public class CreatePollViewModel {
   /** Inner question placeholder, with title and choices. */
   public static class Question {
     private String title = "";
+    private String description = "";
     private final List<String> choices = new ArrayList<>();
 
     public void setTitle(String t) { this.title = t; }
     public String getTitle() { return title; }
+
+    public void setDescription(String d) { this.description = d; }
+    public String getDescription() { return description; }
 
     public int addChoice(String text) {
       choices.add(text);

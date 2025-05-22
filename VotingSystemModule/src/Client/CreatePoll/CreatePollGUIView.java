@@ -55,8 +55,11 @@ public class CreatePollGUIView
     questionVBox.setStyle(
         "-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 1;");
 
-    TextField questionTextField = new TextField();
-    questionTextField.setPromptText("Question text...");
+    TextField questionTitleTextField = new TextField();
+    questionTitleTextField.setPromptText("Question title...");
+
+    TextField questionDescriptionTextField = new TextField();
+    questionDescriptionTextField.setPromptText("Question description...");
 
     VBox choicesContainer = new VBox(5);
 
@@ -70,7 +73,7 @@ public class CreatePollGUIView
     HBox questionControls = new HBox(10, addChoiceButton, removeQuestionButton);
 
     questionVBox.getChildren()
-        .addAll(questionTextField, choicesContainer, questionControls);
+        .addAll(questionTitleTextField, questionDescriptionTextField, choicesContainer, questionControls);
 
     questionsContainer.getChildren().add(questionVBox);
 
@@ -118,16 +121,19 @@ public class CreatePollGUIView
       if (questionVBox.getChildren().size() < 2)
         continue;
 
-      TextField questionTextField = (TextField) questionVBox.getChildren()
+      TextField questionTitleTextField = (TextField) questionVBox.getChildren()
           .get(0);
-      String questionText = questionTextField.getText().trim();
-      if (questionText.isEmpty())
+      String questionTitleText = questionTitleTextField.getText().trim();
+      if (questionTitleText.isEmpty())
       {
-        showAlert("Validation Error", "A question cannot be empty.");
+        showAlert("Validation Error", "A question title cannot be empty.");
         return;
       }
+      TextField questionDescriptionTextField = (TextField) questionVBox.getChildren()
+          .get(1);
+      String questionDescriptionText = questionDescriptionTextField.getText().trim();
 
-      VBox choicesContainer = (VBox) questionVBox.getChildren().get(1);
+      VBox choicesContainer = (VBox) questionVBox.getChildren().get(2);
       List<String> choiceTexts = new ArrayList<>();
 
       for (var choiceNode : choicesContainer.getChildren())
@@ -157,7 +163,8 @@ public class CreatePollGUIView
       }
 
       CreatePollViewModel.Question question = new CreatePollViewModel.Question();
-      question.setTitle(questionText);
+      question.setTitle(questionTitleText);
+      question.setDescription(questionDescriptionText);
       for (String choice : choiceTexts)
       {
         question.addChoice(choice);

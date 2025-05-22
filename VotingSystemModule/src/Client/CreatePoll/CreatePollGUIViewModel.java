@@ -70,7 +70,7 @@ public class CreatePollGUIViewModel
       {
         options[j] = new Common.ChoiceOption(j, choiceTexts.get(j));
       }
-      qArray[i] = new Common.Question(options, i, localQ.getTitle(), "");
+      qArray[i] = new Common.Question(options, i, localQ.getTitle(), localQ.getDescription());
     }
 
     Poll poll = new Poll(pollTitle, pollDescription, 0, qArray, false);

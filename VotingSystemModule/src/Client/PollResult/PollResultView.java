@@ -38,6 +38,7 @@ public class PollResultView implements PropertyChangeListener {
 
     for (Question question : poll.getQuestions()) {
       System.out.println("Q: " + question.getTitle());
+      System.out.println("Q description: " + question.getDescription());
       for (ChoiceOption option : question.getChoiceOptions()) {
         int choiceId = option.getId();
         int count = votes.getOrDefault(choiceId, 0);

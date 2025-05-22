@@ -19,6 +19,7 @@
             </padding>
             <children>
                 <Label fx:id="messageText" />
+            <Label fx:id="descriptionLabel" />
             </children>
         </HBox>
 

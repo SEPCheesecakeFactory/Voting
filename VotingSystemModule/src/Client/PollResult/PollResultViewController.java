@@ -25,6 +25,7 @@ public class PollResultViewController implements PropertyChangeListener
 {
 
   @FXML private Label messageText;
+  @FXML private Label descriptionLabel;
   @FXML private VBox questionsContainer;
 
   private PollResultViewModel viewModel;
@@ -74,15 +75,22 @@ public class PollResultViewController implements PropertyChangeListener
 
     messageText.setText("Results for “" + poll.getTitle() + "”");
 
+    descriptionLabel.setText("Description: “" + poll.getDescription() + "”");
+
     // clear prior contents before re-rendering
     questionsContainer.getChildren().clear();
 
     for (Question question : poll.getQuestions())
     {
       // Question title
-      Label qLabel = new Label("Q: " + question.getTitle());
-      qLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-      questionsContainer.getChildren().add(qLabel);
+      Label qTitleLabel = new Label("Question title: " + question.getTitle());
+      qTitleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+      questionsContainer.getChildren().add(qTitleLabel);
+
+      // Question description
+      Label qDescriptionLabel = new Label("Description: " + question.getDescription());
+      qDescriptionLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+      questionsContainer.getChildren().add(qDescriptionLabel);
 
       // total votes
       int totalVotes = Arrays.stream(question.getChoiceOptions())

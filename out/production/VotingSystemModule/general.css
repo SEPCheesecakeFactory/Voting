@@ -131,3 +131,28 @@
 .scroll-bar .decrement-button {
     -fx-background-color: transparent;
 }
+
+.dialog-pane {
+  -fx-max-width: 400px;
+  -fx-max-height: 300px;
+}
+
+.dialog-pane .list-view {
+  -fx-pref-height: USE_COMPUTED_SIZE;  /* let content dictate height */
+  -fx-pref-width:  USE_COMPUTED_SIZE;  /* likewise for width */
+  -fx-min-height: 0;                   /* avoid imposed minimums */
+  -fx-min-width:  0;
+}
+
+/* If ChoiceDialog uses a ListCell popup, cap its height to show ~6 items */
+.dialog-pane .list-view {
+  -fx-max-height: 6em; /* approx. 6 rows */
+}
+
+/* Re-apply your font only (no layout) */
+.dialog-pane,
+.dialog-pane * {
+  -fx-font-family: "Nunito Light"; /* or "Nunito" if you prefer */
+}
+
+/* (buttons will continue inheriting your .button rules) */

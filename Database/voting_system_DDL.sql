@@ -6,7 +6,7 @@ CREATE TABLE Poll
 (
     id         SERIAL PRIMARY KEY,
     title      VARCHAR(60),
-    description varchar(250),
+    description VARCHAR(1000),
     is_private  BOOLEAN NOT NULL DEFAULT FALSE,
     is_closed  BOOLEAN not null DEFAULT false
 );

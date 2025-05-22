@@ -329,46 +329,107 @@ public class DatabaseConnection implements DatabaseConnector
   //        }
   //      }
 
-  @Override public int loginOrRegisterAProfile(Profile profile)
-  {
-    try (Connection conn = openConnection())
-    {
-      // Check if the user already exists
-      String query = "SELECT id FROM users WHERE username = ?";
-      PreparedStatement checkStmt = conn.prepareStatement(query);
-      checkStmt.setString(1, profile.getUsername());
-      ResultSet rs = checkStmt.executeQuery();
+//  @Override public int loginOrRegisterAProfile(Profile profile)
+//  {
+//    try (Connection conn = openConnection())
+//    {
+//      // Check if the user already exists
+//      String query = "SELECT id FROM users WHERE username = ?";
+//      PreparedStatement checkStmt = conn.prepareStatement(query);
+//      checkStmt.setString(1, profile.getUsername());
+//      ResultSet rs = checkStmt.executeQuery();
+//
+//      if (rs.next())
+//      {
+//        // User exists, return their ID
+//
+//        return rs.getInt("id");
+//      }
+//      else
+//      {
+//        // User doesn't exist, insert them into the database
+//        String insertQuery = "INSERT INTO users (username) VALUES (?) RETURNING id";
+//        PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
+//        insertStmt.setString(1, profile.getUsername());
+//        rs = insertStmt.executeQuery();
+//        if (rs.next())
+//        {
+//          // Return the generated ID after insertion
+//
+//          return rs.getInt("id");
+//        }
+//        else
+//        {
+//          throw new SQLException("Failed to insert user.");
+//        }
+//      }
+//    }
+//    catch (SQLException e)
+//    {
+//      throw new RuntimeException(e);
+//    }
+//  }
 
-      if (rs.next())
-      {
-        // User exists, return their ID
-
-        return rs.getInt("id");
-      }
-      else
-      {
-        // User doesn't exist, insert them into the database
-        String insertQuery = "INSERT INTO users (username) VALUES (?) RETURNING id";
-        PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
-        insertStmt.setString(1, profile.getUsername());
-        rs = insertStmt.executeQuery();
-        if (rs.next())
-        {
-          // Return the generated ID after insertion
-
-          return rs.getInt("id");
-        }
-        else
-        {
-          throw new SQLException("Failed to insert user.");
-        }
-      }
+  @Override
+  public int loginProfile(Profile profile) {
+    if (profile == null || profile.getUsername() == null) {
+      return -1;
     }
-    catch (SQLException e)
-    {
-      throw new RuntimeException(e);
+
+    String query = "SELECT id FROM users WHERE username = ?";
+    try (Connection conn = openConnection();
+        PreparedStatement stmt = conn.prepareStatement(query)) {
+
+      stmt.setString(1, profile.getUsername());
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        return rs.getInt("id");
+      } else {
+        return -1; //
+      }
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Database error in loginProfile", e);
     }
   }
+
+  @Override
+  public int registerProfile(Profile profile) {
+    if (profile == null || profile.getUsername() == null) {
+      return -1;
+    }
+
+    String checkQuery = "SELECT id FROM users WHERE username = ?";
+    String insertQuery = "INSERT INTO users (username) VALUES (?) RETURNING id";
+
+    try (Connection conn = openConnection()) {
+      try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+        checkStmt.setString(1, profile.getUsername());
+        ResultSet rs = checkStmt.executeQuery();
+
+        if (rs.next()) {
+          return -1;
+        }
+      }
+
+      try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+        insertStmt.setString(1, profile.getUsername());
+        ResultSet rs = insertStmt.executeQuery();
+
+        if (rs.next()) {
+          return rs.getInt("id");
+        } else {
+          throw new SQLException("Failed to insert new user");
+        }
+      }
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Database error in registerProfile", e);
+    }
+  }
+
+
 
   @Override
   public void changeUsername(Profile profile) {

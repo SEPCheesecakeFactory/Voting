@@ -1,7 +1,6 @@
 package Common;
 
-public enum MessageType
-{
+public enum MessageType {
   Response,
   SendPollCloseRequest,
   SendVote,
@@ -17,5 +16,26 @@ public enum MessageType
   SendCreatedPoll,
   LookupUser,
   SendLookupUserResult,
-  SendVoteGroup, SendPoll, SendCreateVoteGroupRequest, SendPollAccess, LookupGroup, SendLookupGroupResult, DisplayPollRequest, SendAvailablePolls, GetAvailablePolls, SendUserGroupsRequest, SendUserGroups, MapConnectionFirstSetup, RemoveGroup, SendEditVoteGroupRequest, SendLookupGroupResult1, SendLookupGroupResult2, LookupGroup1, LookupGroup2, Test
+  SendVoteGroup,
+  SendPoll,
+  SendCreateVoteGroupRequest,
+  SendPollAccess,
+  LookupGroup,
+  SendLookupGroupResult,
+  DisplayPollRequest,
+  SendAvailablePolls,
+  GetAvailablePolls,
+  SendUserGroupsRequest,
+  SendUserGroups,
+  MapConnectionFirstSetup,
+  RemoveGroup,
+  SendEditVoteGroupRequest,
+  SendLookupGroupResult1,
+  SendLookupGroupResult2,
+  LookupGroup1,
+  LookupGroup2,
+  SendLogin,
+  SendRegister,
+  Test
 }
+

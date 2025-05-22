@@ -45,11 +45,42 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     support.firePropertyChange("NewMessage", null, message);
   }
 
-  public void setProfile(Profile profile)
-  {
+  public void setProfile(Profile profile) {
+    Profile oldProfile = this.currentProfile;
     this.currentProfile = profile;
-    support.firePropertyChange("ProfileSet", null, null);
+    support.firePropertyChange("ProfileSet", oldProfile, profile);
   }
+
+  /**
+   * Call this when login is successful.
+   */
+  public void fireLoginSuccess(Profile profile) {
+    setProfile(profile);
+    support.firePropertyChange("loginSuccess", null, profile);
+  }
+
+  /**
+   * Call this when registration is successful.
+   */
+  public void fireRegisterSuccess(Profile profile) {
+    setProfile(profile);
+    support.firePropertyChange("registerSuccess", null, profile);
+  }
+
+  /**
+   * Call this when login fails.
+   */
+  public void fireLoginFailure(String reason) {
+    support.firePropertyChange("loginFailure", null, reason);
+  }
+
+  /**
+   * Call this when registration fails.
+   */
+  public void fireRegisterFailure(String reason) {
+    support.firePropertyChange("registerFailure", null, reason);
+  }
+
 
   public Profile getProfile()
   {
@@ -66,14 +97,31 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     return client;
   }
 
-  public void sendLoginOrRegister(Profile profile)
-  {
-    Logger.log("Debugging - sendLoginOrRegister");
-    var message = new Message(MessageType.SendLoginOrRegister);
+//  public void sendLoginOrRegister(Profile profile)
+//  {
+//    Logger.log("Debugging - sendLoginOrRegister");
+//    var message = new Message(MessageType.SendLoginOrRegister);
+//    message.addParam("profile", profile);
+//    boolean success = client.send(message);
+//    if(!success) WindowManager.getInstance().showErrorPopup("Could not login or register!");
+//  }
+
+  public void sendLogin(Profile profile) {
+    Logger.log("Debugging - sendLogin");
+    var message = new Message(MessageType.SendLogin);
     message.addParam("profile", profile);
     boolean success = client.send(message);
-    if(!success) WindowManager.getInstance().showErrorPopup("Could not login or register!");
+    if(!success) WindowManager.getInstance().showErrorPopup("Login failed!");
   }
+
+  public void sendRegister(Profile profile) {
+    Logger.log("Debugging - sendRegister");
+    var message = new Message(MessageType.SendRegister);
+    message.addParam("profile", profile);
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Registration failed!");
+  }
+
 
   public void sendChangeUsername(String username) {
     currentProfile.changeUsername(username);

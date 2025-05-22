@@ -55,7 +55,7 @@ public class ClientConnection implements Runnable
       listener.receiveMessage(message);
   }
 
-  public void send(String message) throws IOException
+  public synchronized void send(String message) throws IOException
   {
     outToServer.writeObject(message);
     outToServer.flush();

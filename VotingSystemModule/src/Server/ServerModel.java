@@ -292,7 +292,17 @@ public class ServerModel implements ServerModelService {
   public synchronized void process(String message,
       ServerConnection serverConnection)
   {
-    Message messageObject = JsonUtil.deserialize(message, Message.class);
+    Message messageObject = null;
+    try
+    {
+      messageObject = JsonUtil.deserialize(message, Message.class);
+    }
+    catch (Exception e)
+    {
+      Logger.log("Error", "Invalid string - not in proper JSON format!");
+      return;
+    }
+
     int clientConnectionIndex=-1;
     try{
       clientConnectionIndex = messageObject.getParam("clientConnectionIndex", int.class);

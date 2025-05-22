@@ -1,5 +1,6 @@
+package ManualTesting;
+
 import Client.ClientConnection;
-import Common.DummyDataMaker;
 import Common.Vote;
 import Utils.Logger;
 

@@ -200,7 +200,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     nameColumn.setPrefWidth(250);
 
     TableColumn<GroupEntry, Void> configColumn = new TableColumn<>("Configuration");
-    configColumn.setCellFactory(col -> new TableCell<>() {
+    configColumn.setCellFactory(col -> new TableCell<GroupEntry, Void>() {
       private final Button btn = new Button("Configure");
 
       {
@@ -219,7 +219,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     configColumn.setPrefWidth(150);
 
     TableColumn<GroupEntry, Void> removeColumn = new TableColumn<>("Remove Group");
-    removeColumn.setCellFactory(col -> new TableCell<>() {
+    removeColumn.setCellFactory(col -> new TableCell<GroupEntry, Void>() {
       private final Button removeButton = new Button("Remove");
 
       {
@@ -237,7 +237,9 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     });
     removeColumn.setPrefWidth(150);
 
-    groupTable.getColumns().addAll(nameColumn, configColumn, removeColumn);
+    groupTable.getColumns().add(nameColumn);
+    groupTable.getColumns().add(configColumn);
+    groupTable.getColumns().add(removeColumn);
   }
 
   // Called when Model returns a user lookup result

@@ -75,6 +75,8 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     }
     else
     {
+      viewModel.createGroup(groupToEdit.getGroupName());
+      groupData.add(groupToEdit);
       showPopupStage(groupToEdit);
     }
 

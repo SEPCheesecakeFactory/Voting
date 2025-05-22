@@ -138,21 +138,17 @@
 }
 
 .dialog-pane .list-view {
-  -fx-pref-height: USE_COMPUTED_SIZE;  /* let content dictate height */
-  -fx-pref-width:  USE_COMPUTED_SIZE;  /* likewise for width */
-  -fx-min-height: 0;                   /* avoid imposed minimums */
+  -fx-pref-height: USE_COMPUTED_SIZE;
+  -fx-pref-width:  USE_COMPUTED_SIZE;
+  -fx-min-height: 0;
   -fx-min-width:  0;
 }
 
-/* If ChoiceDialog uses a ListCell popup, cap its height to show ~6 items */
 .dialog-pane .list-view {
-  -fx-max-height: 6em; /* approx. 6 rows */
+  -fx-max-height: 6em;
 }
 
-/* Re-apply your font only (no layout) */
 .dialog-pane,
 .dialog-pane * {
-  -fx-font-family: "Nunito Light"; /* or "Nunito" if you prefer */
+  -fx-font-family: "Nunito Light";
 }
-
-/* (buttons will continue inheriting your .button rules) */

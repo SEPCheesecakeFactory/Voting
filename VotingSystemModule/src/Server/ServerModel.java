@@ -457,8 +457,8 @@ public class ServerModel implements ServerModelService {
           break;
       }
     } catch (Exception e) {
-      Logger.log("Error in ServerProxy: " + e.getMessage());
-      throw new RuntimeException(e);
+      Logger.log("Error - ServerModel", e.getMessage());
+      e.printStackTrace();
     }
   }
 

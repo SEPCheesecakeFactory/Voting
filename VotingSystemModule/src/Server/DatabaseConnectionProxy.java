@@ -117,6 +117,16 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     databaseConnection.addUserToGroup(userId,groupId);
   }
 
+  @Override public void removeUserFromGroup(int userId, int groupId)
+  {
+    databaseConnection.removeUserFromGroup(userId, groupId);
+  }
+
+  @Override public void removeUsersFromGroup(int groupId)
+  {
+    databaseConnection.removeUsersFromGroup(groupId);
+  }
+
   @Override public int createUserGroup(String groupName, int creatorId)
   {
     return databaseConnection.createUserGroup(groupName, creatorId);

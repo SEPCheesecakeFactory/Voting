@@ -643,6 +643,35 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
+  @Override public void removeUserFromGroup(int userId, int groupId)
+  {
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(
+            "DELETE FROM UserGroupMembership WHERE user_id = ? AND group_id = ?")) {
+      stmt.setInt(1, userId);
+      stmt.setInt(2, groupId);
+      stmt.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override public void removeUsersFromGroup(int groupId)
+  {
+    try (Connection connection = openConnection();
+        PreparedStatement stmt = connection.prepareStatement(
+            "DELETE FROM UserGroupMembership WHERE group_id = ?")) {
+      stmt.setInt(1, groupId);
+      stmt.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
   public boolean userHasAccessToPoll(int userId, int pollId) {
     // Poll is accessible if:
     //  - poll.is_private = false (public poll)

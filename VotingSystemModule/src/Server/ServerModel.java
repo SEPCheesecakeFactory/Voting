@@ -203,6 +203,18 @@ public class ServerModel implements ServerModelService {
       db.addUserToGroup(profile.getId(), groupId);
     }
   }
+
+  public synchronized void editUserGroup(UserGroup userGroup, int creatorId)
+  {
+    int groupId = userGroup.getId();
+
+    db.removeUsersFromGroup(groupId);
+
+    for (Profile profile : userGroup.getMembers()) {
+      db.addUserToGroup(profile.getId(), groupId);
+    }
+  }
+
   public synchronized void grantPollAccessToUsers(int pollId, Set<Profile> users, int userId)
   {
     for (Profile user : users) {
@@ -517,6 +529,15 @@ public class ServerModel implements ServerModelService {
           // Send back the full group (or the dummy with id -1)
           sendLookupGroupResults2(group, clientConnectionIndex);
           break;
+        case SendEditVoteGroupRequest:
+          // params: voteGroup
+          UserGroup userVoteGroup = messageObject.getParam("voteGroup", UserGroup.class);
+          if (userVoteGroup != null)
+          {
+            clientConnectionIndex = messageObject.getParam("clientConnectionIndex",int.class);
+            editUserGroup(userVoteGroup, clientConnectionIndex);
+          }
+          break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());
           break;
@@ -526,6 +547,4 @@ public class ServerModel implements ServerModelService {
       e.printStackTrace();
     }
   }
-
-
 }

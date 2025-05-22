@@ -20,6 +20,8 @@ public interface DatabaseConnector
   public void closePollAndSaveResults(int pollId);
   boolean isOwner(int userId, int pollId);
   void addUserToGroup(int userId, int groupId);
+  void removeUserFromGroup(int userId, int groupId);
+  void removeUsersFromGroup(int groupId);
   int createUserGroup(String groupName, int creatorId);
 //  void addUserToPoll(int userId, int pollId);
 //  void addGroupToPoll(int groupId, int pollId); grantPollAccess methods does the same in a better way

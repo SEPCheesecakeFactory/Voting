@@ -152,6 +152,16 @@ public int registerProfile(Profile profile) {
 
     }
 
+  @Override public void removeUserFromGroup(int userId, int groupId)
+  {
+
+  }
+
+  @Override public void removeUsersFromGroup(int groupId)
+  {
+
+  }
+
   @Override public int createUserGroup(String groupName, int creatorId)
   {
     return 0;

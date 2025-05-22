@@ -54,6 +54,11 @@ public class ClientConnection implements Runnable
     for(var listener : messageListeners)
       listener.receiveMessage(message);
   }
+  private void sendMessageToListener(Message message)
+  {
+    int clientConnectionIndex = message.getParam("clientConnectionIndex", int.class);
+    identifiedMessageListeners.get(clientConnectionIndex).receiveMessage(message);
+  }
 
   public void send(String message) throws IOException
   {

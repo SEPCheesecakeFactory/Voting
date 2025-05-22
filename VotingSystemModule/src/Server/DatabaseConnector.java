@@ -12,7 +12,7 @@ public interface DatabaseConnector
   public void editVote(Vote vote);
   public Poll retrievePoll(int id);
   public PollResult retrievePollResults(int id);
-  public int loginOrRegisterAProfile(Profile profile);
+ // public int loginOrRegisterAProfile(Profile profile);
   public void changeUsername(Profile profile);
   public Poll storePoll(Poll poll, Profile profile);
   public boolean userHasAccessToPoll(int userId, int pollId) throws
@@ -29,4 +29,6 @@ public interface DatabaseConnector
   void grantPollAccessToGroup(int pollId, String groupName, int clientId);
   List<Poll> getAllAvailablePolls(int userId);
   List<UserGroup> getGroupsCreatedByUser(int userId);
+  int registerProfile(Profile profile);
+  int loginProfile(Profile profile);
 }

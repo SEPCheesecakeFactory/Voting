@@ -62,24 +62,48 @@ public class MockDatabaseConnection implements DatabaseConnector {
         return new PollResult(poll, choiceVoters);
     }
 
-    @Override
-    public int loginOrRegisterAProfile(Profile profile) {
-        // First, check if the username already exists in the profiles
-        for (Map.Entry<Integer, Profile> entry : profiles.entrySet()) {
-            if (entry.getValue().getUsername().equals(profile.getUsername())) {
-                // If profile exists, return its existing ID
-                return entry.getKey();
-            }
-        }
+//    @Override
+//    public int loginOrRegisterAProfile(Profile profile) {
+//        // First, check if the username already exists in the profiles
+//        for (Map.Entry<Integer, Profile> entry : profiles.entrySet()) {
+//            if (entry.getValue().getUsername().equals(profile.getUsername())) {
+//                // If profile exists, return its existing ID
+//                return entry.getKey();
+//            }
+//        }
+//
+//        // If the profile doesn't exist, assign a new ID
+//        int id = nextProfileId++;
+//        profile.setId(id);
+//        profiles.put(id, profile);
+//        return id;
+//    }
+@Override
+public int registerProfile(Profile profile) {
+  // Check if username already exists - reject registration if yes
+  if (profileExists(profile.getUsername())) {
+    throw new IllegalArgumentException("Username '" + profile.getUsername() + "' already exists.");
+  }
+  // Assign new ID and save profile
+  int id = nextProfileId++;
+  profile.setId(id);
+  profiles.put(id, profile);
+  return id;
+}
 
-        // If the profile doesn't exist, assign a new ID
-        int id = nextProfileId++;
-        profile.setId(id);
-        profiles.put(id, profile);
-        return id;
+  @Override
+  public int loginProfile(Profile profile) {
+    // Look for a profile with matching username
+    for (Map.Entry<Integer, Profile> entry : profiles.entrySet()) {
+      if (entry.getValue().getUsername().equals(profile.getUsername())) {
+        return entry.getKey(); // return existing profile ID
+      }
     }
+    // If not found, return 0 or -1 to indicate failure to login
+    return 0;
+  }
 
-    @Override
+  @Override
     public void changeUsername(Profile profile) {
         int id = profile.getId();
         String newUsername = profile.getUsername();

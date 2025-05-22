@@ -365,19 +365,52 @@ public class ServerModel implements ServerModelService {
           storePoll(poll, profile, clientConnectionIndex);
           Logger.log("Poll successfully created for: " + poll.getId());
           break;
-        case MessageType.SendLoginOrRegister:
+//        case MessageType.SendLoginOrRegister:
+//          profile = messageObject.getParam("profile", Profile.class);
+//          int id=getDb().loginOrRegisterAProfile(profile);
+//          Logger.log("Profile logged or registered with id: " + id);
+//          profile.setId(id);
+//          //important
+//          Message mes = new Message(MessageType.MapConnectionFirstSetup);
+//          mes.addParam("clientConnectionIndex", id);
+//
+//          //
+//
+//          sendUpdatedProfile(profile, serverConnection);
+//          break;
+
+        case MessageType.SendLogin:
           profile = messageObject.getParam("profile", Profile.class);
-          int id=getDb().loginOrRegisterAProfile(profile);
-          Logger.log("Profile logged or registered with id: " + id);
-          profile.setId(id);
-          //important
-          Message mes = new Message(MessageType.MapConnectionFirstSetup);
-          mes.addParam("clientConnectionIndex", id);
-
-          //
-
-          sendUpdatedProfile(profile, serverConnection);
+          int loginId = getDb().loginProfile(profile);
+          if (loginId != -1) {
+            profile.setId(loginId);
+            sendUpdatedProfile(profile, serverConnection);
+            Logger.log("Profile logged in with id: " + loginId);
+          } else {
+            Message response = new Message(MessageType.SendLogin);
+            response.addParam("status", "Login failed: Invalid credentials");
+            response.addParam("clientConnectionIndex", clientConnectionIndex);
+            sendMessageToUser(response);
+            Logger.log("Login failed for username: " + profile.getUsername());
+          }
           break;
+
+        case MessageType.SendRegister:
+          profile = messageObject.getParam("profile", Profile.class);
+          int registerId = getDb().registerProfile(profile);
+          if (registerId != -1) {
+            profile.setId(registerId);
+            sendUpdatedProfile(profile, serverConnection);
+            Logger.log("Profile registered with id: " + registerId);
+          } else {
+            Message response = new Message(MessageType.SendRegister);
+            response.addParam("status", "Registration failed: Username may be taken");
+            response.addParam("clientConnectionIndex", clientConnectionIndex);
+            sendMessageToUser(response);
+            Logger.log("Registration failed for username: " + profile.getUsername());
+          }
+          break;
+
         case MessageType.SendChangeUsername:
           try {
             profile = messageObject.getParam("username", Profile.class);

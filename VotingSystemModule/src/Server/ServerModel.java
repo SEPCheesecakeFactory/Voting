@@ -358,6 +358,12 @@ public class ServerModel implements ServerModelService {
           Logger.log("Poll Results handled for: " +pollId);
           sendPollResultsToUser(pollResult, clientConnectionIndex);
           break;
+        case MessageType.RemoveGroup:
+          userId = messageObject.getParam("userId", int.class);
+          String groupName = messageObject.getParam("groupName",String.class);
+          Logger.log("Remove Group handled for: " +groupName);
+          getDb().removeGroup(groupName);
+          break;
 
         case MessageType.CreatePoll:
           Poll poll = messageObject.getParam("poll", Poll.class);
@@ -441,7 +447,7 @@ public class ServerModel implements ServerModelService {
           sendLookupUserResults(fullProfile, clientConnectionIndex);
           break;
         case MessageType.LookupGroup:
-          String groupName = messageObject.getParam("groupName", String.class);
+          groupName = messageObject.getParam("groupName", String.class);
           UserGroup group = getDb().getGroupByUsername(groupName);
 
           if (group == null) {

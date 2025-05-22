@@ -130,4 +130,9 @@ public class DatabaseConnectionProxy implements DatabaseConnector
   {
     return databaseConnection.getGroupsCreatedByUser(userId);
   }
+
+  @Override public void removeGroup(String groupName)
+  {
+    databaseConnection.removeGroup(groupName);
+  }
 }

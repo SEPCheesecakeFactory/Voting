@@ -948,5 +948,46 @@ public class DatabaseConnection implements DatabaseConnector
     return groups;
   }
 
+  @Override
+  public void removeGroup(String groupName) {
+    String deleteMembershipsSQL = "DELETE FROM voting_system.UserGroupMembership WHERE group_id = (SELECT id FROM voting_system.UserGroup WHERE name = ?)";
+    String deletePollAccessControlSQL = "DELETE FROM voting_system.PollAccessControl WHERE group_id = (SELECT id FROM voting_system.UserGroup WHERE name = ?)";
+    String deleteGroupSQL = "DELETE FROM voting_system.UserGroup WHERE name = ?";
+
+    try (Connection connection = openConnection()) {
+      connection.setAutoCommit(false);
+
+      try (
+          PreparedStatement deleteMembershipsStmt = connection.prepareStatement(deleteMembershipsSQL);
+          PreparedStatement deletePollAccessControlStmt = connection.prepareStatement(deletePollAccessControlSQL);
+          PreparedStatement deleteGroupStmt = connection.prepareStatement(deleteGroupSQL)
+      ) {
+        // Delete from UserGroupMembership
+        deleteMembershipsStmt.setString(1, groupName);
+        deleteMembershipsStmt.executeUpdate();
+
+        // Delete from PollAccessControl
+        deletePollAccessControlStmt.setString(1, groupName);
+        deletePollAccessControlStmt.executeUpdate();
+
+        // Delete from UserGroup
+        deleteGroupStmt.setString(1, groupName);
+        int affectedRows = deleteGroupStmt.executeUpdate();
+
+        if (affectedRows == 0) {
+          connection.rollback();
+          Logger.log("No group found with the name: " + groupName);
+        } else {
+          connection.commit();
+         Logger.log("Group '" + groupName + "' and related data removed successfully.");
+        }
+      } catch (SQLException e) {
+        connection.rollback();
+        throw new RuntimeException("Failed to remove group '" + groupName + "'. Transaction rolled back.", e);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Database error occurred while removing group.", e);
+    }
+  }
 
 }

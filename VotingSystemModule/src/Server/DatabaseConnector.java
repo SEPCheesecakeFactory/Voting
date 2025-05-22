@@ -29,4 +29,5 @@ public interface DatabaseConnector
   void grantPollAccessToGroup(int pollId, String groupName, int clientId);
   List<Poll> getAllAvailablePolls(int userId);
   List<UserGroup> getGroupsCreatedByUser(int userId);
+  void removeGroup(String groupName);
 }

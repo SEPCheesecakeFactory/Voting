@@ -244,6 +244,16 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     if(!success) WindowManager.getInstance().showErrorPopup("Request for group lookup failed!");
   }
 
+  @Override public void requestRemoveGroup(String groupName)
+  {
+    Logger.log("Debugging - requestRemoveGroup");
+    var message = new Message(MessageType.RemoveGroup);
+    message.addParam("groupName",groupName);
+    message.addParam("userId",getProfile().getId());
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for removing the group failed!");
+
+  }
 
 
   @Override public void createPoll(Poll poll)

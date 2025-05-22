@@ -173,4 +173,9 @@ public class MockDatabaseConnection implements DatabaseConnector {
     return List.of();
   }
 
+  @Override public void removeGroup(String groupName)
+  {
+    //to implement
+  }
+
 }

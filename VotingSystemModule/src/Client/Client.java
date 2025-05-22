@@ -128,7 +128,9 @@ public class Client implements MessageListener
       case SendLookupUserResult -> model.handleUserLookupResult(
           message.getParam("profile", Profile.class));
 
-      case SendLookupGroupResult -> model.handleUserGroupLookupResult(
+      case SendLookupGroupResult1 -> model.handleUserGroupLookupResult1(
+          message.getParam("userGroup", UserGroup.class));
+      case SendLookupGroupResult2 -> model.handleUserGroupLookupResult2(
           message.getParam("userGroup", UserGroup.class));
       case SendUserGroups ->
       {

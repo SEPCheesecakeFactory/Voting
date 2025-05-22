@@ -104,10 +104,15 @@ public class ServerProxy implements ServerModelService
     realService.grantPollAccessToGroups(pollId, groups, userId);
   }
 
-  @Override public void sendLookupGroupResults(UserGroup group,
+  @Override public void sendLookupGroupResults1(UserGroup group,
       int clientConnectionIndex)
   {
-    realService.sendLookupGroupResults(group, clientConnectionIndex);
+    realService.sendLookupGroupResults1(group, clientConnectionIndex);
+  }
+  @Override public void sendLookupGroupResults2(UserGroup group,
+      int clientConnectionIndex)
+  {
+    realService.sendLookupGroupResults2(group, clientConnectionIndex);
   }
 
   @Override public List<UserGroup> getGroupsCreatedByUser(int userId)

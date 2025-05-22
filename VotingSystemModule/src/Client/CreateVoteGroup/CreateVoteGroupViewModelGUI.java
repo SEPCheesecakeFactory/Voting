@@ -52,7 +52,7 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
     model.requestUserGroups();
   }
   public void validateGroupName(String groupName) {
-    model.requestGroupLookup(groupName);
+    model.requestGroupLookup2(groupName);
   }
 
   // This method will be called by the Model when server sends the Profile back
@@ -84,13 +84,13 @@ public class CreateVoteGroupViewModelGUI  implements PropertyChangeListener,
     {
       support.firePropertyChange(evt);
     }
-    if(evt.getPropertyName().equals("LookupGroupResults"))
+    if(evt.getPropertyName().equals("LookupGroupResults2"))
     {
       boolean ifExist;
       UserGroup group = (UserGroup)  evt.getNewValue();
       ifExist= group.getId() != -1;
 
-      support.firePropertyChange("LookupGroupResults",null,ifExist);
+      support.firePropertyChange("LookupGroupResults2",null,ifExist);
     }
 
   }

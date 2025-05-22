@@ -42,7 +42,7 @@ public class AvailablePollsViewModel implements PropertyChangeSubject
     });
 
     model.addPropertyChangeListener("LookupUserResults", this::handleUserLookupEvent);
-    model.addPropertyChangeListener("LookupGroupResults", this::handleGroupLookupEvent);
+    model.addPropertyChangeListener("LookupGroupResults1", this::handleGroupLookupEvent);
 
     model.requestAvailablePolls();
   }
@@ -79,7 +79,7 @@ public class AvailablePollsViewModel implements PropertyChangeSubject
   }
 
   public void validateGroupName(String groupName) {
-    model.requestGroupLookup(groupName);
+    model.requestGroupLookup1(groupName);
   }
 
   private void handleUserLookupEvent(PropertyChangeEvent evt) {

@@ -216,14 +216,28 @@ public class ServerModel implements ServerModelService {
     }
   }
 
-  public synchronized void sendLookupGroupResults(UserGroup group, int clientConnectionIndex)
+  public synchronized void sendLookupGroupResults1(UserGroup group, int clientConnectionIndex)
   {
     try
     {
-      Message message = new Message(MessageType.SendLookupGroupResult);
+      Message message = new Message(MessageType.SendLookupGroupResult1);
       message.addParam("userGroup", group);
       message.addParam("clientConnectionIndex", clientConnectionIndex);
 //      connectionPool.changeToMap(message, connection);
+      connectionPool.sendDirectMessage(message);
+    }
+    catch (IOException e)
+    {
+      Logger.log("Failed to send sendLookupGroupResults to user: " + e.getMessage());    }
+  }
+  public synchronized void sendLookupGroupResults2(UserGroup group, int clientConnectionIndex)
+  {
+    try
+    {
+      Message message = new Message(MessageType.SendLookupGroupResult2);
+      message.addParam("userGroup", group);
+      message.addParam("clientConnectionIndex", clientConnectionIndex);
+      //      connectionPool.changeToMap(message, connection);
       connectionPool.sendDirectMessage(message);
     }
     catch (IOException e)
@@ -446,7 +460,7 @@ public class ServerModel implements ServerModelService {
 
           sendLookupUserResults(fullProfile, clientConnectionIndex);
           break;
-        case MessageType.LookupGroup:
+        case MessageType.LookupGroup1:
           groupName = messageObject.getParam("groupName", String.class);
           UserGroup group = getDb().getGroupByUsername(groupName);
 
@@ -456,7 +470,19 @@ public class ServerModel implements ServerModelService {
           }
 
           // Send back the full group (or the dummy with id -1)
-          sendLookupGroupResults(group, clientConnectionIndex);
+          sendLookupGroupResults1(group, clientConnectionIndex);
+          break;
+        case MessageType.LookupGroup2:
+          groupName = messageObject.getParam("groupName", String.class);
+          group = getDb().getGroupByUsername(groupName);
+
+          if (group == null) {
+            group = new UserGroup(groupName);
+            group.setId(-1);
+          }
+
+          // Send back the full group (or the dummy with id -1)
+          sendLookupGroupResults2(group, clientConnectionIndex);
           break;
         default:
           Logger.log("Received an unknown message type: " + messageObject.getType());

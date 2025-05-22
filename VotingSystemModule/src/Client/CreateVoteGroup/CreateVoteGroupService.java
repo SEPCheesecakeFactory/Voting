@@ -13,4 +13,6 @@ public interface CreateVoteGroupService {
   void requestUserGroups();
   void receiveUserGroups(List<UserGroup> groups);
   void requestRemoveGroup(String groupName);
+  void handleUserGroupLookupResult2(UserGroup userGroup);
+  void requestGroupLookup2(String groupName);
 }

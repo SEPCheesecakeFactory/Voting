@@ -342,7 +342,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
           groupTable.refresh();
         });
       }
-      case "LookupGroupResults" ->{
+      case "LookupGroupResults2" ->{
         Platform.runLater(()->{
           if(evt.getNewValue().equals(true))
           {

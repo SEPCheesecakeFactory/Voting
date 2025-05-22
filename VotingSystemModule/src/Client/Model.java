@@ -226,10 +226,15 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     support.firePropertyChange("receiveUserGroups",null,groups);
   }
 
-  @Override public void handleUserGroupLookupResult(UserGroup userGroup)
+  @Override public void handleUserGroupLookupResult1(UserGroup userGroup)
   {
     Logger.log("Debugging - handleUserGroupLookupResult");
-    support.firePropertyChange("LookupGroupResults", null, userGroup);
+    support.firePropertyChange("LookupGroupResults1", null, userGroup);
+  }
+  @Override public void handleUserGroupLookupResult2(UserGroup userGroup)
+  {
+    Logger.log("Debugging - handleUserGroupLookupResult");
+    support.firePropertyChange("LookupGroupResults2", null, userGroup);
   }
 
   @Override public void sendPollAccess(int pollId, Set<Profile> users,
@@ -245,10 +250,18 @@ public class Model implements PropertyChangeSubject, PollResultRequestService,
     if(!success) WindowManager.getInstance().showErrorPopup("Sending poll access failed!");
   }
 
-  @Override public void requestGroupLookup(String groupName)
+  @Override public void requestGroupLookup1(String groupName)
   {
     Logger.log("Debugging - requestGroupLookup");
-    var message = new Message(MessageType.LookupGroup);
+    var message = new Message(MessageType.LookupGroup1);
+    message.addParam("groupName", groupName);
+    boolean success = client.send(message);
+    if(!success) WindowManager.getInstance().showErrorPopup("Request for group lookup failed!");
+  }
+  @Override public void requestGroupLookup2(String groupName)
+  {
+    Logger.log("Debugging - requestGroupLookup");
+    var message = new Message(MessageType.LookupGroup2);
     message.addParam("groupName", groupName);
     boolean success = client.send(message);
     if(!success) WindowManager.getInstance().showErrorPopup("Request for group lookup failed!");

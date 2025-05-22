@@ -187,7 +187,7 @@ class ModelTest {
     assertEquals("receiveUserGroups", events.get(0).getPropertyName());
 
     events.clear();
-    model.handleUserGroupLookupResult(g);
+    model.handleUserGroupLookupResult1(g);
     assertEquals("LookupGroupResults", events.get(0).getPropertyName());
 
     client.sent.clear();
@@ -197,7 +197,7 @@ class ModelTest {
     Message m2 = client.last();
     assertEquals(MessageType.SendPollAccess, m2.getType());
 
-    model.requestGroupLookup("grp");
+    model.requestGroupLookup1("grp");
     assertEquals(MessageType.LookupGroup, client.last().getType());
   }
 

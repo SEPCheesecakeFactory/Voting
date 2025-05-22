@@ -17,8 +17,10 @@ public class DisplayPollViewModelGUI implements PropertyChangeListener,
     PropertyChangeSubject
 {
 
-  private final StringProperty title = new SimpleStringProperty();
-  private final StringProperty description = new SimpleStringProperty();
+  private final StringProperty questionTitle = new SimpleStringProperty();
+  private final StringProperty questionDescription = new SimpleStringProperty();
+  private final StringProperty pollTitle = new SimpleStringProperty();
+  private final StringProperty pollDescription = new SimpleStringProperty();
   private final ListProperty<ChoiceOption> choices = new SimpleListProperty<>(
       FXCollections.observableArrayList());
   private final IntegerProperty currentIndex = new SimpleIntegerProperty(0);
@@ -78,12 +80,19 @@ public class DisplayPollViewModelGUI implements PropertyChangeListener,
   }
 
 
-  public StringProperty titleProperty() {
-    return title;
+  public StringProperty questionTitleProperty() {
+    return questionTitle;
   }
 
-  public StringProperty descriptionProperty() {
-    return description;
+  public StringProperty questionDescriptionProperty() {
+    return questionDescription;
+  }
+  public StringProperty pollTitleProperty() {
+    return pollTitle;
+  }
+
+  public StringProperty pollDescriptionProperty() {
+    return pollDescription;
   }
 
   public ListProperty<ChoiceOption> choicesProperty() {
@@ -129,10 +138,10 @@ public class DisplayPollViewModelGUI implements PropertyChangeListener,
       if (currentPoll == null || currentPoll.getQuestions().length==0) return;
 
       var question = currentPoll.getQuestions()[currentIndex.get()];
-      title.set(question.getTitle());
+      questionTitle.set(question.getTitle());
       Logger.log("Description: " + question.getDescription());
 
-      description.set(question.getDescription());
+      questionDescription.set(question.getDescription());
       choices.set(FXCollections.observableArrayList(question.getChoiceOptions()));
       totalQuestions.set(currentPoll.getQuestions().length);
     });
@@ -143,10 +152,21 @@ public class DisplayPollViewModelGUI implements PropertyChangeListener,
   public void propertyChange(PropertyChangeEvent evt) {
     if ("PollUpdated".equals(evt.getPropertyName()) && evt.getNewValue() instanceof Poll poll) {
       this.currentPoll = poll;
+      System.out.println(poll.getDescription());
       currentIndex.set(0);
-      updateQuestionData();
+      updatePollData();
+
     }
     support.firePropertyChange(evt);
+  }
+
+  private void updatePollData()
+  {
+    Platform.runLater(()->{
+      pollTitle.set("Poll Title: "+currentPoll.getTitle());
+      pollDescription.set("Description: "+currentPoll.getDescription());
+    });
+    updateQuestionData();
   }
 
   public Poll getCurrentPoll()

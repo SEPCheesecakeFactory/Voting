@@ -206,13 +206,7 @@ public class ServerModel implements ServerModelService {
 
   public synchronized void editUserGroup(UserGroup userGroup, int creatorId)
   {
-    int groupId = userGroup.getId();
-
-    db.removeUsersFromGroup(groupId);
-
-    for (Profile profile : userGroup.getMembers()) {
-      db.addUserToGroup(profile.getId(), groupId);
-    }
+    db.editUserGroup(userGroup, creatorId);
   }
 
   public synchronized void grantPollAccessToUsers(int pollId, Set<Profile> users, int userId)

@@ -23,6 +23,7 @@ public interface DatabaseConnector
   void removeUserFromGroup(int userId, int groupId);
   void removeUsersFromGroup(int groupId);
   int createUserGroup(String groupName, int creatorId);
+  void editUserGroup(UserGroup userGroup, int creatorId);
 //  void addUserToPoll(int userId, int pollId);
 //  void addGroupToPoll(int groupId, int pollId); grantPollAccess methods does the same in a better way
   Profile getProfileByUsername(String username);

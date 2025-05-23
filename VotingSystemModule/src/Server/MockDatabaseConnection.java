@@ -167,9 +167,10 @@ public int registerProfile(Profile profile) {
     return 0;
   }
 
+  @Override public void editUserGroup(UserGroup userGroup, int creatorId)
+  {
 
-
-
+  }
 
   @Override public Profile getProfileByUsername(String username)
   {

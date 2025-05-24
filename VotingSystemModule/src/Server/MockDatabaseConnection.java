@@ -13,11 +13,14 @@ public class MockDatabaseConnection implements DatabaseConnector {
 
     private int nextProfileId = 1;
 
-    @Override
-    public boolean storeVote(Vote vote) {
-        votes.put(vote.getUserId(), vote);
-        return true;
+  @Override
+  public boolean storeVote(Vote vote) {
+    if (vote == null) {
+      throw new IllegalArgumentException("Vote cannot be null");
     }
+    votes.put(vote.getUserId(), vote);
+    return true;
+  }
 
     @Override
     public void editVote(Vote vote) {

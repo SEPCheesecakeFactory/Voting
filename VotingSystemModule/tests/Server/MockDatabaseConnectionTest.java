@@ -17,10 +17,18 @@ class MockDatabaseConnectionTest {
     db = new MockDatabaseConnection();
   }
 
-  // Z - Zero: Retrieve poll that doesn't exist
+
   @Test
   void retrievePoll_Z_nonexistentId_returnsNull() {
     assertNull(db.retrievePoll(999));
+  }
+
+  // Z – Zero: Store a vote with an empty array (no choices)
+  @Test
+  void storeVote_Z_emptyVoteChoices_doesNotFail() {
+    Vote vote = new Vote(1, new int[]{}); // no choices
+    assertDoesNotThrow(() -> db.storeVote(vote));
+    assertEquals(vote, db.votes.get(1));
   }
 
   // O - One: Store and retrieve single vote
@@ -31,7 +39,35 @@ class MockDatabaseConnectionTest {
     assertEquals(vote, db.votes.get(1));
   }
 
-  // M - Many: Store multiple votes
+  // M – Many: Store a vote with multiple choices
+  @Test
+  void storeVote_M_multipleChoices_storedCorrectly() {
+    Vote vote = new Vote(2, new int[]{201, 202, 203});
+    db.storeVote(vote);
+    assertEquals(vote, db.votes.get(2));
+    assertEquals(3, vote.getChoices().length);
+  }
+
+  // B – Boundary: Use choice IDs at edge values (e.g., 0, Integer.MAX_VALUE)
+  @Test
+  void storeVote_B_boundaryValues_storedCorrectly() {
+    Vote vote = new Vote(3, new int[]{0, Integer.MAX_VALUE});
+    db.storeVote(vote);
+    assertEquals(vote, db.votes.get(3));
+  }
+
+  // I – Interface: Uses public Vote interface and methods
+  @Test
+  void storeVote_I_interfaceUsedCorrectly() {
+    Vote vote = new Vote(4, new int[]{500});
+    db.storeVote(vote);
+
+    Vote stored = db.votes.get(4);
+    assertNotNull(stored);
+    assertEquals(4, stored.getUserId());
+    assertArrayEquals(new int[]{500}, stored.getChoices());
+  }
+
   @Test
   void storeVote_M_multipleVotes_allStoredCorrectly() {
     db.storeVote(new Vote(1, new int[]{101}));
@@ -39,7 +75,7 @@ class MockDatabaseConnectionTest {
     assertEquals(2, db.votes.size());
   }
 
-  // B - Boundary: Change username to existing one should fail
+
   @Test
   void changeUsername_B_duplicateUsername_throwsException() {
     Profile p1 = new Profile("Alice");
@@ -54,7 +90,19 @@ class MockDatabaseConnectionTest {
     assertThrows(IllegalArgumentException.class, () -> db.changeUsername(change));
   }
 
-  // I - Interface: Use interface method
+  // E – Exception: Null vote should throw (invalid input)
+  @Test
+  void storeVote_E_nullVote_throwsException() {
+    assertThrows(IllegalArgumentException.class, () -> db.storeVote(null));
+  }
+
+  // S – Simple: Typical valid vote submission
+  @Test
+  void storeVote_S_validVote_succeeds() {
+    Vote vote = new Vote(5, new int[]{111});
+    assertDoesNotThrow(() -> db.storeVote(vote));
+    assertEquals(vote, db.votes.get(5));
+  }
   @Test
   void userHasAccessToPoll_I_existingPoll_returnsTrue() {
     Poll poll = new Poll();
@@ -65,7 +113,7 @@ class MockDatabaseConnectionTest {
     assertTrue(db.userHasAccessToPoll(1, 10));
   }
 
-  // E - Exception: changeUsername with invalid ID
+
   @Test
   void changeUsername_E_invalidId_throwsException() {
     Profile ghost = new Profile("Ghost");
@@ -73,7 +121,7 @@ class MockDatabaseConnectionTest {
     assertThrows(IllegalArgumentException.class, () -> db.changeUsername(ghost));
   }
 
-  // S - State: Clear database resets all
+
   @Test
   void clear_S_resetsInternalState() {
     db.polls.put(1, new Poll());

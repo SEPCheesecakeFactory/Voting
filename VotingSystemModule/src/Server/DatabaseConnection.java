@@ -672,6 +672,38 @@ public class DatabaseConnection implements DatabaseConnector
     }
   }
 
+  @Override public void editUserGroup(UserGroup userGroup, int creatorId)
+  {
+    Connection conn = null;
+    try {
+      conn = openConnection();
+      conn.setAutoCommit(false);
+
+      try (PreparedStatement del = conn.prepareStatement(
+          "DELETE FROM UserGroupMembership WHERE group_id = ?")) {
+        del.setInt(1, userGroup.getId());
+        del.executeUpdate();
+      }
+
+      try (PreparedStatement ins = conn.prepareStatement(
+          "INSERT INTO UserGroupMembership (user_id, group_id) VALUES (?, ?)")) {
+        for (Profile p : userGroup.getMembers()) {
+          ins.setInt(1, p.getId());
+          ins.setInt(2, userGroup.getId());
+          ins.addBatch();
+        }
+        ins.executeBatch();
+      }
+
+      conn.commit();
+    } catch (SQLException e) {
+      if (conn != null) try { conn.rollback(); } catch (Exception exc) { Logger.log("Error when rolling back the changes of editing the user group."); }
+      throw new RuntimeException(e);
+    } finally {
+      if (conn != null) try { conn.close(); } catch (Exception exc) { Logger.log("Error when editing the user group."); }
+    }
+  }
+
   public boolean userHasAccessToPoll(int userId, int pollId) {
     // Poll is accessible if:
     //  - poll.is_private = false (public poll)

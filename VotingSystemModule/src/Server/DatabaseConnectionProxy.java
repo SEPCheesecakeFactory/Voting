@@ -132,9 +132,10 @@ public class DatabaseConnectionProxy implements DatabaseConnector
     return databaseConnection.createUserGroup(groupName, creatorId);
   }
 
-
-
-
+  @Override public void editUserGroup(UserGroup userGroup, int creatorId)
+  {
+    databaseConnection.editUserGroup(userGroup, creatorId);
+  }
 
   @Override public Profile getProfileByUsername(String username)
   {

@@ -91,7 +91,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
     root.setPadding(new Insets(15));
 
     TextField groupNameField = new TextField(groupToEdit.getGroupName());
-    groupNameField.setEditable(false); // lock editing
+    groupNameField.setEditable(false);
     groupNameField.setPrefWidth(300);
 
     Label nameLabel = new Label("Group Name:");
@@ -137,18 +137,27 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       {
         HBox memberRow = new HBox(10);
         TextField memberField = new TextField(member);
-        memberField.setEditable(false);
 
-        Label validLabel = new Label("Valid");
-        validLabel.setStyle("-fx-text-fill: green;");
+        Button validateButton = new Button("Validate");
         Button removeButton = new Button("Remove");
-        removeButton.setOnAction(ev -> {
-          //TODO: remove from database
-          memberContainer.getChildren().remove(memberRow);
-          memberRowMap.remove(member.toLowerCase());
+
+        validateButton.setOnAction(ev -> {
+          String username = memberField.getText().trim();
+          if (username.isEmpty())
+          {
+            showAlert("Validation Error", "Username cannot be empty.");
+            return;
+          }
+          memberRowMap.put(username.toLowerCase(), memberRow);
+          viewModel.requestUserLookup(username);
         });
 
-        memberRow.getChildren().addAll(memberField, validLabel, removeButton);
+        removeButton.setOnAction(ev -> {
+          memberContainer.getChildren().remove(memberRow);
+          memberRowMap.remove(memberField.getText().trim().toLowerCase());
+        });
+
+        memberRow.getChildren().addAll(memberField, validateButton, removeButton);
         memberContainer.getChildren().add(memberRow);
       }
     }
@@ -157,6 +166,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       addMemberRow.run();
       addMemberRow.run();
     }
+
 
     Button addMemberButton = new Button("Add Member");
     addMemberButton.setOnAction(e -> addMemberRow.run());
@@ -199,6 +209,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
       finalGroupToEdit.setMembers(memberNames);
       if(ifEdit)
       {
+        viewModel.getCurrentGroup().setId(finalGroupToEdit.getGroupId());
         viewModel.sendEditedGroupToServer();
       }
       else
@@ -331,7 +342,7 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
           groupData.clear(); // clear previous entries
 
           for (UserGroup group : groups) {
-            GroupEntry entry = new GroupEntry(group.getGroupName());
+            GroupEntry entry = new GroupEntry(group.getGroupName(), group.getId()); // <-- include ID
             List<String> memberNames = group.getMembers().stream()
                 .map(Profile::getUsername)
                 .toList();
@@ -365,11 +376,14 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
   public static class GroupEntry {
     private final SimpleStringProperty groupName = new SimpleStringProperty();
     private List<String> members = new ArrayList<>();
-
+    private int groupId;
     public GroupEntry(String name) {
       this.groupName.set(name);
     }
-
+    public GroupEntry(String name, int groupId) {
+      this.groupName.set(name);
+      this.groupId = groupId;
+    }
     public String getGroupName() {
       return groupName.get();
     }
@@ -388,6 +402,16 @@ public class CreateVoteGroupViewController implements PropertyChangeListener {
 
     public void setMembers(List<String> members) {
       this.members = members;
+    }
+
+    public int getGroupId()
+    {
+      return groupId;
+    }
+
+    public void setGroupId(int groupId)
+    {
+      this.groupId = groupId;
     }
   }
 }

@@ -63,7 +63,13 @@ public class WindowManager
   {
     if (instance == null)
     {
-      instance = new WindowManager();
+      synchronized (WindowManager.class)
+      {
+        if (instance == null)
+        {
+          instance = new WindowManager();
+        }
+      }
     }
     return instance;
   }

@@ -158,6 +158,18 @@ public class ServerModel implements ServerModelService {
     }
   }
 
+  public synchronized void sendErrorRegister(ServerConnection serverConnection){
+    try {
+      Logger.log("ServerModel: Error Register sent");
+      Message message = new Message(MessageType.Response);
+      message.addParam("Error when registering! Username might already exist.", String.class);
+      connectionPool.changeToMap(message, serverConnection);
+      connectionPool.sendDirectMessage(message);
+    } catch (IOException e) {
+      Logger.log("Failed to send the Updated profile to user: " + e.getMessage());
+    }
+  }
+
   public synchronized void storePoll(Poll poll, Profile profile, int clientConnectionIndex)
   {
     try
@@ -429,10 +441,7 @@ public class ServerModel implements ServerModelService {
             sendUpdatedProfile(profile, serverConnection);
             Logger.log("Profile registered with id: " + registerId);
           } else {
-            Message response = new Message(MessageType.SendRegister);
-            response.addParam("status", "Registration failed: Username may be taken");
-            response.addParam("clientConnectionIndex", clientConnectionIndex);
-            sendMessageToUser(response);
+            sendErrorRegister(serverConnection);
             Logger.log("Registration failed for username: " + profile.getUsername());
           }
           break;

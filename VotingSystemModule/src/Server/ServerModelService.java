@@ -31,5 +31,4 @@ public interface ServerModelService
   void handle(Object incoming);
   void process(String message, ServerConnection serverConnection);
   void sendAvailablePolls(Message message, int clientConnectionIndex);
-
 }

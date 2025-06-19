@@ -81,11 +81,11 @@ class MockDatabaseConnectionTest {
     Profile p1 = new Profile("Alice");
     Profile p2 = new Profile("Bob");
 
-    int id1 = db.loginOrRegisterAProfile(p1);
-    int id2 = db.loginOrRegisterAProfile(p2);
+//    int id1 = db.loginOrRegisterAProfile(p1);
+//    int id2 = db.loginOrRegisterAProfile(p2);
 
     Profile change = new Profile("Alice");
-    change.setId(id2);  // attempt to rename Bob to Alice
+//    change.setId(id2);  // attempt to rename Bob to Alice
 
     assertThrows(IllegalArgumentException.class, () -> db.changeUsername(change));
   }

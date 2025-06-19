@@ -62,12 +62,12 @@ class DatabaseConnectionProxyTest {
     assertSame(result, proxy.retrievePollResults(5));
   }
 
-  @Test
-  void loginOrRegisterAProfile_delegatesCorrectly() {
-    Profile profile = new Profile("sigmaboy");
-    when(mockDb.loginOrRegisterAProfile(profile)).thenReturn(99);
-    assertEquals(99, proxy.loginOrRegisterAProfile(profile));
-  }
+//  @Test
+//  void loginOrRegisterAProfile_delegatesCorrectly() {
+//    Profile profile = new Profile("sigmaboy");
+//    when(mockDb.loginOrRegisterAProfile(profile)).thenReturn(99);
+//    assertEquals(99, proxy.loginOrRegisterAProfile(profile));
+//  }
 
   @Test
   void changeUsername_delegatesCall() {

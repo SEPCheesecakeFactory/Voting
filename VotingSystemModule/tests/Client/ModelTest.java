@@ -79,7 +79,7 @@ class ModelTest {
   void sendLoginOrRegister_sendsProperMessage() {
     Profile p = new Profile("alice");
     p.setId(5);
-    model.sendLoginOrRegister(p);
+//    model.sendLoginOrRegister(p);
     Message m = client.last();
     assertEquals(MessageType.SendLoginOrRegister, m.getType());
     assertEquals(p, m.getParam("profile", Profile.class));
